@@ -18,6 +18,8 @@ The [import handoff](IMPORTING-SKILLS.md) guides the importing AI through skill 
 
 The separate [VICE/ROM handoff](IMPORTING-VICE-ROMS.md) covers optional emulator and ROM acquisition.
 
+For optional agent-controlled live debugging, see [RetroDebugger MCP setup](skills/retrodebugger-windows-build/references/mcp-getting-started.md).  Prefer a suitable prebuilt release; use the Windows-build skill only when a source build is needed.  Offline analysis and other appropriate debugger workflows do not require RetroDebugger, MCP, or Windows.
+
 ## Skills
 
 | Skill | What it does |
@@ -31,6 +33,7 @@ The separate [VICE/ROM handoff](IMPORTING-VICE-ROMS.md) covers optional emulator
 | [c64-disk-preservation-cracking](skills/c64-disk-preservation-cracking/SKILL.md) | Preserves disk evidence and analyzes supported formats and copy protection. |
 | [c64-rom-reference](skills/c64-rom-reference/SKILL.md) | Provides ROM and hardware references, plus ROM identity checks. |
 | [c64-basic-v2-rnd-analysis](skills/c64-basic-v2-rnd-analysis/SKILL.md) | Explores exact C64 BASIC V2 random-number behavior and its limits. |
+| [retrodebugger-windows-build](skills/retrodebugger-windows-build/SKILL.md) | Optional Windows source-build workflow, portable build-log analysis, and MCP setup/readiness guidance. |
 
 ## Model-provider access
 

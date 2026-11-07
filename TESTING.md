@@ -18,6 +18,17 @@ These are a **subset**, not an alternative claim that all bundled tests passed. 
 
 Additional disk and p-code tests live beside their scripts.  Discover one test directory at a time; several modules have short import names and are intentionally isolated by the full runner.
 
+## Optional Windows-build skill checks
+
+These checks exercise the bundled helpers without launching RetroDebugger or building native code:
+
+```sh
+python -B -m unittest discover -s skills/retrodebugger-windows-build/scripts/tests -v
+python -B -m unittest discover -s skills/retrodebugger-windows-build/scripts -p 'test_clangd*.py' -v
+```
+
+The log analyzer uses Python's standard library and is portable.  The optional clangd helper and its process-control tests need a POSIX host; their synthetic tests do not require an installed clangd.  Actual source preflight additionally needs clangd and a reviewed compilation database.  Windows compiler, linker, dependency, and runtime acceptance still require native Windows and the toolchain described in the [build skill](skills/retrodebugger-windows-build/SKILL.md).  A helper test pass is not native build or MCP interoperability acceptance.
+
 ## Full bundled test runner
 
 ```sh
@@ -28,7 +39,7 @@ This discovers every directory containing `test_*.py`, runs each in an isolated 
 
 Before running it, supply:
 
-1. **GCC** and a POSIX/little-endian environment for the RND C-backed tests.
+1. **GCC** and a POSIX/little-endian environment for the RND C-backed tests.  The optional Windows-build skill's bundled clangd-helper process-control tests also need POSIX; this does not make the helper a native Windows runner.
 2. The exact **BASIC V2** and **KERNAL revision 3** images identified in the [ROM manifest](skills/c64-rom-reference/references/rom-manifest.md), named `basic.bin` and `kernal.bin`, in `skills/c64-rom-reference/assets/roms/`.  Use only images you are authorized to supply.  The downloader documented by [c64-rom-reference](skills/c64-rom-reference/SKILL.md) is optional, explicit, and never invoked by the test runner.
 
 For Windows acquisition, the [VICE/ROM acquisition handoff](IMPORTING-VICE-ROMS.md) identifies a verified VICE archive and maps its BASIC, KERNAL, and 1541 ROM files to the local asset directory with size/hash checks. Installing Windows VICE alone does not satisfy the GCC/POSIX test prerequisites.
