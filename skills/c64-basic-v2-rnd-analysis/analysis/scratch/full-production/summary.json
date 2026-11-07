@@ -1,0 +1,17 @@
+{
+  "schema": "c64-basic-rnd-full-histogram-v2",
+  "domainSize": 2936012800,
+  "metadataBytes": 11744051200,
+  "metadataLayout": "8-bit cycle-length class plus 24-bit mu",
+  "nextScan": 2936012800,
+  "classifiedStates": 2936012800,
+  "logicalTransitions": 2936012800,
+  "transitionsThisProcess": 2936012800,
+  "checkpointSequence": 45,
+  "cycleLengthClasses": 15,
+  "complete": true,
+  "maxMu": 58681,
+  "maxLambda": 58078,
+  "maxTotal": 116759,
+  "elapsedSecondsThisProcess": 8518.809024
+}

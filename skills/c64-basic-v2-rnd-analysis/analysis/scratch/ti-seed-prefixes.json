@@ -1,0 +1,493 @@
+{
+  "scope": "uniform integer TI values, inclusive range 1..maxTI",
+  "tiZero": "excluded: RND(-0) is RND(0), the timer path",
+  "allIntegerDerivedSeedsCanonical": true,
+  "prefixes": [
+    {
+      "maxTI": 60,
+      "seedCount": 60,
+      "distribution": [
+        {
+          "lambda": 1,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 3,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 7,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 23,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 74,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 85,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 207,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 295,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 371,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 724,
+          "seeds": 15,
+          "percent": 25.0
+        },
+        {
+          "lambda": 2644,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 4232,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 5660,
+          "seeds": 1,
+          "percent": 1.6666666666666667
+        },
+        {
+          "lambda": 7036,
+          "seeds": 1,
+          "percent": 1.6666666666666667
+        },
+        {
+          "lambda": 58078,
+          "seeds": 43,
+          "percent": 71.66666666666667
+        }
+      ]
+    },
+    {
+      "maxTI": 3600,
+      "seedCount": 3600,
+      "distribution": [
+        {
+          "lambda": 1,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 3,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 7,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 23,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 74,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 85,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 207,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 295,
+          "seeds": 1,
+          "percent": 0.027777777777777776
+        },
+        {
+          "lambda": 371,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 724,
+          "seeds": 576,
+          "percent": 16.0
+        },
+        {
+          "lambda": 2644,
+          "seeds": 12,
+          "percent": 0.3333333333333333
+        },
+        {
+          "lambda": 4232,
+          "seeds": 13,
+          "percent": 0.3611111111111111
+        },
+        {
+          "lambda": 5660,
+          "seeds": 13,
+          "percent": 0.3611111111111111
+        },
+        {
+          "lambda": 7036,
+          "seeds": 48,
+          "percent": 1.3333333333333333
+        },
+        {
+          "lambda": 58078,
+          "seeds": 2937,
+          "percent": 81.58333333333333
+        }
+      ]
+    },
+    {
+      "maxTI": 216000,
+      "seedCount": 216000,
+      "distribution": [
+        {
+          "lambda": 1,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 3,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 7,
+          "seeds": 4,
+          "percent": 0.001851851851851852
+        },
+        {
+          "lambda": 23,
+          "seeds": 28,
+          "percent": 0.012962962962962963
+        },
+        {
+          "lambda": 74,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 85,
+          "seeds": 11,
+          "percent": 0.005092592592592593
+        },
+        {
+          "lambda": 207,
+          "seeds": 5,
+          "percent": 0.0023148148148148147
+        },
+        {
+          "lambda": 295,
+          "seeds": 92,
+          "percent": 0.04259259259259259
+        },
+        {
+          "lambda": 371,
+          "seeds": 6,
+          "percent": 0.002777777777777778
+        },
+        {
+          "lambda": 724,
+          "seeds": 33012,
+          "percent": 15.283333333333333
+        },
+        {
+          "lambda": 2644,
+          "seeds": 546,
+          "percent": 0.25277777777777777
+        },
+        {
+          "lambda": 4232,
+          "seeds": 581,
+          "percent": 0.2689814814814815
+        },
+        {
+          "lambda": 5660,
+          "seeds": 970,
+          "percent": 0.44907407407407407
+        },
+        {
+          "lambda": 7036,
+          "seeds": 3301,
+          "percent": 1.5282407407407408
+        },
+        {
+          "lambda": 58078,
+          "seeds": 177444,
+          "percent": 82.15
+        }
+      ]
+    },
+    {
+      "maxTI": 1000000,
+      "seedCount": 1000000,
+      "distribution": [
+        {
+          "lambda": 1,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 3,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 7,
+          "seeds": 13,
+          "percent": 0.0013
+        },
+        {
+          "lambda": 23,
+          "seeds": 148,
+          "percent": 0.0148
+        },
+        {
+          "lambda": 74,
+          "seeds": 2,
+          "percent": 0.0002
+        },
+        {
+          "lambda": 85,
+          "seeds": 43,
+          "percent": 0.0043
+        },
+        {
+          "lambda": 207,
+          "seeds": 24,
+          "percent": 0.0024
+        },
+        {
+          "lambda": 295,
+          "seeds": 347,
+          "percent": 0.0347
+        },
+        {
+          "lambda": 371,
+          "seeds": 51,
+          "percent": 0.0051
+        },
+        {
+          "lambda": 724,
+          "seeds": 152632,
+          "percent": 15.2632
+        },
+        {
+          "lambda": 2644,
+          "seeds": 2399,
+          "percent": 0.2399
+        },
+        {
+          "lambda": 4232,
+          "seeds": 2720,
+          "percent": 0.272
+        },
+        {
+          "lambda": 5660,
+          "seeds": 4529,
+          "percent": 0.4529
+        },
+        {
+          "lambda": 7036,
+          "seeds": 15410,
+          "percent": 1.541
+        },
+        {
+          "lambda": 58078,
+          "seeds": 821682,
+          "percent": 82.1682
+        }
+      ]
+    },
+    {
+      "maxTI": 5183999,
+      "seedCount": 5183999,
+      "distribution": [
+        {
+          "lambda": 1,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 3,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 7,
+          "seeds": 55,
+          "percent": 0.001060956994783371
+        },
+        {
+          "lambda": 23,
+          "seeds": 733,
+          "percent": 0.014139663221385653
+        },
+        {
+          "lambda": 74,
+          "seeds": 5,
+          "percent": 9.645063588939736e-05
+        },
+        {
+          "lambda": 85,
+          "seeds": 215,
+          "percent": 0.004147377343244087
+        },
+        {
+          "lambda": 207,
+          "seeds": 100,
+          "percent": 0.001929012717787947
+        },
+        {
+          "lambda": 295,
+          "seeds": 1836,
+          "percent": 0.03541667349858671
+        },
+        {
+          "lambda": 371,
+          "seeds": 324,
+          "percent": 0.006250001205632949
+        },
+        {
+          "lambda": 724,
+          "seeds": 789294,
+          "percent": 15.225581640737198
+        },
+        {
+          "lambda": 2644,
+          "seeds": 12265,
+          "percent": 0.23659340983669172
+        },
+        {
+          "lambda": 4232,
+          "seeds": 14188,
+          "percent": 0.27368832439975394
+        },
+        {
+          "lambda": 5660,
+          "seeds": 23332,
+          "percent": 0.45007724731428383
+        },
+        {
+          "lambda": 7036,
+          "seeds": 78787,
+          "percent": 1.5198112499635898
+        },
+        {
+          "lambda": 58078,
+          "seeds": 4262865,
+          "percent": 82.23120799213117
+        }
+      ]
+    },
+    {
+      "maxTI": 5184000,
+      "seedCount": 5184000,
+      "distribution": [
+        {
+          "lambda": 1,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 3,
+          "seeds": 0,
+          "percent": 0.0
+        },
+        {
+          "lambda": 7,
+          "seeds": 55,
+          "percent": 0.0010609567901234567
+        },
+        {
+          "lambda": 23,
+          "seeds": 733,
+          "percent": 0.01413966049382716
+        },
+        {
+          "lambda": 74,
+          "seeds": 5,
+          "percent": 9.645061728395061e-05
+        },
+        {
+          "lambda": 85,
+          "seeds": 215,
+          "percent": 0.004147376543209877
+        },
+        {
+          "lambda": 207,
+          "seeds": 100,
+          "percent": 0.0019290123456790122
+        },
+        {
+          "lambda": 295,
+          "seeds": 1836,
+          "percent": 0.035416666666666666
+        },
+        {
+          "lambda": 371,
+          "seeds": 324,
+          "percent": 0.00625
+        },
+        {
+          "lambda": 724,
+          "seeds": 789294,
+          "percent": 15.225578703703704
+        },
+        {
+          "lambda": 2644,
+          "seeds": 12265,
+          "percent": 0.23659336419753085
+        },
+        {
+          "lambda": 4232,
+          "seeds": 14188,
+          "percent": 0.27368827160493825
+        },
+        {
+          "lambda": 5660,
+          "seeds": 23332,
+          "percent": 0.4500771604938272
+        },
+        {
+          "lambda": 7036,
+          "seeds": 78787,
+          "percent": 1.5198109567901235
+        },
+        {
+          "lambda": 58078,
+          "seeds": 4262866,
+          "percent": 82.23121141975308
+        }
+      ]
+    }
+  ]
+}

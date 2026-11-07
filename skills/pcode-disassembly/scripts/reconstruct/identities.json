@@ -1,0 +1,79 @@
+{
+  "schema": "basic-compiler-identities-v1",
+  "fingerprints": [
+    {
+      "family": "speedcompiler",
+      "role": "compiled-object",
+      "loadAddress": 2049,
+      "start": 2304,
+      "end": 6508,
+      "sha256": "58e5e2107cdf271260a4c5f1ec226785351d444ff31b5f8be3df17431982171a",
+      "check": "speedcompiler"
+    },
+    {
+      "family": "austrospeed",
+      "role": "compiled-object",
+      "loadAddress": 2049,
+      "start": 2051,
+      "end": 8083,
+      "sha256": "fa3eaf5780039158d4a985f4f274bf18124fff04eb8c6015800d65555775f13b",
+      "check": "blitz",
+      "decoderFamily": "blitz"
+    },
+    {
+      "family": "austrospeed",
+      "role": "compiled-object",
+      "loadAddress": 2049,
+      "start": 2051,
+      "end": 8057,
+      "sha256": "13d5c4f46f2aa81a0c747af3ad80b96e0a612a4b2c7f011db8cd20c6014440d4",
+      "check": "austrospeed"
+    },
+    {
+      "family": "blitz",
+      "role": "compiled-object",
+      "loadAddress": 2049,
+      "start": 2051,
+      "end": 8083,
+      "sha256": "2a8dc0aa461a2f4551ba5227fb504f9894e5281aa114a33562ff2497c68e5e76",
+      "check": "blitz"
+    },
+    {
+      "family": "petspeed",
+      "role": "compiled-object",
+      "loadAddress": 2049,
+      "start": 2086,
+      "end": 10240,
+      "sha256": "cee17449b6e9700af4642546477c06dbb42413888fa5e594ebded33014c5dbaf",
+      "check": "petspeed"
+    },
+    {
+      "family": "basic64",
+      "role": "compiled-object",
+      "loadAddress": 2049,
+      "start": 2049,
+      "end": 7577,
+      "sha256": "56be072963abe859dbc9410b81e4054c9c74b5471c3f23ace30c8ab162722732",
+      "check": "basic64"
+    },
+    {
+      "family": "dtl",
+      "role": "compiled-object",
+      "loadAddress": 2049,
+      "start": 2049,
+      "end": 2168,
+      "sha256": "6f110060fdde8152bbf07419d2cfe7c8548089f39838d94d228cb27b7cad6a72",
+      "check": "dtl"
+    },
+    {
+      "family": "dtl",
+      "role": "runtime-library",
+      "loadAddress": 2049,
+      "start": 2049,
+      "end": 10240,
+      "sha256": "cefbdfdc72821ac22c97b647177985a9a4235f3738dc52c86b23e689696d2356",
+      "check": null
+    }
+  ],
+  "scope": "Known attached/runtime-library signatures only. No filename evidence; no match does not prove uncompiled input."
+}

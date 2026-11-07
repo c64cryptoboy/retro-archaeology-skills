@@ -1,0 +1,295 @@
+{
+  "schema": "c64-basic-rnd-final-statistics-v1",
+  "weighting": "Each canonical starting state has equal weight.",
+  "domainSize": 2936012800,
+  "run": {
+    "schema": "c64-basic-rnd-full-histogram-v2",
+    "domainSize": 2936012800,
+    "metadataBytes": 11744051200,
+    "metadataLayout": "8-bit cycle-length class plus 24-bit mu",
+    "nextScan": 2936012800,
+    "classifiedStates": 2936012800,
+    "logicalTransitions": 2936012800,
+    "transitionsThisProcess": 2936012800,
+    "checkpointSequence": 45,
+    "cycleLengthClasses": 15,
+    "complete": true,
+    "maxMu": 58681,
+    "maxLambda": 58078,
+    "maxTotal": 116759,
+    "elapsedSecondsThisProcess": 8518.809024
+  },
+  "histograms": {
+    "mu": {
+      "populatedBins": 58682,
+      "minimum": 0,
+      "maximum": 58681,
+      "startWeightedMean": 20890.406768049514,
+      "startWeightedQuantiles": {
+        "1": 284,
+        "10": 3373,
+        "25": 9578,
+        "50": 19313,
+        "75": 31070,
+        "90": 41396,
+        "95": 45193,
+        "99": 51317,
+        "99.9": 54937
+      }
+    },
+    "lambda": {
+      "populatedBins": 15,
+      "minimum": 1,
+      "maximum": 58078,
+      "startWeightedMean": 48021.124500563485,
+      "startWeightedQuantiles": {
+        "1": 724,
+        "10": 724,
+        "25": 58078,
+        "50": 58078,
+        "75": 58078,
+        "90": 58078,
+        "95": 58078,
+        "99": 58078,
+        "99.9": 58078
+      }
+    },
+    "total": {
+      "populatedBins": 109215,
+      "minimum": 1,
+      "maximum": 116759,
+      "startWeightedMean": 68911.53126861299,
+      "startWeightedQuantiles": {
+        "1": 5211,
+        "10": 25627,
+        "25": 61186,
+        "50": 71870,
+        "75": 86526,
+        "90": 98244,
+        "95": 103113,
+        "99": 109395,
+        "99.9": 113015
+      }
+    }
+  },
+  "cycleComponents": [
+    {
+      "lambda": 1,
+      "cycleNodes": 1,
+      "componentCount": 1,
+      "basinStartingStates": 4,
+      "basinPercent": 1.362391880580357e-07
+    },
+    {
+      "lambda": 3,
+      "cycleNodes": 3,
+      "componentCount": 1,
+      "basinStartingStates": 5,
+      "basinPercent": 1.7029898507254465e-07
+    },
+    {
+      "lambda": 7,
+      "cycleNodes": 7,
+      "componentCount": 1,
+      "basinStartingStates": 28119,
+      "basinPercent": 0.0009577274322509766
+    },
+    {
+      "lambda": 23,
+      "cycleNodes": 23,
+      "componentCount": 1,
+      "basinStartingStates": 399539,
+      "basinPercent": 0.013608217239379883
+    },
+    {
+      "lambda": 74,
+      "cycleNodes": 74,
+      "componentCount": 1,
+      "basinStartingStates": 3268,
+      "basinPercent": 0.00011130741664341517
+    },
+    {
+      "lambda": 85,
+      "cycleNodes": 85,
+      "componentCount": 1,
+      "basinStartingStates": 110484,
+      "basinPercent": 0.0037630626133510043
+    },
+    {
+      "lambda": 207,
+      "cycleNodes": 207,
+      "componentCount": 1,
+      "basinStartingStates": 42612,
+      "basinPercent": 0.0014513560703822545
+    },
+    {
+      "lambda": 295,
+      "cycleNodes": 295,
+      "componentCount": 1,
+      "basinStartingStates": 1040855,
+      "basinPercent": 0.03545131002153669
+    },
+    {
+      "lambda": 371,
+      "cycleNodes": 371,
+      "componentCount": 1,
+      "basinStartingStates": 180640,
+      "basinPercent": 0.006152561732700893
+    },
+    {
+      "lambda": 724,
+      "cycleNodes": 724,
+      "componentCount": 1,
+      "basinStartingStates": 446900555,
+      "basinPercent": 15.221342188971382
+    },
+    {
+      "lambda": 2644,
+      "cycleNodes": 2644,
+      "componentCount": 1,
+      "basinStartingStates": 6973622,
+      "basinPercent": 0.2375201497759138
+    },
+    {
+      "lambda": 4232,
+      "cycleNodes": 4232,
+      "componentCount": 1,
+      "basinStartingStates": 8069330,
+      "basinPercent": 0.27483974184308735
+    },
+    {
+      "lambda": 5660,
+      "cycleNodes": 5660,
+      "componentCount": 1,
+      "basinStartingStates": 13183137,
+      "basinPercent": 0.4490149702344622
+    },
+    {
+      "lambda": 7036,
+      "cycleNodes": 7036,
+      "componentCount": 1,
+      "basinStartingStates": 44649715,
+      "basinPercent": 1.5207602296556746
+    },
+    {
+      "lambda": 58078,
+      "cycleNodes": 58078,
+      "componentCount": 1,
+      "basinStartingStates": 2414430915,
+      "basinPercent": 82.23502687045506
+    }
+  ],
+  "distinctComponents": 15,
+  "totalLengthAtLeast": [
+    {
+      "threshold": 58078,
+      "states": 2414430915,
+      "percent": 82.23502687045506
+    },
+    {
+      "threshold": 80000,
+      "states": 1012990110,
+      "percent": 34.50223752430507
+    },
+    {
+      "threshold": 90000,
+      "states": 594447448,
+      "percent": 20.24675941467285
+    },
+    {
+      "threshold": 100000,
+      "states": 244218266,
+      "percent": 8.318024567195348
+    },
+    {
+      "threshold": 105000,
+      "states": 92774250,
+      "percent": 3.159872123173305
+    },
+    {
+      "threshold": 110000,
+      "states": 21594525,
+      "percent": 0.7355051381247384
+    },
+    {
+      "threshold": 115000,
+      "states": 578729,
+      "percent": 0.01971139226640974
+    },
+    {
+      "threshold": 116000,
+      "states": 164008,
+      "percent": 0.0055860791887555805
+    },
+    {
+      "threshold": 116500,
+      "states": 15470,
+      "percent": 0.0005269050598144531
+    },
+    {
+      "threshold": 116700,
+      "states": 1775,
+      "percent": 6.045613970075335e-05
+    },
+    {
+      "threshold": 116750,
+      "states": 103,
+      "percent": 3.5081590924944195e-06
+    },
+    {
+      "threshold": 116759,
+      "states": 1,
+      "percent": 3.4059797014508927e-08
+    }
+  ],
+  "cycleLengthBelow": [
+    {
+      "threshold": 10,
+      "states": 28128,
+      "percent": 0.0009580339704241071
+    },
+    {
+      "threshold": 100,
+      "states": 541419,
+      "percent": 0.01844062123979841
+    },
+    {
+      "threshold": 500,
+      "states": 1805526,
+      "percent": 0.06149584906441825
+    },
+    {
+      "threshold": 725,
+      "states": 448706081,
+      "percent": 15.282838038035802
+    },
+    {
+      "threshold": 1000,
+      "states": 448706081,
+      "percent": 15.282838038035802
+    },
+    {
+      "threshold": 3000,
+      "states": 455679703,
+      "percent": 15.520358187811715
+    },
+    {
+      "threshold": 8000,
+      "states": 521581885,
+      "percent": 17.764973129544938
+    },
+    {
+      "threshold": 58078,
+      "states": 521581885,
+      "percent": 17.764973129544938
+    }
+  ],
+  "sha256": {
+    "summary.json": "a6977b13041e8adeccd78de81630f0a3ab0d6a5de0507cade5a636d249c13e4b",
+    "checkpoint.bin": "71991148d24a1094ab0d6e1e58a3c28b28481f2c3a9c9368ad741443dd36fd0d",
+    "cycle-components.csv": "a5aa50fc1ccf397c40287a37d87a9829f3219f913fc91c41486c377a72129e59",
+    "hist-mu.csv": "ed92aa7889805792c2b6697964722c5e4d894ab296911722851b794f348a8b01",
+    "hist-lambda.csv": "67a64b997d88acac169593282ce6b6e6626465150f262ef1e01d4d478f20596b",
+    "hist-total.csv": "0f4322ba93b2ef78dc3a1728f021089d29b78c250f9ac58192710855e7462e8b"
+  }
+}

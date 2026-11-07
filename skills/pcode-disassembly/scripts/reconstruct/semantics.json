@@ -1,0 +1,3117 @@
+{
+  "schema": "pcode-symbolic-contracts-v1",
+  "families": {
+    "blitz": {
+      "LOAD_VAR": {
+        "op": "load",
+        "dst": "stack",
+        "field": "variable"
+      },
+      "VAR_DESCRIPTOR": {
+        "op": "load",
+        "dst": "stack",
+        "field": "variable"
+      },
+      "ADD": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "+"
+      },
+      "SUBTRACT": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "-"
+      },
+      "MULTIPLY": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "*"
+      },
+      "DIVIDE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "/"
+      },
+      "POWER": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "^"
+      },
+      "AND": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "AND"
+      },
+      "OR": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "OR"
+      },
+      "GT": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": ">"
+      },
+      "EQ": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "="
+      },
+      "GE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": ">="
+      },
+      "LT": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "<"
+      },
+      "NE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "<>"
+      },
+      "LE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "<="
+      },
+      "NEGATE": {
+        "op": "unary",
+        "dst": "stack",
+        "src": "stack"
+      },
+      "NOT": {
+        "op": "unary",
+        "dst": "stack",
+        "src": "stack"
+      },
+      "SGN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "SGN",
+        "effect": false
+      },
+      "INT": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "INT",
+        "effect": false
+      },
+      "ABS": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "ABS",
+        "effect": false
+      },
+      "USR": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "USR",
+        "effect": true
+      },
+      "FRE": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "FRE",
+        "effect": true
+      },
+      "POS": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "POS",
+        "effect": true
+      },
+      "SQR": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "SQR",
+        "effect": false
+      },
+      "RND": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "RND",
+        "effect": true
+      },
+      "LOG": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "LOG",
+        "effect": false
+      },
+      "EXP": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "EXP",
+        "effect": false
+      },
+      "COS": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "COS",
+        "effect": false
+      },
+      "SIN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "SIN",
+        "effect": false
+      },
+      "TAN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "TAN",
+        "effect": false
+      },
+      "ATN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "ATN",
+        "effect": false
+      },
+      "PEEK": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "PEEK",
+        "effect": true
+      },
+      "LEN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "LEN",
+        "effect": false
+      },
+      "STR$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "STR$",
+        "effect": false
+      },
+      "VAL": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "VAL",
+        "effect": false
+      },
+      "ASC": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "ASC",
+        "effect": false
+      },
+      "CHR$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "CHR$",
+        "effect": false
+      },
+      "LEFT$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack"
+        ],
+        "name": "LEFT$",
+        "reverseArgs": true
+      },
+      "RIGHT$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack"
+        ],
+        "name": "RIGHT$",
+        "reverseArgs": true
+      },
+      "MID$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack",
+          "stack"
+        ],
+        "name": "MID$",
+        "reverseArgs": true
+      },
+      "PI": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "STATUS": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "TIME": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "TIME_STRING": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "STORE_VAR": {
+        "op": "store",
+        "src": "stack",
+        "field": "variable"
+      },
+      "STORE_VAR_EXT": {
+        "op": "store",
+        "src": "stack",
+        "field": "variable"
+      },
+      "PRINT": {
+        "op": "print",
+        "src": "stack",
+        "newline": true
+      },
+      "PRINT_SEMI": {
+        "op": "print",
+        "src": "stack",
+        "newline": false
+      },
+      "PRINT_CHANNEL": {
+        "op": "print",
+        "src": "stack",
+        "newline": true,
+        "restoreChannels": true
+      },
+      "PRINT_EMPTY": {
+        "op": "newline"
+      },
+      "PRINT_CHANNEL_EMPTY": {
+        "op": "newline",
+        "restoreChannels": true
+      },
+      "END": {
+        "op": "simple"
+      },
+      "STOP": {
+        "op": "simple"
+      },
+      "RETURN": {
+        "op": "simple"
+      },
+      "NEW": {
+        "op": "simple"
+      },
+      "RESTORE": {
+        "op": "simple"
+      },
+      "SET_TIME_STRING": {
+        "op": "time_store",
+        "src": "stack"
+      },
+      "POKE": {
+        "op": "statement",
+        "name": "POKE",
+        "args": [
+          "stack",
+          "stack"
+        ]
+      },
+      "WAIT": {
+        "op": "statement",
+        "name": "WAIT",
+        "args": [
+          "stack",
+          "stack"
+        ]
+      },
+      "WAIT_XOR": {
+        "op": "statement",
+        "name": "WAIT",
+        "args": [
+          "stack",
+          "stack",
+          "stack"
+        ]
+      },
+      "GOTO": {
+        "op": "branch"
+      },
+      "GOSUB": {
+        "op": "branch"
+      },
+      "IF_GOTO": {
+        "op": "conditional",
+        "src": "stack"
+      },
+      "IF_FALSE_SKIP": {
+        "op": "conditional",
+        "src": "stack"
+      },
+      "ON_GOTO": {
+        "op": "on",
+        "src": "stack",
+        "verb": "GOTO"
+      },
+      "ON_GOSUB": {
+        "op": "on",
+        "src": "stack",
+        "verb": "GOSUB"
+      },
+      "CLR_AND_INIT": {
+        "op": "barrier"
+      },
+      "INIT_RETURN": {
+        "op": "barrier"
+      },
+      "CLOSE": {
+        "op": "statement",
+        "name": "CLOSE",
+        "args": [
+          "stack"
+        ]
+      },
+      "RETURN_IF_TRUE": {
+        "op": "conditional_return",
+        "src": "stack"
+      },
+      "PRINT_COMMA": {
+        "op": "print",
+        "src": "stack",
+        "suffix": ",",
+        "newline": false
+      },
+      "TAB": {
+        "op": "print_function",
+        "src": "stack",
+        "name": "TAB"
+      },
+      "SPC": {
+        "op": "print_function",
+        "src": "stack",
+        "name": "SPC"
+      }
+    },
+    "dtl": {
+      "LOAD_VAR": {
+        "op": "load",
+        "dst": "stack",
+        "field": "variable"
+      },
+      "VAR_DESCRIPTOR": {
+        "op": "load",
+        "dst": "stack",
+        "field": "variable"
+      },
+      "ADD": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "+"
+      },
+      "SUBTRACT": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "-"
+      },
+      "MULTIPLY": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "*"
+      },
+      "DIVIDE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "/"
+      },
+      "POWER": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "^"
+      },
+      "AND": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "AND"
+      },
+      "OR": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "OR"
+      },
+      "GT": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": ">"
+      },
+      "EQ": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "="
+      },
+      "GE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": ">="
+      },
+      "LT": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "<"
+      },
+      "NE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "<>"
+      },
+      "LE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "<="
+      },
+      "NEGATE": {
+        "op": "unary",
+        "dst": "stack",
+        "src": "stack"
+      },
+      "NOT": {
+        "op": "unary",
+        "dst": "stack",
+        "src": "stack"
+      },
+      "SGN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "SGN",
+        "effect": false
+      },
+      "INT": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "INT",
+        "effect": false
+      },
+      "ABS": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "ABS",
+        "effect": false
+      },
+      "USR": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "USR",
+        "effect": true
+      },
+      "FRE": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "FRE",
+        "effect": true
+      },
+      "POS": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "POS",
+        "effect": true
+      },
+      "SQR": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "SQR",
+        "effect": false
+      },
+      "RND": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "RND",
+        "effect": true
+      },
+      "LOG": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "LOG",
+        "effect": false
+      },
+      "EXP": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "EXP",
+        "effect": false
+      },
+      "COS": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "COS",
+        "effect": false
+      },
+      "SIN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "SIN",
+        "effect": false
+      },
+      "TAN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "TAN",
+        "effect": false
+      },
+      "ATN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "ATN",
+        "effect": false
+      },
+      "PEEK": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "PEEK",
+        "effect": true
+      },
+      "LEN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "LEN",
+        "effect": false
+      },
+      "STR$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "STR$",
+        "effect": false
+      },
+      "VAL": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "VAL",
+        "effect": false
+      },
+      "ASC": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "ASC",
+        "effect": false
+      },
+      "CHR$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "CHR$",
+        "effect": false
+      },
+      "LEFT$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack"
+        ],
+        "name": "LEFT$",
+        "reverseArgs": true
+      },
+      "RIGHT$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack"
+        ],
+        "name": "RIGHT$",
+        "reverseArgs": true
+      },
+      "MID$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack",
+          "stack"
+        ],
+        "name": "MID$",
+        "reverseArgs": true
+      },
+      "PI": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "STATUS": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "TIME": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "TIME_STRING": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "STORE_VAR": {
+        "op": "store",
+        "src": "stack",
+        "field": "variable"
+      },
+      "STORE_VAR_EXT": {
+        "op": "store",
+        "src": "stack",
+        "field": "variable"
+      },
+      "PRINT": {
+        "op": "print",
+        "src": "stack",
+        "newline": true
+      },
+      "PRINT_SEMI": {
+        "op": "print",
+        "src": "stack",
+        "newline": false
+      },
+      "PRINT_CHANNEL": {
+        "op": "print",
+        "src": "stack",
+        "newline": false
+      },
+      "PRINT_EMPTY": {
+        "op": "newline"
+      },
+      "PRINT_CHANNEL_EMPTY": {
+        "op": "newline"
+      },
+      "END": {
+        "op": "simple"
+      },
+      "STOP": {
+        "op": "simple"
+      },
+      "RETURN": {
+        "op": "simple"
+      },
+      "NEW": {
+        "op": "simple"
+      },
+      "RESTORE": {
+        "op": "simple"
+      },
+      "SET_TIME_STRING": {
+        "op": "time_store",
+        "src": "stack"
+      },
+      "POKE": {
+        "op": "statement",
+        "name": "POKE",
+        "args": [
+          "stack",
+          "stack"
+        ],
+        "reverseArgs": true
+      },
+      "WAIT": {
+        "op": "statement",
+        "name": "WAIT",
+        "args": [
+          "stack",
+          "stack"
+        ]
+      },
+      "WAIT_XOR": {
+        "op": "statement",
+        "name": "WAIT",
+        "args": [
+          "stack",
+          "stack",
+          "stack"
+        ]
+      },
+      "GOTO": {
+        "op": "branch"
+      },
+      "GOSUB": {
+        "op": "branch"
+      },
+      "IF_GOTO": {
+        "op": "conditional",
+        "src": "stack"
+      },
+      "IF_FALSE_SKIP": {
+        "op": "conditional",
+        "src": "stack"
+      },
+      "ON_GOTO": {
+        "op": "on",
+        "src": "stack",
+        "verb": "GOTO"
+      },
+      "ON_GOSUB": {
+        "op": "on",
+        "src": "stack",
+        "verb": "GOSUB"
+      },
+      "CLR_AND_INIT": {
+        "op": "barrier"
+      },
+      "INIT_RETURN": {
+        "op": "barrier"
+      }
+    },
+    "petspeed": {
+      "LOAD_FAC_VAR": {
+        "op": "load",
+        "dst": "fac",
+        "field": "variable"
+      },
+      "LOAD_FAC_EXT_VAR": {
+        "op": "load",
+        "dst": "fac",
+        "field": "variable"
+      },
+      "CONST_I16_FAC": {
+        "op": "constant",
+        "dst": "fac"
+      },
+      "CONST_U8_FAC": {
+        "op": "constant",
+        "dst": "fac"
+      },
+      "CONST_FLOAT_FAC": {
+        "op": "constant",
+        "dst": "fac"
+      },
+      "CONST_STRING_FAC": {
+        "op": "constant",
+        "dst": "fac"
+      },
+      "ONE_FAC": {
+        "op": "literal",
+        "dst": "fac",
+        "value": "1"
+      },
+      "LOAD_ARG_VAR": {
+        "op": "load",
+        "dst": "arg",
+        "field": "variable"
+      },
+      "LOAD_ARG_EXT_VAR": {
+        "op": "load",
+        "dst": "arg",
+        "field": "variable"
+      },
+      "CONST_I16_ARG": {
+        "op": "constant",
+        "dst": "arg"
+      },
+      "CONST_U8_ARG": {
+        "op": "constant",
+        "dst": "arg"
+      },
+      "CONST_FLOAT_ARG": {
+        "op": "constant",
+        "dst": "arg"
+      },
+      "CONST_STRING_ARG": {
+        "op": "constant",
+        "dst": "arg"
+      },
+      "ONE_ARG": {
+        "op": "literal",
+        "dst": "arg",
+        "value": "1"
+      },
+      "ZERO_FAC": {
+        "op": "literal",
+        "dst": "fac",
+        "value": "0"
+      },
+      "STORE_FAC_VAR": {
+        "op": "store",
+        "src": "fac",
+        "field": "variable"
+      },
+      "STORE_FAC_EXT_VAR": {
+        "op": "store",
+        "src": "fac",
+        "field": "variable"
+      },
+      "ADD": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "fac",
+        "right": "arg",
+        "symbol": "+"
+      },
+      "MULTIPLY": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "fac",
+        "right": "arg",
+        "symbol": "*"
+      },
+      "SUBTRACT": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "-"
+      },
+      "SUBTRACT_FAC_ARG": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "fac",
+        "right": "arg",
+        "symbol": "-"
+      },
+      "DIVIDE": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "fac",
+        "right": "arg",
+        "symbol": "/"
+      },
+      "DIVIDE_ARG_FAC": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "/"
+      },
+      "POWER": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "^"
+      },
+      "AND": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "fac",
+        "right": "arg",
+        "symbol": "AND"
+      },
+      "OR": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "fac",
+        "right": "arg",
+        "symbol": "OR"
+      },
+      "CONCAT": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "+"
+      },
+      "CONCAT_FAC_ARG": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "fac",
+        "right": "arg",
+        "symbol": "+"
+      },
+      "EQUAL": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "="
+      },
+      "NOT_EQUAL": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "<>"
+      },
+      "GREATER_THAN": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": ">"
+      },
+      "LESS_THAN": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "<"
+      },
+      "GREATER_EQUAL": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": ">="
+      },
+      "LESS_EQUAL": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "<="
+      },
+      "STRING_EQUAL": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "="
+      },
+      "STRING_NOT_EQUAL": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "<>"
+      },
+      "STRING_GREATER_THAN": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": ">"
+      },
+      "STRING_LESS_THAN": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "<"
+      },
+      "STRING_GREATER_EQUAL": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": ">="
+      },
+      "STRING_LESS_EQUAL": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "<="
+      },
+      "NEGATE": {
+        "op": "unary",
+        "src": "fac",
+        "dst": "fac"
+      },
+      "NOT": {
+        "op": "unary",
+        "src": "fac",
+        "dst": "fac"
+      },
+      "SGN": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "SGN",
+        "effect": false
+      },
+      "INT": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "INT",
+        "effect": false
+      },
+      "ABS": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "ABS",
+        "effect": false
+      },
+      "USR": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "USR",
+        "effect": true
+      },
+      "FRE": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "FRE",
+        "effect": true
+      },
+      "POS": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "POS",
+        "effect": true
+      },
+      "SQR": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "SQR",
+        "effect": false
+      },
+      "RND": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "RND",
+        "effect": true
+      },
+      "LOG": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "LOG",
+        "effect": false
+      },
+      "EXP": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "EXP",
+        "effect": false
+      },
+      "COS": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "COS",
+        "effect": false
+      },
+      "SIN": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "SIN",
+        "effect": false
+      },
+      "TAN": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "TAN",
+        "effect": false
+      },
+      "ATN": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "ATN",
+        "effect": false
+      },
+      "PEEK": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "PEEK",
+        "effect": true
+      },
+      "LEN": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "LEN",
+        "effect": false
+      },
+      "VAL": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "VAL",
+        "effect": false
+      },
+      "ASC": {
+        "op": "function",
+        "src": "fac",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "ASC",
+        "effect": false
+      },
+      "STR_STRING": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "STR$"
+      },
+      "LEFT_STRING": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "arg",
+          "fac"
+        ],
+        "name": "LEFT$"
+      },
+      "RIGHT_STRING": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "arg",
+          "fac"
+        ],
+        "name": "RIGHT$"
+      },
+      "MID_TAIL_STRING": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "arg",
+          "fac"
+        ],
+        "name": "MID$"
+      },
+      "MID_LENGTH": {
+        "op": "move",
+        "src": "fac",
+        "dst": "midlength"
+      },
+      "MID_STRING": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac",
+          "arg",
+          "midlength"
+        ],
+        "name": "MID$"
+      },
+      "MID_ONE_STRING": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac",
+          "arg",
+          "#1"
+        ],
+        "name": "MID$"
+      },
+      "PUSH_FAC": {
+        "op": "move",
+        "src": "fac",
+        "dst": "alt"
+      },
+      "POP_ARG": {
+        "op": "move",
+        "src": "alt",
+        "dst": "arg"
+      },
+      "PRINT_NUMBER": {
+        "op": "print",
+        "src": "fac",
+        "newline": false
+      },
+      "PRINT_STRING": {
+        "op": "print",
+        "src": "fac",
+        "newline": false
+      },
+      "PRINT_NEWLINE": {
+        "op": "newline"
+      },
+      "END": {
+        "op": "simple"
+      },
+      "STOP": {
+        "op": "simple"
+      },
+      "RETURN": {
+        "op": "simple"
+      },
+      "NEW": {
+        "op": "simple"
+      },
+      "CLR": {
+        "op": "simple"
+      },
+      "RUN": {
+        "op": "simple"
+      },
+      "RESTORE_DATA": {
+        "op": "simple"
+      },
+      "GOTO": {
+        "op": "branch"
+      },
+      "GOSUB": {
+        "op": "branch"
+      },
+      "SKIP_IF_FALSE": {
+        "op": "conditional",
+        "src": "fac"
+      },
+      "ON_BRANCH": {
+        "op": "on",
+        "src": "fac"
+      },
+      "POKE": {
+        "op": "statement",
+        "name": "POKE",
+        "args": [
+          "alt",
+          "fac"
+        ]
+      },
+      "WAIT_MASK": {
+        "op": "statement",
+        "name": "WAIT",
+        "args": [
+          "alt",
+          "fac"
+        ]
+      },
+      "WAIT_XOR_MASK": {
+        "op": "statement",
+        "name": "WAIT",
+        "args": [
+          "alt",
+          "alt",
+          "fac"
+        ],
+        "reverseFirstTwo": true
+      },
+      "SYS": {
+        "op": "statement",
+        "name": "SYS",
+        "args": [
+          "fac"
+        ],
+        "killsMemory": true
+      },
+      "READ_NUMBER": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "READ"
+      },
+      "READ_NUMBER_STORE_ELEMENT": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "READ",
+        "modifier": 65,
+        "destinationType": "number"
+      },
+      "READ_NUMBER_STORE_INTEGER_ELEMENT": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "READ",
+        "modifier": 66,
+        "destinationType": "integer"
+      },
+      "READ_STRING": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "READ"
+      },
+      "READ_STRING_STORE_ELEMENT": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "READ",
+        "modifier": 65,
+        "destinationType": "string"
+      },
+      "GET_NUMBER": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "GET"
+      },
+      "GET_NUMBER_STORE_ELEMENT": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "GET",
+        "modifier": 65,
+        "destinationType": "number"
+      },
+      "GET_NUMBER_STORE_INTEGER_ELEMENT": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "GET",
+        "modifier": 66,
+        "destinationType": "integer"
+      },
+      "GET_STRING": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "GET"
+      },
+      "GET_STRING_STORE_ELEMENT": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "GET",
+        "modifier": 65,
+        "destinationType": "string"
+      },
+      "INPUT_NUMBER": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "INPUT"
+      },
+      "INPUT_NUMBER_STORE_ELEMENT": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "INPUT",
+        "modifier": 65,
+        "destinationType": "number"
+      },
+      "INPUT_NUMBER_STORE_INTEGER_ELEMENT": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "INPUT",
+        "modifier": 66,
+        "destinationType": "integer"
+      },
+      "INPUT_STRING": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "INPUT"
+      },
+      "INPUT_STRING_STORE_ELEMENT": {
+        "op": "input_value",
+        "dst": "fac",
+        "verb": "INPUT",
+        "modifier": 65,
+        "destinationType": "string"
+      },
+      "STATUS_FAC": {
+        "op": "system",
+        "dst": "fac"
+      },
+      "TIME_FAC": {
+        "op": "system",
+        "dst": "fac"
+      },
+      "TIME_ARG": {
+        "op": "system",
+        "dst": "arg"
+      },
+      "TIME_STRING_FAC": {
+        "op": "system",
+        "dst": "fac"
+      },
+      "PI_FAC": {
+        "op": "system",
+        "dst": "fac"
+      },
+      "PI_ARG": {
+        "op": "system",
+        "dst": "arg"
+      },
+      "SET_TIME_STRING": {
+        "op": "time_store",
+        "src": "fac"
+      },
+      "OPEN_FILENAME": {
+        "op": "statement",
+        "name": "OPEN",
+        "args": [
+          "fac",
+          "alt",
+          "alt",
+          "alt"
+        ],
+        "reverseArgs": true
+      },
+      "OPEN_DEVICE": {
+        "op": "statement",
+        "name": "OPEN",
+        "args": [
+          "fac",
+          "alt"
+        ],
+        "reverseArgs": true
+      },
+      "CLOSE": {
+        "op": "statement",
+        "name": "CLOSE",
+        "args": [
+          "fac"
+        ]
+      },
+      "LOAD_RELOCATED": {
+        "op": "statement",
+        "name": "LOAD",
+        "args": [
+          "alt",
+          "fac",
+          "#0"
+        ],
+        "killsMemory": true
+      },
+      "LOAD_ABSOLUTE": {
+        "op": "statement",
+        "name": "LOAD",
+        "args": [
+          "alt",
+          "fac",
+          "#1"
+        ],
+        "killsMemory": true
+      },
+      "PRINT_TAB": {
+        "op": "print_function",
+        "src": "fac",
+        "name": "TAB"
+      },
+      "PRINT_SPACES": {
+        "op": "print_function",
+        "src": "fac",
+        "name": "SPC"
+      },
+      "PRINT_SPC": {
+        "op": "print_function",
+        "src": "fac",
+        "name": "SPC"
+      },
+      "PRINT_COMMA": {
+        "op": "print_comma"
+      }
+    },
+    "basic64": {
+      "LOAD_FAC": {
+        "op": "load",
+        "dst": "fac",
+        "field": "value",
+        "page3": false
+      },
+      "LOAD_ARG": {
+        "op": "load",
+        "dst": "arg",
+        "field": "value",
+        "page3": false
+      },
+      "LOAD_INTEGER_AS_FAC": {
+        "op": "load",
+        "dst": "fac",
+        "field": "value",
+        "page3": false
+      },
+      "LOAD_INTEGER_AS_FLOAT_ARG": {
+        "op": "load",
+        "dst": "arg",
+        "field": "value",
+        "page3": false
+      },
+      "LOAD_INTEGER_PAGE3": {
+        "op": "load",
+        "dst": "iv",
+        "field": "value",
+        "page3": true
+      },
+      "LOAD_INTEGER_ARG_PAGE3": {
+        "op": "load",
+        "dst": "ia",
+        "field": "value",
+        "page3": true
+      },
+      "LOAD_FLOAT_AS_INTEGER": {
+        "op": "load",
+        "dst": "iv",
+        "field": "value",
+        "page3": false
+      },
+      "LOAD_FLOAT_AS_INTEGER_ARG": {
+        "op": "load",
+        "dst": "ia",
+        "field": "value",
+        "page3": false
+      },
+      "PUSH_STRING_PAGE3": {
+        "op": "load",
+        "dst": "ss",
+        "field": "value",
+        "page3": true
+      },
+      "STORE_FAC": {
+        "op": "store",
+        "src": "fac",
+        "field": "value",
+        "page3": false
+      },
+      "STORE_INTEGER_PAGE3": {
+        "op": "store",
+        "src": "iv",
+        "field": "value",
+        "page3": true
+      },
+      "STORE_STRING_PAGE3": {
+        "op": "store",
+        "src": "ss",
+        "field": "value",
+        "page3": true
+      },
+      "STORE_STRING_REFERENCE_PAGE3": {
+        "op": "store",
+        "src": "ss",
+        "field": "value",
+        "page3": true
+      },
+      "CONST_BYTE_INTEGER": {
+        "op": "constant",
+        "dst": "iv",
+        "signedWord": false
+      },
+      "CONST_WORD_INTEGER": {
+        "op": "constant",
+        "dst": "iv",
+        "signedWord": true
+      },
+      "CONST_BYTE_INTEGER_ARG": {
+        "op": "constant",
+        "dst": "ia",
+        "signedWord": false
+      },
+      "CONST_WORD_INTEGER_ARG": {
+        "op": "constant",
+        "dst": "ia",
+        "signedWord": true
+      },
+      "CONST_BYTE_FAC": {
+        "op": "constant",
+        "dst": "fac",
+        "signedWord": false
+      },
+      "CONST_SIGNED_WORD_FAC": {
+        "op": "constant",
+        "dst": "fac",
+        "signedWord": false
+      },
+      "CONST_BYTE_FLOAT_ARG": {
+        "op": "constant",
+        "dst": "arg",
+        "signedWord": false
+      },
+      "CONST_SIGNED_WORD_FLOAT_ARG": {
+        "op": "constant",
+        "dst": "arg",
+        "signedWord": false
+      },
+      "CONST_FLOAT_FAC": {
+        "op": "constant",
+        "dst": "fac",
+        "signedWord": false
+      },
+      "CONST_FLOAT_ARG": {
+        "op": "constant",
+        "dst": "arg",
+        "signedWord": false
+      },
+      "PUSH_INLINE_STRING": {
+        "op": "constant",
+        "dst": "ss",
+        "signedWord": false
+      },
+      "FAC_TO_ARG": {
+        "op": "move",
+        "src": "fac",
+        "dst": "arg",
+        "conversion": false
+      },
+      "INTEGER_TO_ARG": {
+        "op": "move",
+        "src": "iv",
+        "dst": "ia",
+        "conversion": true
+      },
+      "INTEGER_TO_FAC": {
+        "op": "move",
+        "src": "iv",
+        "dst": "fac",
+        "conversion": true
+      },
+      "INTEGER_TO_FLOAT_ARG": {
+        "op": "move",
+        "src": "iv",
+        "dst": "arg",
+        "conversion": true
+      },
+      "FAC_TO_INTEGER": {
+        "op": "move",
+        "src": "fac",
+        "dst": "iv",
+        "conversion": true
+      },
+      "FAC_TO_INTEGER_ARG": {
+        "op": "move",
+        "src": "fac",
+        "dst": "ia",
+        "conversion": true
+      },
+      "PUSH_INTEGER": {
+        "op": "move",
+        "src": "iv",
+        "dst": "alt",
+        "conversion": true
+      },
+      "PUSH_FAC": {
+        "op": "move",
+        "src": "fac",
+        "dst": "alt",
+        "conversion": true
+      },
+      "POP_INTEGER_ARG": {
+        "op": "move",
+        "src": "alt",
+        "dst": "ia",
+        "conversion": true
+      },
+      "POP_INTEGER_TO_FLOAT_ARG": {
+        "op": "move",
+        "src": "alt",
+        "dst": "arg",
+        "conversion": true
+      },
+      "POP_ARG": {
+        "op": "move",
+        "src": "alt",
+        "dst": "arg",
+        "conversion": false
+      },
+      "POP_FAC": {
+        "op": "move",
+        "src": "alt",
+        "dst": "fac",
+        "conversion": false
+      },
+      "POP_FLOAT_TO_INTEGER_ARG": {
+        "op": "move",
+        "src": "alt",
+        "dst": "ia",
+        "conversion": true
+      },
+      "INTEGER_ADD": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "+",
+        "warning": "16-bit integer arithmetic; stock BASIC may differ"
+      },
+      "INTEGER_MULTIPLY": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "*",
+        "warning": "16-bit integer arithmetic; stock BASIC may differ"
+      },
+      "INTEGER_SUBTRACT": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "-",
+        "warning": "16-bit integer arithmetic; stock BASIC may differ"
+      },
+      "INTEGER_DIVIDE": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "/",
+        "warning": "16-bit integer arithmetic; stock BASIC may differ"
+      },
+      "INTEGER_POWER": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "^",
+        "warning": "16-bit integer arithmetic; stock BASIC may differ"
+      },
+      "INTEGER_AND": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "AND",
+        "warning": "16-bit integer arithmetic; stock BASIC may differ"
+      },
+      "INTEGER_OR": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "OR",
+        "warning": "16-bit integer arithmetic; stock BASIC may differ"
+      },
+      "INTEGER_GREATER": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": ">"
+      },
+      "INTEGER_LESS": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "<"
+      },
+      "INTEGER_LESS_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "<="
+      },
+      "INTEGER_GREATER_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": ">="
+      },
+      "INTEGER_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "="
+      },
+      "INTEGER_NOT_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "ia",
+        "right": "iv",
+        "symbol": "<>"
+      },
+      "FLOAT_ADD": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "+",
+        "warning": ""
+      },
+      "FLOAT_MULTIPLY": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "*",
+        "warning": ""
+      },
+      "FLOAT_SUBTRACT": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "-",
+        "warning": ""
+      },
+      "FLOAT_DIVIDE": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "/",
+        "warning": ""
+      },
+      "FLOAT_POWER": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "^",
+        "warning": ""
+      },
+      "FLOAT_AND": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "AND",
+        "warning": ""
+      },
+      "FLOAT_OR": {
+        "op": "binary",
+        "dst": "fac",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "OR",
+        "warning": ""
+      },
+      "FLOAT_GREATER": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "arg",
+        "right": "fac",
+        "symbol": ">"
+      },
+      "FLOAT_LESS": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "<"
+      },
+      "FLOAT_LESS_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "<="
+      },
+      "FLOAT_GREATER_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "arg",
+        "right": "fac",
+        "symbol": ">="
+      },
+      "FLOAT_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "="
+      },
+      "FLOAT_NOT_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "arg",
+        "right": "fac",
+        "symbol": "<>"
+      },
+      "NEGATE_FAC": {
+        "op": "unary",
+        "src": "fac",
+        "dst": "fac"
+      },
+      "INTEGER_NEGATE": {
+        "op": "unary",
+        "src": "iv",
+        "dst": "iv"
+      },
+      "INTEGER_NOT": {
+        "op": "unary",
+        "src": "iv",
+        "dst": "iv"
+      },
+      "SQR": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "SQR",
+        "effect": false
+      },
+      "USR": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "USR",
+        "effect": true
+      },
+      "ABS": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "ABS",
+        "effect": false
+      },
+      "ATN": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "ATN",
+        "effect": false
+      },
+      "COS": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "COS",
+        "effect": false
+      },
+      "EXP": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "EXP",
+        "effect": false
+      },
+      "LOG": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "LOG",
+        "effect": false
+      },
+      "RND": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "RND",
+        "effect": true
+      },
+      "SGN": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "SGN",
+        "effect": false
+      },
+      "SIN": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "SIN",
+        "effect": false
+      },
+      "TAN": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "TAN",
+        "effect": false
+      },
+      "INT": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "fac"
+        ],
+        "name": "INT",
+        "effect": false
+      },
+      "PEEK_INTEGER": {
+        "op": "function",
+        "dst": "iv",
+        "args": [
+          "iv"
+        ],
+        "name": "PEEK",
+        "effect": true,
+        "warning": "Runtime-specific empty-string/rounding behavior may differ from BASIC"
+      },
+      "FRE_INTEGER": {
+        "op": "function",
+        "dst": "iv",
+        "args": [
+          "#0"
+        ],
+        "name": "FRE",
+        "effect": true,
+        "warning": "Runtime-specific empty-string/rounding behavior may differ from BASIC"
+      },
+      "POS_INTEGER": {
+        "op": "function",
+        "dst": "iv",
+        "args": [
+          "#0"
+        ],
+        "name": "POS",
+        "effect": true,
+        "warning": "Runtime-specific empty-string/rounding behavior may differ from BASIC"
+      },
+      "CHR_STRING": {
+        "op": "function",
+        "dst": "ss",
+        "args": [
+          "iv"
+        ],
+        "name": "CHR$",
+        "effect": false,
+        "warning": "Runtime-specific empty-string/rounding behavior may differ from BASIC"
+      },
+      "ASC_INTEGER": {
+        "op": "function",
+        "dst": "iv",
+        "args": [
+          "ss"
+        ],
+        "name": "ASC",
+        "effect": false,
+        "warning": "Runtime-specific empty-string/rounding behavior may differ from BASIC"
+      },
+      "LEN_INTEGER": {
+        "op": "function",
+        "dst": "iv",
+        "args": [
+          "ss"
+        ],
+        "name": "LEN",
+        "effect": false,
+        "warning": "Runtime-specific empty-string/rounding behavior may differ from BASIC"
+      },
+      "VAL_FLOAT": {
+        "op": "function",
+        "dst": "fac",
+        "args": [
+          "ss"
+        ],
+        "name": "VAL",
+        "effect": false,
+        "warning": "Runtime-specific empty-string/rounding behavior may differ from BASIC"
+      },
+      "STR_STRING": {
+        "op": "function",
+        "dst": "ss",
+        "args": [
+          "fac"
+        ],
+        "name": "STR$",
+        "effect": false,
+        "warning": "Runtime-specific empty-string/rounding behavior may differ from BASIC"
+      },
+      "LEFT_STRING": {
+        "op": "function",
+        "dst": "ss",
+        "args": [
+          "ss",
+          "iv"
+        ],
+        "name": "LEFT$"
+      },
+      "RIGHT_STRING": {
+        "op": "function",
+        "dst": "ss",
+        "args": [
+          "ss",
+          "iv"
+        ],
+        "name": "RIGHT$"
+      },
+      "MID_STRING_TO_END": {
+        "op": "function",
+        "dst": "ss",
+        "args": [
+          "ss",
+          "iv"
+        ],
+        "name": "MID$"
+      },
+      "MID_STRING_LENGTH": {
+        "op": "function",
+        "dst": "ss",
+        "args": [
+          "ss",
+          "alt",
+          "iv"
+        ],
+        "name": "MID$"
+      },
+      "CONCATENATE_STRINGS": {
+        "op": "binary",
+        "dst": "ss",
+        "right": "ss",
+        "left": "ss",
+        "symbol": "+"
+      },
+      "CONCATENATE_STRINGS_REVERSED": {
+        "op": "binary",
+        "dst": "ss",
+        "left": "ss",
+        "right": "ss",
+        "symbol": "+",
+        "leftFirst": true
+      },
+      "STRING_LESS": {
+        "op": "binary",
+        "dst": "iv",
+        "right": "ss",
+        "left": "ss",
+        "symbol": "<"
+      },
+      "STRING_GREATER_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "right": "ss",
+        "left": "ss",
+        "symbol": ">="
+      },
+      "STRING_GREATER": {
+        "op": "binary",
+        "dst": "iv",
+        "right": "ss",
+        "left": "ss",
+        "symbol": ">"
+      },
+      "STRING_LESS_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "right": "ss",
+        "left": "ss",
+        "symbol": "<="
+      },
+      "STRING_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "right": "ss",
+        "left": "ss",
+        "symbol": "="
+      },
+      "STRING_NOT_EQUAL": {
+        "op": "binary",
+        "dst": "iv",
+        "right": "ss",
+        "left": "ss",
+        "symbol": "<>"
+      },
+      "PRINT_FLOAT": {
+        "op": "print",
+        "src": "fac",
+        "newline": false
+      },
+      "PRINT_INTEGER": {
+        "op": "print",
+        "src": "iv",
+        "newline": false
+      },
+      "PRINT_STRING": {
+        "op": "print",
+        "src": "ss",
+        "newline": false
+      },
+      "PRINT_NEWLINE": {
+        "op": "newline"
+      },
+      "END": {
+        "op": "simple"
+      },
+      "STOP": {
+        "op": "simple"
+      },
+      "RETURN": {
+        "op": "simple"
+      },
+      "NEW_AND_EXIT": {
+        "op": "simple"
+      },
+      "CLEAR_AND_RESTORE": {
+        "op": "simple"
+      },
+      "RESTORE_DATA": {
+        "op": "simple"
+      },
+      "GOTO": {
+        "op": "branch"
+      },
+      "GOSUB": {
+        "op": "branch"
+      },
+      "IF_FALSE_GOTO": {
+        "op": "conditional",
+        "src": "iv"
+      },
+      "IF_INTEGER_GOTO": {
+        "op": "conditional",
+        "src": "iv"
+      },
+      "ON_GOTO": {
+        "op": "on",
+        "src": "iv",
+        "verb": "GOTO"
+      },
+      "ON_GOSUB": {
+        "op": "on",
+        "src": "iv",
+        "verb": "GOSUB"
+      },
+      "POKE_BYTE": {
+        "op": "statement",
+        "name": "POKE",
+        "args": [
+          "alt",
+          "iv"
+        ]
+      },
+      "SYS": {
+        "op": "statement",
+        "name": "SYS",
+        "args": [
+          "iv"
+        ],
+        "killsMemory": true
+      },
+      "READ_STATUS_INTEGER": {
+        "op": "system",
+        "dst": "iv"
+      },
+      "READ_TIME_FLOAT": {
+        "op": "system",
+        "dst": "fac"
+      },
+      "READ_TIME_STRING": {
+        "op": "system",
+        "dst": "ss"
+      },
+      "SET_TIME_STRING": {
+        "op": "time_store",
+        "src": "ss"
+      },
+      "GET_STRING": {
+        "op": "input_value",
+        "verb": "GET",
+        "dst": "ss"
+      },
+      "READ_FLOAT_FIELD": {
+        "op": "input_value",
+        "verb": "selected-input",
+        "dst": "fac"
+      },
+      "READ_INTEGER_FIELD": {
+        "op": "input_value",
+        "verb": "selected-input",
+        "dst": "iv"
+      },
+      "READ_STRING_FIELD": {
+        "op": "input_value",
+        "verb": "selected-input",
+        "dst": "ss"
+      },
+      "LOAD_INTEGER": {
+        "op": "load",
+        "dst": "iv",
+        "field": "value"
+      },
+      "LOAD_INTEGER_ARG": {
+        "op": "load",
+        "dst": "ia",
+        "field": "value"
+      },
+      "PUSH_STRING": {
+        "op": "load",
+        "dst": "ss",
+        "field": "value"
+      },
+      "STORE_INTEGER": {
+        "op": "store",
+        "src": "iv",
+        "field": "value"
+      },
+      "STORE_STRING": {
+        "op": "store",
+        "src": "ss",
+        "field": "value"
+      },
+      "STORE_STRING_REFERENCE": {
+        "op": "store",
+        "src": "ss",
+        "field": "value"
+      },
+      "POP_INTEGER": {
+        "op": "move",
+        "src": "alt",
+        "dst": "iv"
+      },
+      "PUSH_BASIC_STRING_RESULT": {
+        "op": "load",
+        "dst": "ss",
+        "field": "value",
+        "fixedAddress": 706
+      },
+      "LOAD_BASIC_FLOAT_RESULT": {
+        "op": "load",
+        "dst": "fac",
+        "field": "value",
+        "fixedAddress": 706
+      },
+      "LOAD_BASIC_RESULT_AS_INTEGER": {
+        "op": "load",
+        "dst": "iv",
+        "field": "value",
+        "fixedAddress": 706
+      },
+      "DOUBLE_INTEGER": {
+        "op": "binary",
+        "dst": "iv",
+        "left": "iv",
+        "right": "#2",
+        "symbol": "*",
+        "warning": "16-bit wrap; optimized doubling"
+      },
+      "OPEN_FILE": {
+        "op": "statement",
+        "name": "OPEN",
+        "args": [
+          "ss",
+          "alt",
+          "alt",
+          "alt"
+        ],
+        "reverseArgs": true
+      },
+      "CLOSE_FILE": {
+        "op": "statement",
+        "name": "CLOSE",
+        "args": [
+          "iv"
+        ]
+      },
+      "LOAD_PROGRAM": {
+        "op": "statement",
+        "name": "LOAD",
+        "args": [
+          "ss",
+          "alt",
+          "iv"
+        ],
+        "killsMemory": true
+      },
+      "SAVE_PROGRAM": {
+        "op": "statement",
+        "name": "SAVE",
+        "args": [
+          "ss",
+          "alt",
+          "iv"
+        ],
+        "killsMemory": true
+      },
+      "WAIT_BITS": {
+        "op": "statement",
+        "name": "WAIT",
+        "args": [
+          "iv",
+          "alt",
+          "alt"
+        ],
+        "reverseArgs": true
+      },
+      "PRINT_TAB": {
+        "op": "print_function",
+        "src": "iv",
+        "name": "TAB"
+      },
+      "PRINT_SPACES": {
+        "op": "print_function",
+        "src": "iv",
+        "name": "SPC"
+      },
+      "PRINT_SPC": {
+        "op": "print_function",
+        "src": "iv",
+        "name": "SPC"
+      },
+      "PRINT_COMMA": {
+        "op": "print_comma"
+      }
+    },
+    "speedcompiler": {},
+    "austrospeed": {
+      "LOAD_VAR": {
+        "op": "load",
+        "dst": "stack",
+        "field": "variable"
+      },
+      "VAR_DESCRIPTOR": {
+        "op": "load",
+        "dst": "stack",
+        "field": "variable"
+      },
+      "ADD": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "+"
+      },
+      "SUBTRACT": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "-"
+      },
+      "MULTIPLY": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack"
+        ],
+        "reverseArgs": true,
+        "name": "VM_AUSTRO_MULTIPLY",
+        "warning": "unknown stock-BASIC-equivalent multiplication: supplied Austro integer-negation path differs; preserve runtime-specific operation."
+      },
+      "DIVIDE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "/"
+      },
+      "POWER": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "^"
+      },
+      "AND": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "AND"
+      },
+      "OR": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "OR"
+      },
+      "GT": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": ">"
+      },
+      "EQ": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "="
+      },
+      "GE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": ">="
+      },
+      "LT": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "<"
+      },
+      "NE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "<>"
+      },
+      "LE": {
+        "op": "binary",
+        "dst": "stack",
+        "right": "stack",
+        "left": "stack",
+        "symbol": "<="
+      },
+      "NEGATE": {
+        "op": "unary",
+        "dst": "stack",
+        "src": "stack"
+      },
+      "NOT": {
+        "op": "unary",
+        "dst": "stack",
+        "src": "stack"
+      },
+      "SGN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "SGN",
+        "effect": false
+      },
+      "INT": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "INT",
+        "effect": false
+      },
+      "ABS": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "ABS",
+        "effect": false
+      },
+      "USR": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "USR",
+        "effect": true
+      },
+      "FRE": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "FRE",
+        "effect": true
+      },
+      "POS": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "POS",
+        "effect": true
+      },
+      "SQR": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "SQR",
+        "effect": false
+      },
+      "RND": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "RND",
+        "effect": true
+      },
+      "LOG": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "LOG",
+        "effect": false
+      },
+      "EXP": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "EXP",
+        "effect": false
+      },
+      "COS": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "COS",
+        "effect": false
+      },
+      "SIN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "SIN",
+        "effect": false
+      },
+      "TAN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "TAN",
+        "effect": false
+      },
+      "ATN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "ATN",
+        "effect": false
+      },
+      "PEEK": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "PEEK",
+        "effect": true
+      },
+      "LEN": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "LEN",
+        "effect": false
+      },
+      "STR$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "STR$",
+        "effect": false
+      },
+      "VAL": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "VAL",
+        "effect": false
+      },
+      "ASC": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "ASC",
+        "effect": false
+      },
+      "CHR$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack"
+        ],
+        "name": "CHR$",
+        "effect": false
+      },
+      "LEFT$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack"
+        ],
+        "name": "LEFT$",
+        "reverseArgs": true
+      },
+      "RIGHT$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack"
+        ],
+        "name": "RIGHT$",
+        "reverseArgs": true
+      },
+      "MID$": {
+        "op": "function",
+        "dst": "stack",
+        "args": [
+          "stack",
+          "stack",
+          "stack"
+        ],
+        "name": "MID$",
+        "reverseArgs": true
+      },
+      "PI": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "STATUS": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "TIME": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "TIME_STRING": {
+        "op": "system",
+        "dst": "stack"
+      },
+      "STORE_VAR": {
+        "op": "store",
+        "src": "stack",
+        "field": "variable"
+      },
+      "STORE_VAR_EXT": {
+        "op": "store",
+        "src": "stack",
+        "field": "variable"
+      },
+      "PRINT": {
+        "op": "print",
+        "src": "stack",
+        "newline": true
+      },
+      "PRINT_SEMI": {
+        "op": "print",
+        "src": "stack",
+        "newline": false
+      },
+      "PRINT_CHANNEL": {
+        "op": "print",
+        "src": "stack",
+        "newline": true,
+        "restoreChannels": true
+      },
+      "PRINT_EMPTY": {
+        "op": "newline"
+      },
+      "PRINT_CHANNEL_EMPTY": {
+        "op": "newline",
+        "restoreChannels": true
+      },
+      "END": {
+        "op": "simple"
+      },
+      "STOP": {
+        "op": "simple"
+      },
+      "RETURN": {
+        "op": "simple"
+      },
+      "NEW": {
+        "op": "simple"
+      },
+      "RESTORE": {
+        "op": "simple"
+      },
+      "SET_TIME_STRING": {
+        "op": "time_store",
+        "src": "stack"
+      },
+      "POKE": {
+        "op": "statement",
+        "name": "POKE",
+        "args": [
+          "stack",
+          "stack"
+        ]
+      },
+      "WAIT": {
+        "op": "statement",
+        "name": "WAIT",
+        "args": [
+          "stack",
+          "stack"
+        ]
+      },
+      "WAIT_XOR": {
+        "op": "statement",
+        "name": "WAIT",
+        "args": [
+          "stack",
+          "stack",
+          "stack"
+        ]
+      },
+      "GOTO": {
+        "op": "branch"
+      },
+      "GOSUB": {
+        "op": "branch"
+      },
+      "IF_GOTO": {
+        "op": "conditional",
+        "src": "stack"
+      },
+      "IF_FALSE_SKIP": {
+        "op": "conditional",
+        "src": "stack"
+      },
+      "ON_GOTO": {
+        "op": "on",
+        "src": "stack",
+        "verb": "GOTO"
+      },
+      "ON_GOSUB": {
+        "op": "on",
+        "src": "stack",
+        "verb": "GOSUB"
+      },
+      "CLR_AND_INIT": {
+        "op": "barrier"
+      },
+      "INIT_RETURN": {
+        "op": "barrier"
+      },
+      "CLOSE": {
+        "op": "statement",
+        "name": "CLOSE",
+        "args": [
+          "stack"
+        ]
+      },
+      "RETURN_IF_TRUE": {
+        "op": "conditional_return",
+        "src": "stack"
+      },
+      "PRINT_COMMA": {
+        "op": "print",
+        "src": "stack",
+        "suffix": ",",
+        "newline": false
+      },
+      "TAB": {
+        "op": "print_function",
+        "src": "stack",
+        "name": "TAB"
+      },
+      "SPC": {
+        "op": "print_function",
+        "src": "stack",
+        "name": "SPC"
+      }
+    }
+  }
+}

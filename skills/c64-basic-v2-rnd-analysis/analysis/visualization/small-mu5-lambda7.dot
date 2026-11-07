@@ -1,0 +1,30 @@
+digraph c64_rnd_example {
+  graph [rankdir=LR, bgcolor="#101820", fontcolor=white, label="C64 BASIC V2 RND: μ=5, λ=7", labelloc=t, fontsize=24];
+  node [shape=box, style="rounded,filled", fontname="Courier New", fontsize=12, fontcolor="#101820"];
+  edge [color="#d7e3ec", fontcolor=white, fontsize=11];
+  x0 [fillcolor="#5cc8ff", label="x0\\n80 25 8f 63 9f\\n≈ 0.6467191947"];
+  x1 [fillcolor="#5cc8ff", label="x1\\n80 58 54 75 eb\\n≈ 0.8450387667"];
+  x2 [fillcolor="#5cc8ff", label="x2\\n80 66 94 2d 9a\\n≈ 0.9006985188"];
+  x3 [fillcolor="#5cc8ff", label="x3\\n7f 78 e2 89 47\\n≈ 0.4861033343"];
+  x4 [fillcolor="#5cc8ff", label="x4\\n80 57 bd 3a b1\\n≈ 0.8427311594"];
+  x5 [fillcolor="#ffca5c", label="x5\\n80 12 7f c2 99\\n≈ 0.5722619651"];
+  x6 [fillcolor="#ffca5c", label="x6\\n80 2d 08 77 d0\\n≈ 0.6759104617"];
+  x7 [fillcolor="#ffca5c", label="x7\\n80 57 8a 0a f6\\n≈ 0.8419501162"];
+  x8 [fillcolor="#ffca5c", label="x8\\n7e 09 06 7a 62\\n≈ 0.1338137743"];
+  x9 [fillcolor="#ffca5c", label="x9\\n7d 4b b8 66 15\\n≈ 0.09947280647"];
+  x10 [fillcolor="#ffca5c", label="x10\\n7e 77 78 fe 42\\n≈ 0.2416724899"];
+  x11 [fillcolor="#ffca5c", label="x11\\n80 57 bd 3a b0\\n≈ 0.8427311592"];
+  x0 -> x1;
+  x1 -> x2;
+  x2 -> x3;
+  x3 -> x4;
+  x4 -> x5;
+  x5 -> x6;
+  x6 -> x7;
+  x7 -> x8;
+  x8 -> x9;
+  x9 -> x10;
+  x10 -> x11;
+  x11 -> x5 [label=" repeats", color="#ff6b8a", penwidth=2];
+  { rank=same; x5; x6; x7; x8; x9; x10; x11; }
+}

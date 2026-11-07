@@ -1,0 +1,70 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1500" height="850" viewBox="0 0 1500 850">
+<defs><marker id="arrow" markerWidth="10" markerHeight="8" refX="9" refY="4" orient="auto"><path d="M0,0 L10,4 L0,8 z" fill="#d7e3ec"/></marker></defs>
+<rect width="100%" height="100%" fill="#101820"/>
+<text x="750.0" y="42.0" text-anchor="middle" font-family="monospace" font-size="27" font-weight="bold" fill="#f3f6f8">C64 BASIC V2 RND — a complete μ=5, λ=7 example</text>
+<text x="750.0" y="73.0" text-anchor="middle" font-family="monospace" font-size="17" font-weight="normal" fill="#aab7c4">Seed with RND(-.311306466); the arrow from x11 returns exactly to x5</text>
+<line x1="171.0" y1="425.0" x2="183.0" y2="425.0" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="341.0" y1="425.0" x2="353.0" y2="425.0" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="511.0" y1="425.0" x2="523.0" y2="425.0" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="681.0" y1="425.0" x2="693.0" y2="425.0" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="851.0" y1="425.0" x2="868.0" y2="425.0" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="983.0" y1="383.6" x2="997.3" y2="297.1" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="1106.9" y1="242.8" x2="1139.0" y2="221.4" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="1278.4" y1="239.2" x2="1304.1" y2="299.0" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="1368.2" y1="375.5" x2="1368.2" y2="471.5" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="1308.8" y1="549.1" x2="1283.1" y2="608.9" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<line x1="1144.9" y1="629.2" x2="1112.8" y2="607.9" stroke="#d7e3ec" stroke-width="2" marker-end="url(#arrow)"/>
+<path d="M 999.9,555.6 Q 1200.0,765.0 985.6,469.1" fill="none" stroke="#ff6b8a" stroke-width="3" marker-end="url(#arrow)"/>
+<text x="995.0" y="735.0" text-anchor="middle" font-family="monospace" font-size="15" font-weight="bold" fill="#ff8ca3">repeat to x5</text>
+<text x="460.0" y="325.0" text-anchor="middle" font-family="monospace" font-size="18" font-weight="bold" fill="#5cc8ff">on-ramp: 5 transitions</text>
+<text x="1170.0" y="120.0" text-anchor="middle" font-family="monospace" font-size="18" font-weight="bold" fill="#ffca5c">cycle: 7 states</text>
+<rect x="13.0" y="378.0" width="164" height="94" rx="12" fill="#5cc8ff" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="95.0" y="405.0" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x0</text>
+<text x="95.0" y="428.0" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">80 25 8f 63 9f</text>
+<text x="95.0" y="452.0" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.6467191947</text>
+<rect x="183.0" y="378.0" width="164" height="94" rx="12" fill="#5cc8ff" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="265.0" y="405.0" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x1</text>
+<text x="265.0" y="428.0" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">80 58 54 75 eb</text>
+<text x="265.0" y="452.0" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.8450387667</text>
+<rect x="353.0" y="378.0" width="164" height="94" rx="12" fill="#5cc8ff" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="435.0" y="405.0" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x2</text>
+<text x="435.0" y="428.0" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">80 66 94 2d 9a</text>
+<text x="435.0" y="452.0" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.9006985188</text>
+<rect x="523.0" y="378.0" width="164" height="94" rx="12" fill="#5cc8ff" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="605.0" y="405.0" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x3</text>
+<text x="605.0" y="428.0" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">7f 78 e2 89 47</text>
+<text x="605.0" y="452.0" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.4861033343</text>
+<rect x="693.0" y="378.0" width="164" height="94" rx="12" fill="#5cc8ff" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="775.0" y="405.0" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x4</text>
+<text x="775.0" y="428.0" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">80 57 bd 3a b1</text>
+<text x="775.0" y="452.0" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.8427311594</text>
+<rect x="868.0" y="378.0" width="164" height="94" rx="12" fill="#ffca5c" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="950.0" y="405.0" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x5</text>
+<text x="950.0" y="428.0" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">80 12 7f c2 99</text>
+<text x="950.0" y="452.0" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.5722619651</text>
+<rect x="950.8" y="206.0" width="164" height="94" rx="12" fill="#ffca5c" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="1032.8" y="233.0" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x6</text>
+<text x="1032.8" y="256.0" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">80 2d 08 77 d0</text>
+<text x="1032.8" y="280.0" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.6759104617</text>
+<rect x="1137.0" y="163.5" width="164" height="94" rx="12" fill="#ffca5c" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="1219.0" y="190.5" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x7</text>
+<text x="1219.0" y="213.5" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">80 57 8a 0a f6</text>
+<text x="1219.0" y="237.5" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.8419501162</text>
+<rect x="1286.2" y="282.5" width="164" height="94" rx="12" fill="#ffca5c" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="1368.2" y="309.5" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x8</text>
+<text x="1368.2" y="332.5" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">7e 09 06 7a 62</text>
+<text x="1368.2" y="356.5" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.1338137743</text>
+<rect x="1286.2" y="473.5" width="164" height="94" rx="12" fill="#ffca5c" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="1368.2" y="500.5" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x9</text>
+<text x="1368.2" y="523.5" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">7d 4b b8 66 15</text>
+<text x="1368.2" y="547.5" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.09947280647</text>
+<rect x="1137.0" y="592.5" width="164" height="94" rx="12" fill="#ffca5c" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="1219.0" y="619.5" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x10</text>
+<text x="1219.0" y="642.5" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">7e 77 78 fe 42</text>
+<text x="1219.0" y="666.5" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.2416724899</text>
+<rect x="950.8" y="550.0" width="164" height="94" rx="12" fill="#ffca5c" stroke="#f3f6f8" stroke-width="1.5"/>
+<text x="1032.8" y="577.0" text-anchor="middle" font-family="monospace" font-size="16" font-weight="bold" fill="#101820">x11</text>
+<text x="1032.8" y="600.0" text-anchor="middle" font-family="monospace" font-size="13" font-weight="normal" fill="#101820">80 57 bd 3a b0</text>
+<text x="1032.8" y="624.0" text-anchor="middle" font-family="monospace" font-size="12" font-weight="normal" fill="#101820">≈ 0.8427311592</text>
+<text x="750.0" y="815.0" text-anchor="middle" font-family="monospace" font-size="16" font-weight="normal" fill="#aab7c4">Blue nodes feed the cycle; gold nodes repeat forever. Byte labels are the five-byte RNDX state.</text>
+</svg>

@@ -1,0 +1,822 @@
+{
+  "schema": "dtl-pcode-profile-v1",
+  "id": "dtl64.4-stage1",
+  "runtimeSha256": "019eb0bcd74cb76fe77d0b9c2198abc330b81652bcdc8fbed3a2fe93ef76d1d4",
+  "scope": "Supplied 64.4 runtime, standard internal-variable object layout; not overlays or other revisions.",
+  "layout": {
+    "loadAddress": 2049,
+    "bootstrapSize": 119,
+    "bootstrapSha256": "6f110060fdde8152bbf07419d2cfe7c8548089f39838d94d228cb27b7cad6a72",
+    "dataOffset": 122,
+    "initOffset": 124,
+    "mainOffset": 126,
+    "imageEndOffset": 130,
+    "trailerSize": 16,
+    "arrayWord": 0,
+    "variableWord": 2,
+    "arrayBias": 4,
+    "variableBias": 5,
+    "branchKeyHigh": 4,
+    "branchKeyLow": 5,
+    "paddingSize": 3,
+    "scalarStride": 7
+  },
+  "map": {
+    "terminalLine": 65280
+  },
+  "basicTokens": {
+    "80": "END",
+    "81": "FOR",
+    "82": "NEXT",
+    "83": "DATA",
+    "84": "INPUT#",
+    "85": "INPUT",
+    "86": "DIM",
+    "87": "READ",
+    "88": "LET",
+    "89": "GOTO",
+    "8A": "RUN",
+    "8B": "IF",
+    "8C": "RESTORE",
+    "8D": "GOSUB",
+    "8E": "RETURN",
+    "8F": "REM",
+    "90": "STOP",
+    "91": "ON",
+    "92": "WAIT",
+    "93": "LOAD",
+    "94": "SAVE",
+    "95": "VERIFY",
+    "96": "DEF",
+    "97": "POKE",
+    "98": "PRINT#",
+    "99": "PRINT",
+    "9A": "CONT",
+    "9B": "LIST",
+    "9C": "CLR",
+    "9D": "CMD",
+    "9E": "SYS",
+    "9F": "OPEN",
+    "A0": "CLOSE",
+    "A1": "GET",
+    "A2": "NEW",
+    "A3": "TAB(",
+    "A4": "TO",
+    "A5": "FN",
+    "A6": "SPC(",
+    "A7": "THEN",
+    "A8": "NOT",
+    "A9": "STEP",
+    "AA": "+",
+    "AB": "-",
+    "AC": "*",
+    "AD": "/",
+    "AE": "^",
+    "AF": "AND",
+    "B0": "OR",
+    "B1": ">",
+    "B2": "=",
+    "B3": "<",
+    "B4": "SGN",
+    "B5": "INT",
+    "B6": "ABS",
+    "B7": "USR",
+    "B8": "FRE",
+    "B9": "POS",
+    "BA": "SQR",
+    "BB": "RND",
+    "BC": "LOG",
+    "BD": "EXP",
+    "BE": "COS",
+    "BF": "SIN",
+    "C0": "TAN",
+    "C1": "ATN",
+    "C2": "PEEK",
+    "C3": "LEN",
+    "C4": "STR$",
+    "C5": "VAL",
+    "C6": "ASC",
+    "C7": "CHR$",
+    "C8": "LEFT$",
+    "C9": "RIGHT$",
+    "CA": "MID$",
+    "CB": "GO",
+    "FF": "{PI}"
+  },
+  "opcodes": {
+    "00": {
+      "handler": 43103,
+      "mnemonic": "BASIC",
+      "grammar": "basic_island",
+      "confidence": "strong-native",
+      "allowedStarts": [
+        "80",
+        "84",
+        "85",
+        "86",
+        "87",
+        "90",
+        "92",
+        "93",
+        "94",
+        "95",
+        "96",
+        "98",
+        "99",
+        "9D",
+        "9F",
+        "A0",
+        "A1",
+        "A2"
+      ],
+      "statementControls": {
+        "80": "stop",
+        "90": "stop",
+        "A2": "stop",
+        "93": "interpreter-load"
+      },
+      "evidence": "$A85F ROM bridge with text cursor; raw tokenized statements end before contextual 00/3A"
+    },
+    "01": {
+      "handler": 44031,
+      "mnemonic": "ADD",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "02": {
+      "handler": 44152,
+      "mnemonic": "SUBTRACT",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "03": {
+      "handler": 44210,
+      "mnemonic": "MULTIPLY",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "04": {
+      "handler": 44287,
+      "mnemonic": "DIVIDE",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "05": {
+      "handler": 44349,
+      "mnemonic": "POWER",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "06": {
+      "handler": 44437,
+      "mnemonic": "AND",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "07": {
+      "handler": 44465,
+      "mnemonic": "OR",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "18": {
+      "handler": 44493,
+      "mnemonic": "NEGATE",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "19": {
+      "handler": 44518,
+      "mnemonic": "NOT",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "2A": {
+      "handler": 44540,
+      "mnemonic": "COMPARE_GT",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "2B": {
+      "handler": 44626,
+      "mnemonic": "COMPARE_EQ",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "2C": {
+      "handler": 44630,
+      "mnemonic": "COMPARE_GE",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "2D": {
+      "handler": 44634,
+      "mnemonic": "COMPARE_LT",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "2E": {
+      "handler": 44638,
+      "mnemonic": "COMPARE_NE",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "2F": {
+      "handler": 44642,
+      "mnemonic": "COMPARE_LE",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "native arithmetic handlers and A08A return; source-correlated examples"
+    },
+    "3A": {
+      "handler": 41098,
+      "mnemonic": "DELIMITER",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "$A08A increments once"
+    },
+    "41": {
+      "handler": 45779,
+      "mnemonic": "ARRAY_REGISTER",
+      "grammar": "array16",
+      "confidence": "strong-native",
+      "evidence": "$B2D3-$B2FB; explicit three-byte advance"
+    },
+    "42": {
+      "handler": 45826,
+      "mnemonic": "FOR_REAL",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "control": "loop-runtime",
+      "evidence": "$BE1A reader; B356 +3 for FOR, B3FE +3 for NEXT"
+    },
+    "43": {
+      "handler": 45955,
+      "mnemonic": "FOR_REAL_STEP",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "control": "loop-runtime",
+      "evidence": "$BE1A reader; B356 +3 for FOR, B3FE +3 for NEXT"
+    },
+    "44": {
+      "handler": 45820,
+      "mnemonic": "FOR_INTEGER",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "control": "loop-runtime",
+      "evidence": "$BE1A reader; B356 +3 for FOR, B3FE +3 for NEXT"
+    },
+    "45": {
+      "handler": 45946,
+      "mnemonic": "FOR_INTEGER_STEP",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "control": "loop-runtime",
+      "evidence": "$BE1A reader; B356 +3 for FOR, B3FE +3 for NEXT"
+    },
+    "46": {
+      "handler": 46054,
+      "mnemonic": "NEXT",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "control": "loop-runtime",
+      "evidence": "$B3E6 sets advance1; saved loop cursor on repeat"
+    },
+    "47": {
+      "handler": 46078,
+      "mnemonic": "NEXT_NAMED",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "control": "loop-runtime",
+      "evidence": "$BE1A reader; B356 +3 for FOR, B3FE +3 for NEXT"
+    },
+    "48": {
+      "handler": 46255,
+      "mnemonic": "GOTO",
+      "grammar": "xor_target",
+      "confidence": "strong-native",
+      "control": "jump",
+      "evidence": "$B4AF: high/low XOR A42C/A6E4, from trailer5/4 via initializer"
+    },
+    "49": {
+      "handler": 46276,
+      "mnemonic": "CLEAR_OR_RUN",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "control": "runtime-managed",
+      "evidence": "$B4C4 resets state and restarts init; resumes after saved cursor when applicable"
+    },
+    "4A": {
+      "handler": 46246,
+      "mnemonic": "GOSUB",
+      "grammar": "xor_target",
+      "confidence": "strong-native",
+      "control": "call",
+      "evidence": "$B4AF: high/low XOR A42C/A6E4, from trailer5/4 via initializer"
+    },
+    "4B": {
+      "handler": 45778,
+      "mnemonic": "OP_4B",
+      "grammar": null,
+      "confidence": "unknown"
+    },
+    "4C": {
+      "handler": 46319,
+      "mnemonic": "RETURN",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "control": "return",
+      "evidence": "$B4EF after setup restores PLA; stack cursor +3 at B507"
+    },
+    "4D": {
+      "handler": 46380,
+      "mnemonic": "ON_GOTO",
+      "grammar": "target_table",
+      "confidence": "strong-native",
+      "maxCount": 252,
+      "control": "multi-branch",
+      "evidence": "$B528-$B585: byte count, pairs, XOR branch decoder"
+    },
+    "4E": {
+      "handler": 46376,
+      "mnemonic": "ON_GOSUB",
+      "grammar": "target_table",
+      "confidence": "strong-native",
+      "maxCount": 252,
+      "control": "multi-branch",
+      "evidence": "$B528-$B585: byte count, pairs, XOR branch decoder"
+    },
+    "4F": {
+      "handler": 46472,
+      "mnemonic": "IF_SKIP_FALSE",
+      "grammar": "relative8",
+      "confidence": "strong-native",
+      "control": "conditional",
+      "evidence": "$B588 true +2, false B5B4 adds byte to opcode address"
+    },
+    "50": {
+      "handler": 46533,
+      "mnemonic": "POKE",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "$B5C5 uses stacked address/FAC and A08A"
+    },
+    "51": {
+      "handler": 46599,
+      "mnemonic": "SYS_EMPTY_TAIL",
+      "grammar": "sys_delimiter",
+      "confidence": "strong-native",
+      "delimiter": 58,
+      "control": "native-call",
+      "evidence": "$B607 sets text cursor to p+1; B624 resumes at cursor+1; only empty colon tail supported"
+    },
+    "52": {
+      "handler": 46643,
+      "mnemonic": "RESTORE",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "$B633 resets DATA cursor then A08A"
+    },
+    "53": {
+      "handler": 46649,
+      "mnemonic": "DEF_FN",
+      "grammar": "fn_definition",
+      "confidence": "strong-native",
+      "control": "definition",
+      "evidence": "$B639 descriptor offset, four descriptor bytes, skip at p+7; B8C1 consumer resolves body relative to main"
+    },
+    "54": {
+      "handler": 46680,
+      "mnemonic": "INIT_DECODE",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "evidence": "$B658-$B675; live decoded-region match"
+    },
+    "55": {
+      "handler": 46357,
+      "mnemonic": "FN_RETURN",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "control": "function-return",
+      "evidence": "$B515 restores formal value then saved cursor+3"
+    },
+    "56": {
+      "handler": 46712,
+      "mnemonic": "OP_56",
+      "grammar": null,
+      "confidence": "unknown"
+    },
+    "57": {
+      "handler": 46724,
+      "mnemonic": "INIT_ENTER",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "control": "runtime-managed",
+      "evidence": "$B684; captured handler entry, resumes via runtime setup"
+    },
+    "58": {
+      "handler": 46773,
+      "mnemonic": "OP_58",
+      "grammar": null,
+      "confidence": "unknown"
+    },
+    "59": {
+      "handler": 46798,
+      "mnemonic": "OP_59",
+      "grammar": null,
+      "confidence": "unknown"
+    },
+    "5A": {
+      "handler": 46798,
+      "mnemonic": "OP_5A",
+      "grammar": null,
+      "confidence": "unknown"
+    },
+    "5B": {
+      "handler": 46798,
+      "mnemonic": "VARIABLE_FILE",
+      "grammar": "counted_bytes",
+      "confidence": "strong-native",
+      "evidence": "$B6CE reads length and advances length+2; may initialize embedded table instead of LOAD"
+    },
+    "5C": {
+      "handler": 46514,
+      "mnemonic": "SKIP",
+      "grammar": "relative8",
+      "confidence": "strong-native",
+      "control": "jump",
+      "evidence": "$B5B2-$B5C2"
+    },
+    "5E": {
+      "handler": 47034,
+      "mnemonic": "DIRECTIVE",
+      "grammar": "selector",
+      "confidence": "strong-native",
+      "selectors": {
+        "00": "restore-state-enable-stop",
+        "01": "enable-stop",
+        "02": "disable-stop",
+        "03": "restore-state-enable-stop",
+        "04": "special-poke",
+        "05": "normal-poke"
+      },
+      "evidence": "$B7BA dispatch; B7D2/B7D8 six-entry tables"
+    },
+    "80": {
+      "handler": 44646,
+      "mnemonic": "INTEGER_SMALL",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "constant": 0,
+      "evidence": "$AE66-$AEBE"
+    },
+    "81": {
+      "handler": 44668,
+      "mnemonic": "INTEGER_SMALL",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "constant": 1,
+      "evidence": "$AE66-$AEBE"
+    },
+    "82": {
+      "handler": 44692,
+      "mnemonic": "INTEGER_SMALL",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "constant": 2,
+      "evidence": "$AE66-$AEBE"
+    },
+    "83": {
+      "handler": 44699,
+      "mnemonic": "INTEGER_SMALL",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "constant": 3,
+      "evidence": "$AE66-$AEBE"
+    },
+    "84": {
+      "handler": 44706,
+      "mnemonic": "INTEGER_SMALL",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "constant": 4,
+      "evidence": "$AE66-$AEBE"
+    },
+    "85": {
+      "handler": 44713,
+      "mnemonic": "INTEGER_SMALL",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "constant": 5,
+      "evidence": "$AE66-$AEBE"
+    },
+    "86": {
+      "handler": 44720,
+      "mnemonic": "INTEGER_SMALL",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "constant": 6,
+      "evidence": "$AE66-$AEBE"
+    },
+    "87": {
+      "handler": 44727,
+      "mnemonic": "INTEGER_SMALL",
+      "grammar": "none",
+      "confidence": "strong-native",
+      "constant": 7,
+      "evidence": "$AE66-$AEBE"
+    },
+    "88": {
+      "handler": 44734,
+      "mnemonic": "REAL_LITERAL",
+      "grammar": "float5",
+      "confidence": "strong-native",
+      "evidence": "$AEBE-$AF00 advances six bytes"
+    },
+    "89": {
+      "handler": 44873,
+      "mnemonic": "INTEGER_BYTE",
+      "grammar": "u8",
+      "confidence": "strong-native",
+      "evidence": "$AF49 advances two bytes"
+    },
+    "8A": {
+      "handler": 44943,
+      "mnemonic": "STRING_LITERAL",
+      "grammar": "counted_bytes",
+      "confidence": "strong-native",
+      "maxCount": 253,
+      "evidence": "$AF8F length then bytes; advances length+2"
+    },
+    "8D": {
+      "handler": 44907,
+      "mnemonic": "INTEGER_WORD",
+      "grammar": "u16be",
+      "confidence": "strong-native",
+      "signed": true,
+      "evidence": "$AF6B high byte then low byte; advances three"
+    },
+    "90": {
+      "handler": 44801,
+      "mnemonic": "LOAD_REAL_SCALAR",
+      "grammar": "var8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "91": {
+      "handler": 44994,
+      "mnemonic": "LOAD_INTEGER_SCALAR",
+      "grammar": "var8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "92": {
+      "handler": 45073,
+      "mnemonic": "LOAD_STRING_SCALAR",
+      "grammar": "var8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "94": {
+      "handler": 44811,
+      "mnemonic": "LOAD_REAL_SCALAR_LONG",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "95": {
+      "handler": 45018,
+      "mnemonic": "LOAD_INTEGER_SCALAR_LONG",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "96": {
+      "handler": 45106,
+      "mnemonic": "LOAD_STRING_SCALAR_LONG",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "A0": {
+      "handler": 44827,
+      "mnemonic": "LOAD_REAL_ARRAY",
+      "grammar": "array8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "A1": {
+      "handler": 45031,
+      "mnemonic": "LOAD_INTEGER_ARRAY",
+      "grammar": "array8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "A2": {
+      "handler": 45115,
+      "mnemonic": "LOAD_STRING_ARRAY",
+      "grammar": "array8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "A4": {
+      "handler": 44866,
+      "mnemonic": "LOAD_REAL_ARRAY_LONG",
+      "grammar": "array16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "A5": {
+      "handler": 45066,
+      "mnemonic": "LOAD_INTEGER_ARRAY_LONG",
+      "grammar": "array16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "A6": {
+      "handler": 45150,
+      "mnemonic": "LOAD_STRING_ARRAY_LONG",
+      "grammar": "array16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "B4": {
+      "handler": 47297,
+      "mnemonic": "OP_B4",
+      "grammar": null,
+      "confidence": "unknown"
+    },
+    "B8": {
+      "handler": 47410,
+      "mnemonic": "FUNCTION",
+      "grammar": "selector",
+      "confidence": "strong-native",
+      "selectors": {
+        "00": "SGN",
+        "01": "INT",
+        "02": "ABS",
+        "03": "USR",
+        "04": "FRE",
+        "05": "POS",
+        "06": "SQR",
+        "07": "RND",
+        "08": "LOG",
+        "09": "EXP",
+        "0A": "COS",
+        "0B": "SIN",
+        "0C": "TAN",
+        "0D": "ATN",
+        "0E": "PEEK",
+        "0F": "LEN",
+        "10": "STR$",
+        "11": "VAL",
+        "12": "ASC",
+        "13": "CHR$",
+        "14": "LEFT$",
+        "15": "RIGHT$",
+        "16": "MID$",
+        "17": "PI",
+        "18": "TI",
+        "19": "TI$",
+        "1A": "ST",
+        "1B": "SET_TI$"
+      },
+      "evidence": "$B932 advances two bytes; selectors00..1B; aliases preserved, no incoming-context equivalence claim"
+    },
+    "D0": {
+      "handler": 45157,
+      "mnemonic": "STORE_REAL_SCALAR",
+      "grammar": "var8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "D1": {
+      "handler": 45205,
+      "mnemonic": "STORE_INTEGER_SCALAR",
+      "grammar": "var8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "D2": {
+      "handler": 45264,
+      "mnemonic": "STORE_STRING_SCALAR",
+      "grammar": "var8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "D4": {
+      "handler": 45177,
+      "mnemonic": "STORE_REAL_SCALAR_LONG",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "D5": {
+      "handler": 45234,
+      "mnemonic": "STORE_INTEGER_SCALAR_LONG",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "D6": {
+      "handler": 45270,
+      "mnemonic": "STORE_STRING_SCALAR_LONG",
+      "grammar": "var16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "E0": {
+      "handler": 45183,
+      "mnemonic": "STORE_REAL_ARRAY",
+      "grammar": "array8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "E1": {
+      "handler": 45240,
+      "mnemonic": "STORE_INTEGER_ARRAY",
+      "grammar": "array8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "E2": {
+      "handler": 45276,
+      "mnemonic": "STORE_STRING_ARRAY",
+      "grammar": "array8",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "E4": {
+      "handler": 45194,
+      "mnemonic": "STORE_REAL_ARRAY_LONG",
+      "grammar": "array16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "E5": {
+      "handler": 45252,
+      "mnemonic": "STORE_INTEGER_ARRAY_LONG",
+      "grammar": "array16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "E6": {
+      "handler": 45287,
+      "mnemonic": "STORE_STRING_ARRAY_LONG",
+      "grammar": "array16",
+      "confidence": "strong-native",
+      "evidence": "$B15C/$B177 scalar or B193/B1D0 array offset readers; typed native handler"
+    },
+    "F8": {
+      "handler": 47410,
+      "mnemonic": "FUNCTION_F8",
+      "grammar": "selector",
+      "confidence": "strong-native",
+      "selectors": {
+        "00": "SGN",
+        "01": "INT",
+        "02": "ABS",
+        "03": "USR",
+        "04": "FRE",
+        "05": "POS",
+        "06": "SQR",
+        "07": "RND",
+        "08": "LOG",
+        "09": "EXP",
+        "0A": "COS",
+        "0B": "SIN",
+        "0C": "TAN",
+        "0D": "ATN",
+        "0E": "PEEK",
+        "0F": "LEN",
+        "10": "STR$",
+        "11": "VAL",
+        "12": "ASC",
+        "13": "CHR$",
+        "14": "LEFT$",
+        "15": "RIGHT$",
+        "16": "MID$",
+        "17": "PI",
+        "18": "TI",
+        "19": "TI$",
+        "1A": "ST",
+        "1B": "SET_TI$"
+      },
+      "evidence": "$B932 advances two bytes; selectors00..1B; aliases preserved, no incoming-context equivalence claim"
+    }
+  }
+}

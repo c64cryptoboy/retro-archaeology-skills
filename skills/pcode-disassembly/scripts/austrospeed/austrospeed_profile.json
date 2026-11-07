@@ -1,0 +1,593 @@
+{
+  "schema": "blitz-pcode-profile-v1",
+  "id": "austrospeed-1e-attached-v1",
+  "status": "Audited shared operand grammar for the separately fingerprinted supplied runtime; runtime semantics are not identical to BLITZ.",
+  "dispatch": {
+    "opcodePointerZeroPage": 57,
+    "directHandlerHighBase": 2071,
+    "directHandlerLowBase": 2170,
+    "directOpcodeMin": 14,
+    "directOpcodeMax": 112,
+    "variableOffsetTable": 2283,
+    "variableOffsetCount": 32,
+    "startupPointerTable": 8057,
+    "startupPointerCount": 6
+  },
+  "layout": {
+    "variableRecordSize": 7,
+    "dataEncoding": "length-prefixed-strings-ff"
+  },
+  "opcodeFamilies": [
+    {
+      "minimum": "00",
+      "maximum": "0D",
+      "mnemonic": "EXPR_OP_{opcode}",
+      "operand": "none",
+      "confidence": "strong-structure/unknown-semantics"
+    },
+    {
+      "minimum": "80",
+      "maximum": "9F",
+      "mnemonic": "LOAD_VAR",
+      "operand": "none",
+      "variableIndexMask": 31,
+      "confidence": "confirmed-structure"
+    },
+    {
+      "minimum": "A8",
+      "maximum": "A9",
+      "mnemonic": "CONST_FAC5",
+      "operand": "fac5",
+      "confidence": "confirmed"
+    },
+    {
+      "minimum": "B0",
+      "maximum": "BF",
+      "mnemonic": "CONST_SMALL",
+      "operand": "none",
+      "valueMask": 15,
+      "confidence": "confirmed"
+    },
+    {
+      "minimum": "C0",
+      "maximum": "DF",
+      "mnemonic": "STORE_VAR",
+      "operand": "none",
+      "variableIndexMask": 31,
+      "confidence": "confirmed-structure"
+    },
+    {
+      "minimum": "E8",
+      "maximum": "EF",
+      "mnemonic": "CONST_STRING",
+      "operand": "inline_string_short",
+      "confidence": "confirmed-structure"
+    },
+    {
+      "minimum": "F0",
+      "maximum": "FF",
+      "mnemonic": "CONST_COMPACT",
+      "operand": "none",
+      "valueMask": 31,
+      "confidence": "confirmed"
+    }
+  ],
+  "exactOpcodes": {
+    "01": {
+      "mnemonic": "GT",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "02": {
+      "mnemonic": "EQ",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "04": {
+      "mnemonic": "LT",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "05": {
+      "mnemonic": "NE",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "07": {
+      "mnemonic": "ADD",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "08": {
+      "mnemonic": "SUBTRACT",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "09": {
+      "mnemonic": "MULTIPLY",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "0A": {
+      "mnemonic": "DIVIDE",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "0B": {
+      "mnemonic": "POWER",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "0C": {
+      "mnemonic": "AND",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "0D": {
+      "mnemonic": "OR",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "10": {
+      "mnemonic": "DIM_INTERNAL",
+      "operand": "dim5",
+      "confidence": "confirmed"
+    },
+    "11": {
+      "mnemonic": "FOR_SETUP",
+      "operand": "none",
+      "control": "for_setup",
+      "confidence": "confirmed"
+    },
+    "14": {
+      "mnemonic": "NEXT",
+      "operand": "none",
+      "control": "next",
+      "confidence": "confirmed"
+    },
+    "15": {
+      "mnemonic": "CLR_AND_INIT",
+      "operand": "none",
+      "control": "internal_init",
+      "confidence": "confirmed"
+    },
+    "16": {
+      "mnemonic": "INIT_RETURN",
+      "operand": "none",
+      "control": "internal_return",
+      "confidence": "confirmed"
+    },
+    "17": {
+      "mnemonic": "POKE",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "19": {
+      "mnemonic": "GOTO",
+      "operand": "target_be16",
+      "control": "goto",
+      "confidence": "confirmed"
+    },
+    "1A": {
+      "mnemonic": "GOSUB",
+      "operand": "target_be16",
+      "control": "gosub",
+      "confidence": "confirmed"
+    },
+    "1B": {
+      "mnemonic": "ON_GOTO",
+      "operand": "on_table",
+      "control": "multi_branch",
+      "confidence": "confirmed"
+    },
+    "1C": {
+      "mnemonic": "ON_GOSUB",
+      "operand": "on_table",
+      "control": "multi_branch_call",
+      "confidence": "strong"
+    },
+    "1D": {
+      "mnemonic": "RETURN",
+      "operand": "none",
+      "control": "return",
+      "confidence": "confirmed"
+    },
+    "1F": {
+      "mnemonic": "IF_FALSE_SKIP",
+      "operand": "skip_u8",
+      "control": "branch",
+      "confidence": "confirmed"
+    },
+    "21": {
+      "mnemonic": "INT",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "27": {
+      "mnemonic": "RND",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "2E": {
+      "mnemonic": "PEEK",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "2F": {
+      "mnemonic": "LEN",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "31": {
+      "mnemonic": "VAL",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "33": {
+      "mnemonic": "CHR$",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "35": {
+      "mnemonic": "RIGHT$",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "36": {
+      "mnemonic": "MID$",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "3C": {
+      "mnemonic": "PRINT_SEMI",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "3E": {
+      "mnemonic": "PRINT",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "3F": {
+      "mnemonic": "PRINT_EMPTY",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "42": {
+      "mnemonic": "SELECT_OUTPUT_CHANNEL",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "43": {
+      "mnemonic": "PRINT_CHANNEL",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "46": {
+      "mnemonic": "GET",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "48": {
+      "mnemonic": "SELECT_INPUT_CHANNEL",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "4A": {
+      "mnemonic": "READ",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "4E": {
+      "mnemonic": "NEW",
+      "operand": "none",
+      "control": "return",
+      "confidence": "confirmed"
+    },
+    "4F": {
+      "mnemonic": "END",
+      "operand": "none",
+      "control": "return",
+      "confidence": "confirmed"
+    },
+    "50": {
+      "mnemonic": "INPUT_BEGIN",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "51": {
+      "mnemonic": "INPUT_FINAL",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "53": {
+      "mnemonic": "INPUT_KEYBOARD",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "52": {
+      "mnemonic": "IF_GOTO",
+      "operand": "target_be16",
+      "control": "branch",
+      "confidence": "confirmed"
+    },
+    "55": {
+      "mnemonic": "INPUT_FIRST",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "57": {
+      "mnemonic": "INPUT_NEXT",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "58": {
+      "mnemonic": "RETURN_IF_TRUE",
+      "operand": "none",
+      "control": "conditional_return",
+      "confidence": "confirmed"
+    },
+    "60": {
+      "mnemonic": "OPEN",
+      "operand": "argc_u8",
+      "confidence": "confirmed"
+    },
+    "61": {
+      "mnemonic": "CLOSE",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "A0": {
+      "mnemonic": "VAR_DESCRIPTOR",
+      "operand": "index_u8",
+      "role": "variable_descriptor",
+      "confidence": "confirmed-structure"
+    },
+    "A6": {
+      "mnemonic": "CONST_U8",
+      "operand": "u8",
+      "confidence": "confirmed"
+    },
+    "A7": {
+      "mnemonic": "CONST_U16",
+      "operand": "u16be",
+      "confidence": "confirmed"
+    },
+    "E7": {
+      "mnemonic": "CONST_STRING",
+      "operand": "inline_string_u8",
+      "confidence": "confirmed"
+    },
+    "A4": {
+      "mnemonic": "LOAD_ARRAY",
+      "operand": "descriptor_u8",
+      "confidence": "confirmed"
+    },
+    "E0": {
+      "mnemonic": "STORE_VAR_EXT",
+      "operand": "index_u8",
+      "confidence": "confirmed"
+    },
+    "E4": {
+      "mnemonic": "STORE_ARRAY",
+      "operand": "descriptor_u8",
+      "confidence": "confirmed"
+    },
+    "03": {
+      "mnemonic": "GE",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "06": {
+      "mnemonic": "LE",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "0E": {
+      "mnemonic": "NEGATE",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "0F": {
+      "mnemonic": "NOT",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "12": {
+      "mnemonic": "FOR_SETUP_STEP",
+      "operand": "none",
+      "control": "for_setup",
+      "confidence": "confirmed"
+    },
+    "13": {
+      "mnemonic": "NEXT_UNNAMED",
+      "operand": "none",
+      "control": "next",
+      "confidence": "confirmed"
+    },
+    "18": {
+      "mnemonic": "SYS",
+      "operand": "inline_basic_to_colon",
+      "confidence": "confirmed"
+    },
+    "1E": {
+      "mnemonic": "RESTORE",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "20": {
+      "mnemonic": "SGN",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "22": {
+      "mnemonic": "ABS",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "23": {
+      "mnemonic": "USR",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "24": {
+      "mnemonic": "FRE",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "25": {
+      "mnemonic": "POS",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "26": {
+      "mnemonic": "SQR",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "28": {
+      "mnemonic": "LOG",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "29": {
+      "mnemonic": "EXP",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "2A": {
+      "mnemonic": "COS",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "2B": {
+      "mnemonic": "SIN",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "2C": {
+      "mnemonic": "TAN",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "2D": {
+      "mnemonic": "ATN",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "30": {
+      "mnemonic": "STR$",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "32": {
+      "mnemonic": "ASC",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "34": {
+      "mnemonic": "LEFT$",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "37": {
+      "mnemonic": "DEF_FN",
+      "operand": "def_fn_header",
+      "control": "def_fn",
+      "confidence": "confirmed"
+    },
+    "38": {
+      "mnemonic": "FN_CALL",
+      "operand": "u16be",
+      "role": "function_descriptor",
+      "confidence": "confirmed"
+    },
+    "39": {
+      "mnemonic": "FN_RETURN",
+      "operand": "none",
+      "control": "return",
+      "confidence": "confirmed"
+    },
+    "3D": {
+      "mnemonic": "PRINT_COMMA",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "40": {
+      "mnemonic": "SPC",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "41": {
+      "mnemonic": "TAB",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "45": {
+      "mnemonic": "PRINT_CHANNEL_EMPTY",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "49": {
+      "mnemonic": "STOP",
+      "operand": "none",
+      "control": "return",
+      "confidence": "confirmed"
+    },
+    "4B": {
+      "mnemonic": "READ_NUMERIC",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "4C": {
+      "mnemonic": "WAIT",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "4D": {
+      "mnemonic": "WAIT_XOR",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "56": {
+      "mnemonic": "SET_TIME_STRING",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "5D": {
+      "mnemonic": "LOAD",
+      "operand": "argc_u8",
+      "confidence": "confirmed"
+    },
+    "5E": {
+      "mnemonic": "SAVE",
+      "operand": "argc_u8",
+      "confidence": "confirmed"
+    },
+    "5F": {
+      "mnemonic": "VERIFY",
+      "operand": "argc_u8",
+      "confidence": "confirmed"
+    },
+    "AA": {
+      "mnemonic": "PI",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "AB": {
+      "mnemonic": "STATUS",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "AC": {
+      "mnemonic": "TIME",
+      "operand": "none",
+      "confidence": "confirmed"
+    },
+    "AF": {
+      "mnemonic": "TIME_STRING",
+      "operand": "none",
+      "confidence": "confirmed"
+    }
+  }
+}

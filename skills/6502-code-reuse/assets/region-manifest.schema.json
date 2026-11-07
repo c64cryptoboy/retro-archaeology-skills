@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://local.invalid/6502-code-reuse/region-manifest.schema.json",
+  "title": "Extracted byte-region manifest",
+  "type": "object",
+  "required": ["schemaVersion", "artifact", "regions"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": {"const": 1},
+    "artifact": {
+      "type": "object",
+      "required": ["path", "format", "size", "sha256"],
+      "additionalProperties": false,
+      "properties": {
+        "path": {"type": "string", "minLength": 1},
+        "format": {"type": "string", "minLength": 1},
+        "size": {"type": "integer", "minimum": 0},
+        "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"}
+      }
+    },
+    "capture": {"type": "object"},
+    "regions": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["id", "path", "kind", "size", "sha256", "scanByDefault", "source"],
+        "additionalProperties": false,
+        "properties": {
+          "id": {"type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$"},
+          "path": {"type": "string", "minLength": 1},
+          "kind": {"type": "string", "minLength": 1},
+          "size": {"type": "integer", "minimum": 1},
+          "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+          "scanByDefault": {"type": "boolean"},
+          "baseAddress": {"type": "integer", "minimum": 0},
+          "cpuProfile": {"type": "string", "minLength": 1},
+          "knownMask": {
+            "type": "object",
+            "required": ["path", "sha256", "meaning"],
+            "additionalProperties": false,
+            "properties": {
+              "path": {"type": "string", "minLength": 1},
+              "sha256": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+              "meaning": {"type": "string", "minLength": 1}
+            }
+          },
+          "source": {"type": "object", "minProperties": 1}
+        }
+      }
+    }
+  }
+}

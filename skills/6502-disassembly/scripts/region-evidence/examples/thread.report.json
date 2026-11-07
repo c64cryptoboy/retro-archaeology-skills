@@ -1,0 +1,305 @@
+{
+  "schema": "regional-implementation-evidence-v1",
+  "input": {
+    "sha256": "f1e0c4a567d541c4802c07b1d0d6850c911bd4681dd484d6cb47760a510d6e81",
+    "format": "raw",
+    "base": 4096,
+    "end": 4164,
+    "byteLength": 68,
+    "cpu": "6502",
+    "mappingEvidence": {
+      "status": "supplied-not-automatically-proved",
+      "reference": "Synthetic flat memory; cursor precondition $F0/$F1=$1040 is supplied, not observed."
+    }
+  },
+  "worksheetSha256": "76042106043d415fbb0cc4dfdcf3d5cba2df8d796e5dd0867b5414ab47b1ead2",
+  "publicHelperPrimaryFiles": {
+    "skills/pcode-disassembly/scripts/reconstruct/identify.py": "6f5716a8a8b53dfce637ca9b5cd1edb32ca44f306decf99e92c83c205fb264d0",
+    "shared/6502/cfg6502.py": "af7767d1cfb31517e1b20816e42a4cd7b539681b338ed8266100cf16e67ea756",
+    "skills/pcode-disassembly/scripts/reconstruct/identities.json": "195dabd0581f3ea3e155183cf4e0200e56141a5eda0aa98f3445c4e6e41c4926",
+    "skills/pcode-disassembly/scripts/reconstruct/formats.py": "cfdd46bdd6fd790936f9627e9e1bae5e417c119999e2914778c15887b20e0ddd",
+    "shared/6502/dis6502.py": "266925f26527c89fd378caf0cf2d3da3cc0ccc5f791829ab1a03783b8f816a05"
+  },
+  "region": {
+    "start": 4160,
+    "end": 4164,
+    "sha256": "0b0f23538db6436de39d91b97aa0d5f183974ef35fba4f74fee11897d8267dfa",
+    "evidence": {
+      "status": "supplied-not-automatically-proved",
+      "reference": "Synthetic stream byte range constructed by synthetic_fixture.py."
+    },
+    "roleAssertion": {
+      "status": "supplied-not-automatically-proved",
+      "reference": "Supplied synthetic application stream, not a historical artifact."
+    }
+  },
+  "componentIdentity": {
+    "publicBaseline": {
+      "schema": "basic-compiler-identification-v1",
+      "inputSha256": "f1e0c4a567d541c4802c07b1d0d6850c911bd4681dd484d6cb47760a510d6e81",
+      "format": "raw",
+      "loadAddress": 4096,
+      "status": "unknown",
+      "family": null,
+      "matches": [],
+      "caveats": [
+        "Known signatures only; packed/encrypted, detached or unfamiliar runtimes may be unrecognized.",
+        "No match is not proof that the input was not compiled BASIC.",
+        "Matching library bytes are not proof of historical authorship, reachability, version support or full decoding."
+      ]
+    },
+    "suppliedPins": []
+  },
+  "mechanism": {
+    "representationCandidate": "threaded-cells",
+    "actualReachability": "unknown",
+    "candidateBasis": "conditional-on-supplied-consumer; not a verified consumer mechanism",
+    "consumerAssertion": {
+      "operation": "dispatch",
+      "representation": "threaded-cells",
+      "evidence": {
+        "status": "supplied-not-automatically-proved",
+        "reference": "Supplied correspondence to synthetic-consumers.asm; the tool does not prove the semantics."
+      },
+      "reachabilityEvidence": null,
+      "bytes": {
+        "start": 4096,
+        "end": 4133,
+        "expectedSha256": "dd8466859dd3046ebec600ce63b411bc5473ddcf2033c5e63b2bf79378124d31",
+        "actualSha256": "dd8466859dd3046ebec600ce63b411bc5473ddcf2033c5e63b2bf79378124d31",
+        "matched": true,
+        "assertion": {
+          "status": "supplied-not-automatically-proved",
+          "reference": "Supplied correspondence to synthetic-consumers.asm; the tool does not prove the semantics."
+        }
+      }
+    },
+    "nativeStaticGraph": {
+      "loadAddress": 4096,
+      "endAddressExclusive": 4164,
+      "entries": [
+        4096
+      ],
+      "instructions": [
+        {
+          "pc": 4096,
+          "bytes": [
+            160,
+            0
+          ],
+          "mnemonic": "LDY",
+          "mode": "imm",
+          "length": 2,
+          "operand": "#$00"
+        },
+        {
+          "pc": 4098,
+          "bytes": [
+            177,
+            240
+          ],
+          "mnemonic": "LDA",
+          "mode": "izy",
+          "length": 2,
+          "operand": "($F0),Y"
+        },
+        {
+          "pc": 4100,
+          "bytes": [
+            133,
+            242
+          ],
+          "mnemonic": "STA",
+          "mode": "zp",
+          "length": 2,
+          "operand": "$F2"
+        },
+        {
+          "pc": 4102,
+          "bytes": [
+            200
+          ],
+          "mnemonic": "INY",
+          "mode": "imp",
+          "length": 1,
+          "operand": ""
+        },
+        {
+          "pc": 4103,
+          "bytes": [
+            177,
+            240
+          ],
+          "mnemonic": "LDA",
+          "mode": "izy",
+          "length": 2,
+          "operand": "($F0),Y"
+        },
+        {
+          "pc": 4105,
+          "bytes": [
+            133,
+            243
+          ],
+          "mnemonic": "STA",
+          "mode": "zp",
+          "length": 2,
+          "operand": "$F3"
+        },
+        {
+          "pc": 4107,
+          "bytes": [
+            24
+          ],
+          "mnemonic": "CLC",
+          "mode": "imp",
+          "length": 1,
+          "operand": ""
+        },
+        {
+          "pc": 4108,
+          "bytes": [
+            165,
+            240
+          ],
+          "mnemonic": "LDA",
+          "mode": "zp",
+          "length": 2,
+          "operand": "$F0"
+        },
+        {
+          "pc": 4110,
+          "bytes": [
+            105,
+            2
+          ],
+          "mnemonic": "ADC",
+          "mode": "imm",
+          "length": 2,
+          "operand": "#$02"
+        },
+        {
+          "pc": 4112,
+          "bytes": [
+            133,
+            240
+          ],
+          "mnemonic": "STA",
+          "mode": "zp",
+          "length": 2,
+          "operand": "$F0"
+        },
+        {
+          "pc": 4114,
+          "bytes": [
+            144,
+            2
+          ],
+          "mnemonic": "BCC",
+          "mode": "rel",
+          "length": 2,
+          "operand": "$1016"
+        },
+        {
+          "pc": 4116,
+          "bytes": [
+            230,
+            241
+          ],
+          "mnemonic": "INC",
+          "mode": "zp",
+          "length": 2,
+          "operand": "$F1"
+        },
+        {
+          "pc": 4118,
+          "bytes": [
+            108,
+            242,
+            0
+          ],
+          "mnemonic": "JMP",
+          "mode": "ind",
+          "length": 3,
+          "operand": "($00F2)"
+        }
+      ],
+      "edges": [
+        {
+          "from": 4114,
+          "to": 4118,
+          "kind": "branch",
+          "internal": true
+        },
+        {
+          "from": 4114,
+          "to": 4116,
+          "kind": "fallthrough",
+          "internal": true
+        }
+      ],
+      "dataXrefs": [],
+      "stops": [
+        {
+          "at": 4118,
+          "reason": "unresolved_indirect_jump",
+          "pointer": 242
+        }
+      ],
+      "limitReached": false
+    },
+    "stream": {
+      "status": "consistent",
+      "scope": "boundaries-only-under-supplied-contract",
+      "records": [
+        {
+          "start": 4160,
+          "end": 4162,
+          "bytes": "2010",
+          "token": 4128,
+          "flow": "next",
+          "successors": [
+            4162
+          ],
+          "ruleEvidence": {
+            "status": "supplied-not-automatically-proved",
+            "reference": "synthetic-consumers.asm: cell $1020 returns to dispatch"
+          }
+        },
+        {
+          "start": 4162,
+          "end": 4164,
+          "bytes": "2410",
+          "token": 4132,
+          "flow": "stop",
+          "successors": [],
+          "ruleEvidence": {
+            "status": "supplied-not-automatically-proved",
+            "reference": "synthetic-consumers.asm: cell $1024 returns to caller"
+          }
+        }
+      ],
+      "violations": [],
+      "unknownRanges": [],
+      "coveredBytes": 4,
+      "regionBytes": 4
+    }
+  },
+  "generationEvidence": {
+    "status": "none-established",
+    "reason": "Identity and boundary compatibility do not establish generation."
+  },
+  "historicalAuthorship": {
+    "status": "unresolved"
+  },
+  "limitations": [
+    "Consumer semantics, entry points, mapping, rule meanings, and evidence references are supplied, not automatically proved.",
+    "Static CFG paths are possible paths from supplied entries, not observed reachability; flags, banking, and self-modification are not modeled.",
+    "Only fixed-width 1/2-byte tokens, 0..16 operand bytes, and absolute 16-bit stream targets are supported.",
+    "No target execution, producer validation, source authentication, statistical inference, or handwritten default.",
+    "Unvisited bytes stay unknown; bytes outside the selected region are outside this boundary question.",
+    "Boundary consistency does not establish termination, actual execution, or semantic correctness."
+  ],
+  "worksheetFileSha256": "da4b8032f9f97d2b4bfeb10572b7fbae31b1cbf7a5c35646689375314f2ae24e",
+  "toolSha256": "305fa90d35a4ab322ab08294710763cdb0893e8c85b66ecca63daafd79089c11"
+}

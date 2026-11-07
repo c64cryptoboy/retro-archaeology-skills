@@ -1,0 +1,787 @@
+{
+  "schema": "speedcompiler-profile-v1",
+  "id": "input64-speedcompiler-2.2-default-v1",
+  "loadAddress": 2049,
+  "runtimeStart": 2304,
+  "runtimeEnd": 6508,
+  "runtimeSha256": "58e5e2107cdf271260a4c5f1ec226785351d444ff31b5f8be3df17431982171a",
+  "entryPointer": 7934,
+  "defaultCodeStart": 8192,
+  "dispatchTable": 2304,
+  "opcodes": {
+    "00": {
+      "mnemonic": "NOP",
+      "grammar": "none",
+      "handler": 2762,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "02": {
+      "mnemonic": "INTEGER_ADD",
+      "grammar": "none",
+      "handler": 3664,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "04": {
+      "mnemonic": "INTEGER_SUBTRACT",
+      "grammar": "none",
+      "handler": 3639,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "06": {
+      "mnemonic": "INTEGER_MULTIPLY",
+      "grammar": "none",
+      "handler": 3811,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "08": {
+      "mnemonic": "INTEGER_DIVIDE",
+      "grammar": "none",
+      "handler": 3700,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "0A": {
+      "mnemonic": "INTEGER_NOT",
+      "grammar": "none",
+      "handler": 3622,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "0C": {
+      "mnemonic": "INTEGER_AND",
+      "grammar": "none",
+      "handler": 3603,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "0E": {
+      "mnemonic": "INTEGER_OR",
+      "grammar": "none",
+      "handler": 3584,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "10": {
+      "mnemonic": "INTEGER_COMPARE",
+      "grammar": "mask",
+      "handler": 4327,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "12": {
+      "mnemonic": "PEEK",
+      "grammar": "none",
+      "handler": 4291,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "14": {
+      "mnemonic": "POS",
+      "grammar": "none",
+      "handler": 4306,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "16": {
+      "mnemonic": "RND",
+      "grammar": "none",
+      "handler": 6320,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "18": {
+      "mnemonic": "USR",
+      "grammar": "none",
+      "handler": 5995,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "1A": {
+      "mnemonic": "LEN",
+      "grammar": "none",
+      "handler": 4134,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "1C": {
+      "mnemonic": "MID_STRING",
+      "grammar": "none",
+      "handler": 3920,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "1E": {
+      "mnemonic": "LEFT_STRING",
+      "grammar": "none",
+      "handler": 3992,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "20": {
+      "mnemonic": "RIGHT_STRING",
+      "grammar": "none",
+      "handler": 3965,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "22": {
+      "mnemonic": "CHR_STRING",
+      "grammar": "none",
+      "handler": 4102,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "24": {
+      "mnemonic": "VAL",
+      "grammar": "none",
+      "handler": 6187,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "26": {
+      "mnemonic": "ASC",
+      "grammar": "none",
+      "handler": 4080,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "28": {
+      "mnemonic": "STR_INTEGER",
+      "grammar": "none",
+      "handler": 4158,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "2A": {
+      "mnemonic": "STRING_CONCAT",
+      "grammar": "none",
+      "handler": 4007,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "2C": {
+      "mnemonic": "CONST_BYTE",
+      "grammar": "u8",
+      "handler": 4671,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "2E": {
+      "mnemonic": "CONST_WORD",
+      "grammar": "word",
+      "handler": 4625,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "30": {
+      "mnemonic": "STORE_INTEGER",
+      "grammar": "u8",
+      "handler": 4492,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "32": {
+      "mnemonic": "PRINT_STRING",
+      "grammar": "none",
+      "handler": 2919,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "34": {
+      "mnemonic": "PRINT_INTEGER",
+      "grammar": "none",
+      "handler": 2908,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "36": {
+      "mnemonic": "PRINT_COMMA",
+      "grammar": "none",
+      "handler": 3291,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "38": {
+      "mnemonic": "PRINT_TAB",
+      "grammar": "none",
+      "handler": 3271,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "3A": {
+      "mnemonic": "PRINT_SPC",
+      "grammar": "none",
+      "handler": 3324,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "3C": {
+      "mnemonic": "INTEGER_RESERVE",
+      "grammar": "none",
+      "handler": 4684,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "3E": {
+      "mnemonic": "POKE",
+      "grammar": "none",
+      "handler": 4564,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "40": {
+      "mnemonic": "SYS",
+      "grammar": "none",
+      "handler": 4548,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "42": {
+      "mnemonic": "READ_INTEGER",
+      "grammar": "none",
+      "handler": 5191,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "44": {
+      "mnemonic": "READ_STRING",
+      "grammar": "none",
+      "handler": 5271,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "46": {
+      "mnemonic": "RESTORE_DATA",
+      "grammar": "word",
+      "handler": 4508,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "48": {
+      "mnemonic": "GOTO",
+      "grammar": "target",
+      "handler": 3062,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "4A": {
+      "mnemonic": "GOSUB",
+      "grammar": "target",
+      "handler": 4652,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "4C": {
+      "mnemonic": "ON_GOTO",
+      "grammar": "on_targets",
+      "handler": 3167,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "4E": {
+      "mnemonic": "NOP_4E",
+      "grammar": "none",
+      "handler": 2762,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "50": {
+      "mnemonic": "NOP_50",
+      "grammar": "none",
+      "handler": 2762,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "52": {
+      "mnemonic": "END",
+      "grammar": "none",
+      "handler": 3207,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "54": {
+      "mnemonic": "RETURN",
+      "grammar": "none",
+      "handler": 4641,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "56": {
+      "mnemonic": "WAIT_BITS",
+      "grammar": "none",
+      "handler": 4379,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "58": {
+      "mnemonic": "IF_INTEGER_TRUE",
+      "grammar": "target",
+      "handler": 3141,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "5A": {
+      "mnemonic": "INPUT_PROMPT",
+      "grammar": "zstring",
+      "handler": 2964,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "5C": {
+      "mnemonic": "GET_STRING",
+      "grammar": "none",
+      "handler": 2983,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "5E": {
+      "mnemonic": "NEXT_INTEGER_UP_UNSIGNED",
+      "grammar": "slot_target",
+      "handler": 3032,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "60": {
+      "mnemonic": "NEXT_INTEGER_DOWN_UNSIGNED",
+      "grammar": "slot_target",
+      "handler": 3104,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "62": {
+      "mnemonic": "OPEN_FILE",
+      "grammar": "none",
+      "handler": 3391,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "64": {
+      "mnemonic": "CLOSE_FILE",
+      "grammar": "none",
+      "handler": 3470,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "66": {
+      "mnemonic": "SELECT_OUTPUT",
+      "grammar": "none",
+      "handler": 3451,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "68": {
+      "mnemonic": "RESTORE_CHANNELS",
+      "grammar": "none",
+      "handler": 3576,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "6A": {
+      "mnemonic": "LOAD_FILE",
+      "grammar": "none",
+      "handler": 3342,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "6C": {
+      "mnemonic": "GET_FILE_STRING",
+      "grammar": "none",
+      "handler": 3409,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "6E": {
+      "mnemonic": "INPUT_FILE",
+      "grammar": "none",
+      "handler": 3364,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "70": {
+      "mnemonic": "PRINT_LITERAL",
+      "grammar": "zstring",
+      "handler": 4706,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "72": {
+      "mnemonic": "PRINT_NEWLINE",
+      "grammar": "none",
+      "handler": 4712,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "74": {
+      "mnemonic": "IF_INTEGER_FALSE",
+      "grammar": "target",
+      "handler": 3154,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "76": {
+      "mnemonic": "STRING_COMPARE",
+      "grammar": "mask",
+      "handler": 4729,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "78": {
+      "mnemonic": "CLEAR_RANGE",
+      "grammar": "clear",
+      "handler": 2699,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "7A": {
+      "mnemonic": "INTEGER_DIVIDE_UNSIGNED",
+      "grammar": "none",
+      "handler": 3689,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "7C": {
+      "mnemonic": "INTEGER_COMPARE_UNSIGNED",
+      "grammar": "mask",
+      "handler": 4323,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "7E": {
+      "mnemonic": "STR_UNSIGNED",
+      "grammar": "none",
+      "handler": 4152,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "80": {
+      "mnemonic": "PRINT_UNSIGNED",
+      "grammar": "none",
+      "handler": 2902,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "82": {
+      "mnemonic": "NEXT_INTEGER_UP_SIGNED",
+      "grammar": "slot_target",
+      "handler": 3006,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "84": {
+      "mnemonic": "NEXT_INTEGER_DOWN_SIGNED",
+      "grammar": "slot_target",
+      "handler": 3075,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "86": {
+      "mnemonic": "SAVE_STACK_DEPTH",
+      "grammar": "none",
+      "handler": 4940,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "88": {
+      "mnemonic": "DROP_STACK_BYTES",
+      "grammar": "none",
+      "handler": 4950,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "8A": {
+      "mnemonic": "INTEGER_MULTIPLY_BYTE",
+      "grammar": "none",
+      "handler": 4961,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "8C": {
+      "mnemonic": "INPUT_NEXT",
+      "grammar": "none",
+      "handler": 4990,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "8E": {
+      "mnemonic": "CONST_ZERO",
+      "grammar": "none",
+      "handler": 5078,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "90": {
+      "mnemonic": "INTEGER_NEGATE",
+      "grammar": "none",
+      "handler": 5089,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "92": {
+      "mnemonic": "WRITE_BYTE",
+      "grammar": "write_byte",
+      "handler": 5111,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "94": {
+      "mnemonic": "CONST_FLOAT",
+      "grammar": "float",
+      "handler": 6026,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "96": {
+      "mnemonic": "LOAD_FLOAT",
+      "grammar": "u8",
+      "handler": 5464,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "98": {
+      "mnemonic": "STORE_FLOAT",
+      "grammar": "u8",
+      "handler": 5593,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "9A": {
+      "mnemonic": "LOAD_FLOAT_ELEMENT",
+      "grammar": "u8",
+      "handler": 5495,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "9C": {
+      "mnemonic": "STORE_FLOAT_ELEMENT",
+      "grammar": "u8",
+      "handler": 5564,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "9E": {
+      "mnemonic": "INTEGER_TO_FLOAT",
+      "grammar": "none",
+      "handler": 5905,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "A0": {
+      "mnemonic": "FLOAT_TO_INTEGER",
+      "grammar": "none",
+      "handler": 5940,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "A2": {
+      "mnemonic": "FLOAT_ADD",
+      "grammar": "none",
+      "handler": 6257,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "A4": {
+      "mnemonic": "FLOAT_SUBTRACT",
+      "grammar": "none",
+      "handler": 6248,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "A6": {
+      "mnemonic": "FLOAT_MULTIPLY",
+      "grammar": "none",
+      "handler": 6266,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "A8": {
+      "mnemonic": "FLOAT_DIVIDE",
+      "grammar": "none",
+      "handler": 6275,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "AA": {
+      "mnemonic": "SGN",
+      "grammar": "none",
+      "handler": 6419,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "AC": {
+      "mnemonic": "ABS",
+      "grammar": "none",
+      "handler": 6004,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "AE": {
+      "mnemonic": "STORE_FLOAT_ABSOLUTE",
+      "grammar": "word",
+      "handler": 5576,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "B0": {
+      "mnemonic": "SQR",
+      "grammar": "none",
+      "handler": 6302,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "B2": {
+      "mnemonic": "LOG",
+      "grammar": "none",
+      "handler": 6293,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "B4": {
+      "mnemonic": "EXP",
+      "grammar": "none",
+      "handler": 6311,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "B6": {
+      "mnemonic": "COS",
+      "grammar": "none",
+      "handler": 6329,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "B8": {
+      "mnemonic": "SIN",
+      "grammar": "none",
+      "handler": 6338,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "BA": {
+      "mnemonic": "TAN",
+      "grammar": "none",
+      "handler": 6347,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "BC": {
+      "mnemonic": "ATN",
+      "grammar": "none",
+      "handler": 6356,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "BE": {
+      "mnemonic": "FLOAT_POWER",
+      "grammar": "none",
+      "handler": 6284,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "C0": {
+      "mnemonic": "FLOAT_NEGATE",
+      "grammar": "none",
+      "handler": 6012,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "C2": {
+      "mnemonic": "FLOAT_COMPARE",
+      "grammar": "mask",
+      "handler": 6110,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "C4": {
+      "mnemonic": "NEXT_FLOAT",
+      "grammar": "slot_target",
+      "handler": 6052,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "C6": {
+      "mnemonic": "READ_FLOAT",
+      "grammar": "none",
+      "handler": 5230,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "C8": {
+      "mnemonic": "CONST_STRING",
+      "grammar": "string",
+      "handler": 4689,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "CA": {
+      "mnemonic": "LOAD_INTEGER",
+      "grammar": "u8",
+      "handler": 2733,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "CC": {
+      "mnemonic": "LOAD_INTEGER_ELEMENT",
+      "grammar": "u8",
+      "handler": 4592,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "CE": {
+      "mnemonic": "LOAD_STRING",
+      "grammar": "u8",
+      "handler": 2778,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "D0": {
+      "mnemonic": "LOAD_STRING_ELEMENT",
+      "grammar": "u8",
+      "handler": 4577,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "D2": {
+      "mnemonic": "ARITHMETIC_STATUS",
+      "grammar": "none",
+      "handler": 4608,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "D4": {
+      "mnemonic": "STORE_INTEGER_RESET",
+      "grammar": "u8",
+      "handler": 4490,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "D6": {
+      "mnemonic": "STORE_INTEGER_ELEMENT",
+      "grammar": "u8",
+      "handler": 4446,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "D8": {
+      "mnemonic": "STORE_STRING",
+      "grammar": "u8",
+      "handler": 2819,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "DA": {
+      "mnemonic": "STORE_STRING_ELEMENT",
+      "grammar": "u8",
+      "handler": 2813,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "DC": {
+      "mnemonic": "STATUS",
+      "grammar": "none",
+      "handler": 4844,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "DE": {
+      "mnemonic": "LOAD_CHARACTER",
+      "grammar": "u8",
+      "handler": 4861,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "E0": {
+      "mnemonic": "STORE_CHARACTER",
+      "grammar": "u8",
+      "handler": 4901,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "E2": {
+      "mnemonic": "IF_FLOAT_FALSE",
+      "grammar": "target",
+      "handler": 5646,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "E4": {
+      "mnemonic": "PRINT_FLOAT",
+      "grammar": "none",
+      "handler": 5458,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "E6": {
+      "mnemonic": "TIME",
+      "grammar": "none",
+      "handler": 5977,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "E8": {
+      "mnemonic": "TIME_STRING",
+      "grammar": "none",
+      "handler": 5383,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "EA": {
+      "mnemonic": "INT",
+      "grammar": "none",
+      "handler": 5968,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "EC": {
+      "mnemonic": "SET_TIME_STRING",
+      "grammar": "none",
+      "handler": 6158,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "EE": {
+      "mnemonic": "CHECK_INDEX_BYTE",
+      "grammar": "u8",
+      "handler": 6378,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "F0": {
+      "mnemonic": "CHECK_INDEX_WORD",
+      "grammar": "word",
+      "handler": 6393,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "F2": {
+      "mnemonic": "STR_FLOAT",
+      "grammar": "none",
+      "handler": 5452,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "F4": {
+      "mnemonic": "CHECK_RETURN_STACK",
+      "grammar": "none",
+      "handler": 6365,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "F6": {
+      "mnemonic": "PLOT",
+      "grammar": "none",
+      "handler": 6445,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "F8": {
+      "mnemonic": "POKE_WORD",
+      "grammar": "none",
+      "handler": 6428,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "FA": {
+      "mnemonic": "CHECK_STRING_LENGTH",
+      "grammar": "u8",
+      "handler": 6460,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "FC": {
+      "mnemonic": "NOP_FC",
+      "grammar": "none",
+      "handler": 2762,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    },
+    "FE": {
+      "mnemonic": "EXTENSION",
+      "grammar": "unknown",
+      "handler": 6474,
+      "evidence": "supplied runtime native handler CFG/cursor audit; emission/runtime coverage reported separately"
+    }
+  },
+  "limitations": [
+    "Only attached default-code-start objects with the evidenced two-clear/RESTORE prologue.",
+    "Odd dispatch bytes and extension selector FE refuse.",
+    "Runtime buffers may retain source/compiler residue; never interpreted as program statements.",
+    "Native grammar support is not all-op execution or stock BASIC compatibility."
+  ]
+}

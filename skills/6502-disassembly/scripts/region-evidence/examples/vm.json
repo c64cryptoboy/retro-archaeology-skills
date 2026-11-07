@@ -1,0 +1,57 @@
+{
+  "schema": "regional-consumer-worksheet-v1",
+  "input": {
+    "format": "raw",
+    "base": 4096,
+    "sha256": "044eaed476e60495af2a9bc63aa0367c0f5a0caf97afc26258db5f63edf7217b",
+    "cpu": "6502",
+    "mappingEvidence": "Synthetic flat memory; cursor precondition $F0/$F1=$1040 is supplied, not observed."
+  },
+  "region": {
+    "start": 4160,
+    "end": 4166,
+    "entries": [
+      4160
+    ],
+    "evidence": "Synthetic stream byte range constructed by synthetic_fixture.py.",
+    "roleEvidence": "Supplied synthetic application stream, not a historical artifact."
+  },
+  "componentPins": [],
+  "consumer": {
+    "start": 4096,
+    "end": 4144,
+    "sha256": "c06c18233e538c278661a90ba050879387c60f59d4c260cfa702dcef9daba5d5",
+    "operation": "dispatch",
+    "representation": "vm-opcodes",
+    "nativeEntries": [
+      4107
+    ],
+    "evidence": "Supplied correspondence to synthetic-consumers.asm; the tool does not prove the semantics.",
+    "reachabilityEvidence": null,
+    "contract": {
+      "tokenBytes": 1,
+      "byteOrder": "little",
+      "rules": [
+        {
+          "token": 0,
+          "operandBytes": 0,
+          "flow": "stop",
+          "evidence": "synthetic-consumers.asm: STOP returns"
+        },
+        {
+          "token": 1,
+          "operandBytes": 1,
+          "flow": "next",
+          "evidence": "synthetic-consumers.asm: LITERAL fetches one byte"
+        },
+        {
+          "token": 2,
+          "operandBytes": 2,
+          "flow": "jump",
+          "targetOffset": 0,
+          "evidence": "synthetic-consumers.asm: JUMP fetches low/high absolute cursor"
+        }
+      ]
+    }
+  }
+}

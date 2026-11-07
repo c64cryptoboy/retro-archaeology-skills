@@ -1,0 +1,11 @@
+{
+  "schema": "c64-basic-rnd-negative-shell-histogram-v1",
+  "imageStates": 10745675776,
+  "canonicalImageStates": 2936012800,
+  "outerStates": 7809662976,
+  "transitions": 7809662976,
+  "maxShellMu": 58681,
+  "threadsIndependent": true,
+  "elapsedSecondsThisProcess": 1977.187796,
+  "complete": true
+}

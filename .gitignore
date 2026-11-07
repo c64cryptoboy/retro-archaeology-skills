@@ -1,0 +1,14 @@
+# Local Python/test artifacts
+__pycache__/
+*.py[cod]
+.pytest_cache/
+
+# Optional user-supplied ROMs -- never part of this distribution
+/skills/c64-rom-reference/assets/roms/*.bin
+
+# RND's large, locally generated graph metadata
+/skills/c64-basic-v2-rnd-analysis/analysis/scratch/**/metadata.bin
+/skills/c64-basic-v2-rnd-analysis/analysis/scratch/**/successors.bin
+
+# Generated quick-start input
+/tiny-example.prg

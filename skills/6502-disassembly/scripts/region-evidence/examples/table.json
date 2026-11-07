@@ -1,0 +1,50 @@
+{
+  "schema": "regional-consumer-worksheet-v1",
+  "input": {
+    "format": "raw",
+    "base": 4096,
+    "sha256": "cc2f84056026bb930710161f32912bec810956c7fe664113b11da3d30dde5260",
+    "cpu": "6502",
+    "mappingEvidence": "Synthetic flat memory; cursor precondition $F0/$F1=$1040 is supplied, not observed."
+  },
+  "region": {
+    "start": 4160,
+    "end": 4164,
+    "entries": [
+      4160
+    ],
+    "evidence": "Synthetic stream byte range constructed by synthetic_fixture.py.",
+    "roleEvidence": "Supplied synthetic application stream, not a historical artifact."
+  },
+  "componentPins": [],
+  "consumer": {
+    "start": 4096,
+    "end": 4109,
+    "sha256": "15526cf2b06de51d4cb40c678e82cd8a9d23c7abcfae5bbee3fa38c15072f70b",
+    "operation": "data-read",
+    "representation": "threaded-cells",
+    "nativeEntries": [
+      4096
+    ],
+    "evidence": "Supplied correspondence to synthetic-consumers.asm; the tool does not prove the semantics.",
+    "reachabilityEvidence": null,
+    "contract": {
+      "tokenBytes": 2,
+      "byteOrder": "little",
+      "rules": [
+        {
+          "token": 4128,
+          "operandBytes": 0,
+          "flow": "next",
+          "evidence": "synthetic-consumers.asm: cell $1020 returns to dispatch"
+        },
+        {
+          "token": 4132,
+          "operandBytes": 0,
+          "flow": "stop",
+          "evidence": "synthetic-consumers.asm: cell $1024 returns to caller"
+        }
+      ]
+    }
+  }
+}

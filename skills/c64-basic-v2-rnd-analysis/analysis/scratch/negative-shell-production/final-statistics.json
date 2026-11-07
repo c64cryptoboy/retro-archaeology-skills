@@ -1,0 +1,146 @@
+{
+  "schema": "c64-basic-rnd-negative-seed-space-statistics-v1",
+  "scope": "Each distinct RNDX state in the all-valid-normalized-negative-FAC image receives equal weight; subsequent positive advances remain inside this union. RND(0) and the power-on-only entry are excluded.",
+  "states": 10745675776,
+  "canonicalStates": 2936012800,
+  "outerEntryStates": 7809662976,
+  "cycleNodes": 79440,
+  "transientStates": 10745596336,
+  "components": [
+    {
+      "loop": 1,
+      "lambda": 1,
+      "transientStates": 13,
+      "outerEntryStates": 10,
+      "medianMu": 2,
+      "maxMu": 3,
+      "basinStates": 14
+    },
+    {
+      "loop": 2,
+      "lambda": 3,
+      "transientStates": 16,
+      "outerEntryStates": 14,
+      "medianMu": 1,
+      "maxMu": 2,
+      "basinStates": 19
+    },
+    {
+      "loop": 3,
+      "lambda": 7,
+      "transientStates": 103045,
+      "outerEntryStates": 74933,
+      "medianMu": 124,
+      "maxMu": 277,
+      "basinStates": 103052
+    },
+    {
+      "loop": 4,
+      "lambda": 23,
+      "transientStates": 1463420,
+      "outerEntryStates": 1063904,
+      "medianMu": 486,
+      "maxMu": 1168,
+      "basinStates": 1463443
+    },
+    {
+      "loop": 5,
+      "lambda": 74,
+      "transientStates": 11877,
+      "outerEntryStates": 8683,
+      "medianMu": 23,
+      "maxMu": 99,
+      "basinStates": 11951
+    },
+    {
+      "loop": 6,
+      "lambda": 85,
+      "transientStates": 402751,
+      "outerEntryStates": 292352,
+      "medianMu": 197,
+      "maxMu": 463,
+      "basinStates": 402836
+    },
+    {
+      "loop": 7,
+      "lambda": 207,
+      "transientStates": 156211,
+      "outerEntryStates": 113806,
+      "medianMu": 97,
+      "maxMu": 443,
+      "basinStates": 156418
+    },
+    {
+      "loop": 8,
+      "lambda": 295,
+      "transientStates": 3809394,
+      "outerEntryStates": 2768834,
+      "medianMu": 680,
+      "maxMu": 1768,
+      "basinStates": 3809689
+    },
+    {
+      "loop": 9,
+      "lambda": 371,
+      "transientStates": 660161,
+      "outerEntryStates": 479892,
+      "medianMu": 147,
+      "maxMu": 570,
+      "basinStates": 660532
+    },
+    {
+      "loop": 10,
+      "lambda": 724,
+      "transientStates": 1635694813,
+      "outerEntryStates": 1188794982,
+      "medianMu": 25231,
+      "maxMu": 49811,
+      "basinStates": 1635695537
+    },
+    {
+      "loop": 11,
+      "lambda": 2644,
+      "transientStates": 25517450,
+      "outerEntryStates": 18546472,
+      "medianMu": 1380,
+      "maxMu": 5721,
+      "basinStates": 25520094
+    },
+    {
+      "loop": 12,
+      "lambda": 4232,
+      "transientStates": 29529864,
+      "outerEntryStates": 21464766,
+      "medianMu": 758,
+      "maxMu": 2886,
+      "basinStates": 29534096
+    },
+    {
+      "loop": 13,
+      "lambda": 5660,
+      "transientStates": 48239072,
+      "outerEntryStates": 35061595,
+      "medianMu": 1358,
+      "maxMu": 4977,
+      "basinStates": 48244732
+    },
+    {
+      "loop": 14,
+      "lambda": 7036,
+      "transientStates": 163375067,
+      "outerEntryStates": 118732388,
+      "medianMu": 2535,
+      "maxMu": 7890,
+      "basinStates": 163382103
+    },
+    {
+      "loop": 15,
+      "lambda": 58078,
+      "transientStates": 8836633182,
+      "outerEntryStates": 6422260345,
+      "medianMu": 18602,
+      "maxMu": 58681,
+      "basinStates": 8836691260
+    }
+  ]
+}

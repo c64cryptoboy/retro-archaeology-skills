@@ -1,0 +1,535 @@
+{
+  "schema": "regional-implementation-evidence-v1",
+  "input": {
+    "sha256": "044eaed476e60495af2a9bc63aa0367c0f5a0caf97afc26258db5f63edf7217b",
+    "format": "raw",
+    "base": 4096,
+    "end": 4166,
+    "byteLength": 70,
+    "cpu": "6502",
+    "mappingEvidence": {
+      "status": "supplied-not-automatically-proved",
+      "reference": "Synthetic flat memory; cursor precondition $F0/$F1=$1040 is supplied, not observed."
+    }
+  },
+  "worksheetSha256": "eb495a1e5a4a5826cff74fa2f747d863a1b194a398b173f26ec497eee54b736f",
+  "publicHelperPrimaryFiles": {
+    "skills/pcode-disassembly/scripts/reconstruct/identify.py": "6f5716a8a8b53dfce637ca9b5cd1edb32ca44f306decf99e92c83c205fb264d0",
+    "shared/6502/cfg6502.py": "af7767d1cfb31517e1b20816e42a4cd7b539681b338ed8266100cf16e67ea756",
+    "skills/pcode-disassembly/scripts/reconstruct/identities.json": "195dabd0581f3ea3e155183cf4e0200e56141a5eda0aa98f3445c4e6e41c4926",
+    "skills/pcode-disassembly/scripts/reconstruct/formats.py": "cfdd46bdd6fd790936f9627e9e1bae5e417c119999e2914778c15887b20e0ddd",
+    "shared/6502/dis6502.py": "266925f26527c89fd378caf0cf2d3da3cc0ccc5f791829ab1a03783b8f816a05"
+  },
+  "region": {
+    "start": 4160,
+    "end": 4166,
+    "sha256": "b4985a8907af78f6b5c647689d7cff5c707dea454edc11726c383a775bdfc715",
+    "evidence": {
+      "status": "supplied-not-automatically-proved",
+      "reference": "Synthetic stream byte range constructed by synthetic_fixture.py."
+    },
+    "roleAssertion": {
+      "status": "supplied-not-automatically-proved",
+      "reference": "Supplied synthetic application stream, not a historical artifact."
+    }
+  },
+  "componentIdentity": {
+    "publicBaseline": {
+      "schema": "basic-compiler-identification-v1",
+      "inputSha256": "044eaed476e60495af2a9bc63aa0367c0f5a0caf97afc26258db5f63edf7217b",
+      "format": "raw",
+      "loadAddress": 4096,
+      "status": "unknown",
+      "family": null,
+      "matches": [],
+      "caveats": [
+        "Known signatures only; packed/encrypted, detached or unfamiliar runtimes may be unrecognized.",
+        "No match is not proof that the input was not compiled BASIC.",
+        "Matching library bytes are not proof of historical authorship, reachability, version support or full decoding."
+      ]
+    },
+    "suppliedPins": []
+  },
+  "mechanism": {
+    "representationCandidate": "vm-opcodes",
+    "actualReachability": "unknown",
+    "candidateBasis": "conditional-on-supplied-consumer; not a verified consumer mechanism",
+    "consumerAssertion": {
+      "operation": "dispatch",
+      "representation": "vm-opcodes",
+      "evidence": {
+        "status": "supplied-not-automatically-proved",
+        "reference": "Supplied correspondence to synthetic-consumers.asm; the tool does not prove the semantics."
+      },
+      "reachabilityEvidence": null,
+      "bytes": {
+        "start": 4096,
+        "end": 4144,
+        "expectedSha256": "c06c18233e538c278661a90ba050879387c60f59d4c260cfa702dcef9daba5d5",
+        "actualSha256": "c06c18233e538c278661a90ba050879387c60f59d4c260cfa702dcef9daba5d5",
+        "matched": true,
+        "assertion": {
+          "status": "supplied-not-automatically-proved",
+          "reference": "Supplied correspondence to synthetic-consumers.asm; the tool does not prove the semantics."
+        }
+      }
+    },
+    "nativeStaticGraph": {
+      "loadAddress": 4096,
+      "endAddressExclusive": 4166,
+      "entries": [
+        4107
+      ],
+      "instructions": [
+        {
+          "pc": 4096,
+          "bytes": [
+            160,
+            0
+          ],
+          "mnemonic": "LDY",
+          "mode": "imm",
+          "length": 2,
+          "operand": "#$00"
+        },
+        {
+          "pc": 4098,
+          "bytes": [
+            177,
+            240
+          ],
+          "mnemonic": "LDA",
+          "mode": "izy",
+          "length": 2,
+          "operand": "($F0),Y"
+        },
+        {
+          "pc": 4100,
+          "bytes": [
+            230,
+            240
+          ],
+          "mnemonic": "INC",
+          "mode": "zp",
+          "length": 2,
+          "operand": "$F0"
+        },
+        {
+          "pc": 4102,
+          "bytes": [
+            208,
+            2
+          ],
+          "mnemonic": "BNE",
+          "mode": "rel",
+          "length": 2,
+          "operand": "$100A"
+        },
+        {
+          "pc": 4104,
+          "bytes": [
+            230,
+            241
+          ],
+          "mnemonic": "INC",
+          "mode": "zp",
+          "length": 2,
+          "operand": "$F1"
+        },
+        {
+          "pc": 4106,
+          "bytes": [
+            96
+          ],
+          "mnemonic": "RTS",
+          "mode": "imp",
+          "length": 1,
+          "operand": ""
+        },
+        {
+          "pc": 4107,
+          "bytes": [
+            32,
+            0,
+            16
+          ],
+          "mnemonic": "JSR",
+          "mode": "abs",
+          "length": 3,
+          "operand": "$1000"
+        },
+        {
+          "pc": 4110,
+          "bytes": [
+            201,
+            0
+          ],
+          "mnemonic": "CMP",
+          "mode": "imm",
+          "length": 2,
+          "operand": "#$00"
+        },
+        {
+          "pc": 4112,
+          "bytes": [
+            240,
+            29
+          ],
+          "mnemonic": "BEQ",
+          "mode": "rel",
+          "length": 2,
+          "operand": "$102F"
+        },
+        {
+          "pc": 4114,
+          "bytes": [
+            201,
+            1
+          ],
+          "mnemonic": "CMP",
+          "mode": "imm",
+          "length": 2,
+          "operand": "#$01"
+        },
+        {
+          "pc": 4116,
+          "bytes": [
+            240,
+            5
+          ],
+          "mnemonic": "BEQ",
+          "mode": "rel",
+          "length": 2,
+          "operand": "$101B"
+        },
+        {
+          "pc": 4118,
+          "bytes": [
+            201,
+            2
+          ],
+          "mnemonic": "CMP",
+          "mode": "imm",
+          "length": 2,
+          "operand": "#$02"
+        },
+        {
+          "pc": 4120,
+          "bytes": [
+            240,
+            7
+          ],
+          "mnemonic": "BEQ",
+          "mode": "rel",
+          "length": 2,
+          "operand": "$1021"
+        },
+        {
+          "pc": 4122,
+          "bytes": [
+            0
+          ],
+          "mnemonic": "BRK",
+          "mode": "imp",
+          "length": 1,
+          "operand": ""
+        },
+        {
+          "pc": 4123,
+          "bytes": [
+            32,
+            0,
+            16
+          ],
+          "mnemonic": "JSR",
+          "mode": "abs",
+          "length": 3,
+          "operand": "$1000"
+        },
+        {
+          "pc": 4126,
+          "bytes": [
+            76,
+            11,
+            16
+          ],
+          "mnemonic": "JMP",
+          "mode": "abs",
+          "length": 3,
+          "operand": "$100B"
+        },
+        {
+          "pc": 4129,
+          "bytes": [
+            32,
+            0,
+            16
+          ],
+          "mnemonic": "JSR",
+          "mode": "abs",
+          "length": 3,
+          "operand": "$1000"
+        },
+        {
+          "pc": 4132,
+          "bytes": [
+            170
+          ],
+          "mnemonic": "TAX",
+          "mode": "imp",
+          "length": 1,
+          "operand": ""
+        },
+        {
+          "pc": 4133,
+          "bytes": [
+            32,
+            0,
+            16
+          ],
+          "mnemonic": "JSR",
+          "mode": "abs",
+          "length": 3,
+          "operand": "$1000"
+        },
+        {
+          "pc": 4136,
+          "bytes": [
+            133,
+            241
+          ],
+          "mnemonic": "STA",
+          "mode": "zp",
+          "length": 2,
+          "operand": "$F1"
+        },
+        {
+          "pc": 4138,
+          "bytes": [
+            134,
+            240
+          ],
+          "mnemonic": "STX",
+          "mode": "zp",
+          "length": 2,
+          "operand": "$F0"
+        },
+        {
+          "pc": 4140,
+          "bytes": [
+            76,
+            11,
+            16
+          ],
+          "mnemonic": "JMP",
+          "mode": "abs",
+          "length": 3,
+          "operand": "$100B"
+        },
+        {
+          "pc": 4143,
+          "bytes": [
+            96
+          ],
+          "mnemonic": "RTS",
+          "mode": "imp",
+          "length": 1,
+          "operand": ""
+        }
+      ],
+      "edges": [
+        {
+          "from": 4107,
+          "to": 4096,
+          "kind": "call",
+          "internal": true
+        },
+        {
+          "from": 4107,
+          "to": 4110,
+          "kind": "fallthrough",
+          "internal": true
+        },
+        {
+          "from": 4102,
+          "to": 4106,
+          "kind": "branch",
+          "internal": true
+        },
+        {
+          "from": 4102,
+          "to": 4104,
+          "kind": "fallthrough",
+          "internal": true
+        },
+        {
+          "from": 4112,
+          "to": 4143,
+          "kind": "branch",
+          "internal": true
+        },
+        {
+          "from": 4112,
+          "to": 4114,
+          "kind": "fallthrough",
+          "internal": true
+        },
+        {
+          "from": 4116,
+          "to": 4123,
+          "kind": "branch",
+          "internal": true
+        },
+        {
+          "from": 4116,
+          "to": 4118,
+          "kind": "fallthrough",
+          "internal": true
+        },
+        {
+          "from": 4123,
+          "to": 4096,
+          "kind": "call",
+          "internal": true
+        },
+        {
+          "from": 4123,
+          "to": 4126,
+          "kind": "fallthrough",
+          "internal": true
+        },
+        {
+          "from": 4120,
+          "to": 4129,
+          "kind": "branch",
+          "internal": true
+        },
+        {
+          "from": 4120,
+          "to": 4122,
+          "kind": "fallthrough",
+          "internal": true
+        },
+        {
+          "from": 4126,
+          "to": 4107,
+          "kind": "jump",
+          "internal": true
+        },
+        {
+          "from": 4129,
+          "to": 4096,
+          "kind": "call",
+          "internal": true
+        },
+        {
+          "from": 4129,
+          "to": 4132,
+          "kind": "fallthrough",
+          "internal": true
+        },
+        {
+          "from": 4133,
+          "to": 4096,
+          "kind": "call",
+          "internal": true
+        },
+        {
+          "from": 4133,
+          "to": 4136,
+          "kind": "fallthrough",
+          "internal": true
+        },
+        {
+          "from": 4140,
+          "to": 4107,
+          "kind": "jump",
+          "internal": true
+        }
+      ],
+      "dataXrefs": [],
+      "stops": [
+        {
+          "at": 4106,
+          "reason": "rts"
+        },
+        {
+          "at": 4143,
+          "reason": "rts"
+        },
+        {
+          "at": 4122,
+          "reason": "brk"
+        }
+      ],
+      "limitReached": false
+    },
+    "stream": {
+      "status": "consistent",
+      "scope": "boundaries-only-under-supplied-contract",
+      "records": [
+        {
+          "start": 4160,
+          "end": 4162,
+          "bytes": "017f",
+          "token": 1,
+          "flow": "next",
+          "successors": [
+            4162
+          ],
+          "ruleEvidence": {
+            "status": "supplied-not-automatically-proved",
+            "reference": "synthetic-consumers.asm: LITERAL fetches one byte"
+          }
+        },
+        {
+          "start": 4162,
+          "end": 4165,
+          "bytes": "024510",
+          "token": 2,
+          "flow": "jump",
+          "successors": [
+            4165
+          ],
+          "ruleEvidence": {
+            "status": "supplied-not-automatically-proved",
+            "reference": "synthetic-consumers.asm: JUMP fetches low/high absolute cursor"
+          }
+        },
+        {
+          "start": 4165,
+          "end": 4166,
+          "bytes": "00",
+          "token": 0,
+          "flow": "stop",
+          "successors": [],
+          "ruleEvidence": {
+            "status": "supplied-not-automatically-proved",
+            "reference": "synthetic-consumers.asm: STOP returns"
+          }
+        }
+      ],
+      "violations": [],
+      "unknownRanges": [],
+      "coveredBytes": 6,
+      "regionBytes": 6
+    }
+  },
+  "generationEvidence": {
+    "status": "none-established",
+    "reason": "Identity and boundary compatibility do not establish generation."
+  },
+  "historicalAuthorship": {
+    "status": "unresolved"
+  },
+  "limitations": [
+    "Consumer semantics, entry points, mapping, rule meanings, and evidence references are supplied, not automatically proved.",
+    "Static CFG paths are possible paths from supplied entries, not observed reachability; flags, banking, and self-modification are not modeled.",
+    "Only fixed-width 1/2-byte tokens, 0..16 operand bytes, and absolute 16-bit stream targets are supported.",
+    "No target execution, producer validation, source authentication, statistical inference, or handwritten default.",
+    "Unvisited bytes stay unknown; bytes outside the selected region are outside this boundary question.",
+    "Boundary consistency does not establish termination, actual execution, or semantic correctness."
+  ],
+  "worksheetFileSha256": "b8706e777bc6095a402989a7dd91b99804a41152d869b07fa2a256d0119fb1b1",
+  "toolSha256": "305fa90d35a4ab322ab08294710763cdb0893e8c85b66ecca63daafd79089c11"
+}

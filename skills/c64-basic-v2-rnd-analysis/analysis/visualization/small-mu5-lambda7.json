@@ -1,0 +1,30 @@
+{
+  "schema": "c64-basic-rnd-small-functional-graph-v1",
+  "seedExpression": "RND(-.311306466)",
+  "inputFacBytes": "7f 9f 63 8f a5",
+  "seedStateBytes": "80 25 8f 63 9f",
+  "mu": 5,
+  "lambda": 7,
+  "repeatFrom": 11,
+  "repeatTo": 5,
+  "nodes": [
+    {"index": 0, "stateBytes": "80 25 8f 63 9f", "valueApprox": "0.6467191947"},
+    {"index": 1, "stateBytes": "80 58 54 75 eb", "valueApprox": "0.8450387667"},
+    {"index": 2, "stateBytes": "80 66 94 2d 9a", "valueApprox": "0.9006985188"},
+    {"index": 3, "stateBytes": "7f 78 e2 89 47", "valueApprox": "0.4861033343"},
+    {"index": 4, "stateBytes": "80 57 bd 3a b1", "valueApprox": "0.8427311594"},
+    {"index": 5, "stateBytes": "80 12 7f c2 99", "valueApprox": "0.5722619651"},
+    {"index": 6, "stateBytes": "80 2d 08 77 d0", "valueApprox": "0.6759104617"},
+    {"index": 7, "stateBytes": "80 57 8a 0a f6", "valueApprox": "0.8419501162"},
+    {"index": 8, "stateBytes": "7e 09 06 7a 62", "valueApprox": "0.1338137743"},
+    {"index": 9, "stateBytes": "7d 4b b8 66 15", "valueApprox": "0.09947280647"},
+    {"index": 10, "stateBytes": "7e 77 78 fe 42", "valueApprox": "0.2416724899"},
+    {"index": 11, "stateBytes": "80 57 bd 3a b0", "valueApprox": "0.8427311592"}
+  ],
+  "nextRepeatedState": {
+    "index": 12,
+    "sameAs": 5,
+    "stateBytes": "80 12 7f c2 99"
+  },
+  "evidence": "Exact pinned-ROM transition; metadata class lambda=7 and mu=5. Decimal input parsed by the pinned BASIC ROM to the stated FAC bytes."
+}
