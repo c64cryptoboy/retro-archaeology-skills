@@ -46,15 +46,17 @@ Do not make the only surviving archival copy a cracked or normalized image.
 
 A protection-stripped D64 is useful for execution and study, but it is **not a substitute for a preservation-quality representation of the original disk**.
 
-### Distinguish two goals
+### Distinguish preservation, understanding, and execution goals
 
-Treat these as separate deliverables.
+Declare which outcome is requested.  Treat these as separate deliverables.
 
 **Preservation master:** an image intended to retain the original disk's physical or logical behavior as faithfully as practical.
 
 **Runnable preservation copy:** a derived copy whose protection has been neutralized or whose loader has been adapted so the software runs reliably in an emulator or from replacement media.
 
-When practical, keep both.
+When practical, keep both.  A derivative is not required when the requested outcome is analysis alone.
+
+**Mechanism study:** a specimen-backed explanation of a bounded protection dependency, with source mappings, result consumers, assumptions, hazards, and unresolved observations.  It can be entirely static when its claims are static.  Use the [evidence card and stopping gate](controlled-bypass-evidence.md#close-an-understanding-only-question); do not label a proposed patch, predicted decode, or incomplete chain as a validated bypass.
 
 ### Prefer minimal intervention
 

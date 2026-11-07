@@ -107,7 +107,9 @@ Identify observed mechanics first; name the family second.
 
 ## When to stop
 
-The analysis is sufficient when:
+Stop according to the declared outcome and finite budget, not a quota of cracked titles.  For an understanding-only question, complete the [mechanism evidence card](controlled-bypass-evidence.md#close-an-understanding-only-question): pin the specimen and source mappings, trace the relevant producer and consumer, separate static derivations from execution, and retain hazards and unresolved dependencies.  A missing safe observation or an incomplete chain can be a useful negative finding; it is not a proved bypass.  A derivative is optional in this mode.
+
+When a runnable derivative is requested, the analysis and validation are sufficient within the stated scope when:
 
 - the original image is safely preserved,
 - relevant loader architecture is understood,
@@ -117,8 +119,8 @@ The analysis is sufficient when:
 - any required runtime decoding is understood,
 - the minimum patch is identified,
 - delayed checks have been investigated,
-- the derived image has been validated,
-- changes are documented.
+- the derived image has been validated through its relevant load and initialization path, with later lifecycle coverage stated,
+- changes and residual limitations are documented.
 
 Do not require every byte of the loader or drive code to be fully understood if the preservation dependency is already established and the remaining code is unrelated.
 

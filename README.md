@@ -32,6 +32,12 @@ The separate [VICE/ROM handoff](IMPORTING-VICE-ROMS.md) covers optional emulator
 | [c64-rom-reference](skills/c64-rom-reference/SKILL.md) | Provides ROM and hardware references, plus ROM identity checks. |
 | [c64-basic-v2-rnd-analysis](skills/c64-basic-v2-rnd-analysis/SKILL.md) | Explores exact C64 BASIC V2 random-number behavior and its limits. |
 
+## Model-provider access
+
+Legitimate reverse engineering and copy-protection analysis can still trigger model-provider safety refusals.  If using OpenAI, review its [Daybreak programs](https://openai.com/daybreak/) and [current API requirements](https://developers.openai.com/api/docs/guides/daybreak).  You may need approved access for your chosen model and a client that correctly supports it; Daybreak Blue approval alone is not sufficient for every model.  Enrollment or an API parameter does not grant unrestricted access or guarantee that requests will be accepted.
+
+These skills remain model- and harness-agnostic and do not require OpenAI or Daybreak.  Keep the legitimate preservation purpose explicit, and use documented provider/client support to investigate refusals rather than concealing intent or circumventing restrictions.
+
 ## Requirements and license
 
 Python tools need Python 3.10+. See [TESTING.md](TESTING.md) for additional prerequisites and checks. ROM images are not bundled.

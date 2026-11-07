@@ -4,7 +4,11 @@ These standard-library Python tools are shared dependencies of the analysis skil
 
 Reuse and reduction import canonical modules here through small Python adapters, so those packages do not require filesystem symlinks.  Keep the repository layout intact.  The CPU implementation derives from ChiptuneSAK; preserve its in-file attribution and [MIT notice](CHIPTUNESAK_LICENSE.txt).
 
-See [the disassembly workflow](../../skills/6502-disassembly/SKILL.md) for commands and evidence limits.  Most tools accept `--help`; the small linear formatter instead uses `dis6502.py INPUT.prg [START] [COUNT]`.
+See [the disassembly workflow](../../skills/6502-disassembly/SKILL.md) for commands and evidence limits.  Most tools accept `--help`; the linear formatter supports it and uses `dis6502.py INPUT.prg [START] [COUNT]`.
+
+The formatter stops at the end of supplied bytes.  An incomplete instruction shows only its available bytes and an `INCOMPLETE` marker, never a zero-filled operand or an invented `BRK`.  Its `fmt()` helper raises `ValueError` for missing operand bytes.  Both formatter and CFG reject a PRG whose linear load range extends past `$FFFF`; an exclusive end of `$10000` is valid.  Relative targets and CFG successors wrap as 16-bit CPU addresses, but missing instruction bytes are not fetched by wrapping around the image.  This does not model a wrapping loader, memory banking, or runtime execution.
+
+Run the additive bounds controls with `python -B -m unittest discover -s tests -p 'test_disassembly_bounds.py' -v` from this directory.
 
 `cfg6502.py` follows official NMOS opcodes from declared entries, records direct control/data references, and exposes unknown/truncated/indirect stops.  It does not resolve banking, automatically classify all bytes, or guarantee nonoverlapping instruction boundaries.  Treat the linear formatter and all-offset candidate scanners as inspection aids, never as proof of executable structure.
 

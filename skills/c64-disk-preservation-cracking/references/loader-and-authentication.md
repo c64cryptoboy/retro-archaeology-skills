@@ -116,6 +116,18 @@ Indicators:
 - track read succeeds only under unexpected zone configuration,
 - density changes during custom read code.
 
+#### Recover the raw-reader assembly contract
+
+Density labels and nominal section lengths are not a complete decoder-input specification.  For a selected raw reader:
+
+1. Pin the code stage, relocation, and entry conditions.  An inferred decoding seed or coherent stage map remains conditional until its producer is established.
+2. Record the actual port operations, arithmetic mode, data-direction/input configuration, and byte-ready source.  Distinguish density changes from head-phase updates and a sync level from a sync edge or end.
+3. Count every stored and discarded read in execution order, including helper reads and the first store after an index wrap.  Map the complete destination layout, retry behavior, and split buffers.  Check both directions of stack interference: scratch writes can destroy live return addresses, while later calls or interrupts can overwrite unread scratch.
+4. Follow that assembled buffer into the actual decoder entry and caller.  Inspect conversion-table behavior, marker/checksum handling, and any rejection branches rather than borrowing an offline extractor's acceptance rules.
+5. Follow the resulting bytes or status to their consumer and bound that span.  An outgoing page does not establish an untraced receiver's acceptance, installation, or execution.
+
+Keep a strict offline decoder strict.  Its refusal at specified representation coordinates does not prove that a controller presents the same octets, that a ROM conversion routine rejects them, or that acquisition failed.  A direct caller may use a permissive converter without the surrounding normal validation path.  Conversely, permissive conversion and plausible prefixes do not establish a complete recovered payload.  Stored speed metadata and cross-format bit agreement do not supply missing timing observations or additional density-specific acquisitions.
+
 ### Sync manipulation
 
 Indicators:
@@ -176,6 +188,16 @@ Indicators:
 - protection depends on rotational timing between track accesses,
 - code measures time between signatures,
 - data content is correct yet copies fail because physical positioning differs.
+
+#### Validate joint access relationships, not only individual tracks
+
+For an access that uses one track as an anchor before observing another, record an edge-labelled schedule: the verified source event, head movement and service state, destination observation, retry behavior, and the result positions actually consumed.  Pin the relevant drive-code and ROM semantics.  A requested-sector read and the first checksum-valid header encountered after a step are different observations; automatic seek correction, remembered track or disk ID, and interrupt or timer state can affect the relationship.
+
+Test preservation of that joint schedule as well as per-track sector identities, payloads, disk IDs, checksums, and cyclic order.  A bounded representation control can compare a common rotation of the connected tracks with an independent rotation of one track: the latter can preserve each track's decoded contents while changing its incident cross-track relationships.  Express shifts in a consistent coordinate system.  Equal byte shifts imply equal represented phase shifts only under an established length and mapping relationship; unequal track lengths or speeds need separate treatment.  Invariance of selected edges is not proof that every dependency is preserved.
+
+Keep collection separate from consumption.  Establish the predicate's actual index coverage, and use instruction-supported controls to test changed consumed positions and ignored positions.  Comparing an expected vector with a deliberately changed copy is not, by itself, an independent reconstruction of the predicate.  Likewise, validate source coordinates against original encoded data; an expected-byte inequality does not establish the mapping.
+
+These controls establish relationships in the represented data under stated assumptions.  They do not establish original angular registration, mechanical timing, a naturally observed response vector, or a runtime rejection caused by a chosen rotation.  Those stronger claims need appropriate acquisition or execution evidence; aligned stored origins and valid sectors alone do not supply it.
 
 ### Runtime code decryption connected to loading
 

@@ -4,7 +4,7 @@
 
 ## Phase 11 -- Use a debugger dynamically
 
-Prefer experiments over prolonged speculation.
+Prefer experiments over prolonged speculation.  Before a consequential runtime action, and after any interruption, apply [Checkpointing and recovery](checkpointing-and-recovery.md): record the attempt, honor holds, inspect actual state, and do not replay an unknown-outcome operation.
 
 Useful operations include:
 
@@ -62,9 +62,11 @@ Use only supported operations, and report missing capabilities.  Never infer mag
 
 ## Phase 13 — Validate the crack
 
-A preservation crack is complete only after meaningful validation.
+For paired control/candidate images, returned decode keys, VM checkpoints, or representation changes, apply [Controlled bypass evidence](controlled-bypass-evidence.md).  It separates transport integrity from authentication, requires truthful sector coverage and patch effects, and distinguishes an observed rejection from an unexplained emulator stop.
 
-Test:
+A preservation crack is complete only within its stated, meaningfully validated scope.  A title screen can establish a bounded bypass when the complete relevant single-load/authentication path and required effects are evidenced; it is not whole-game validation.  Investigate relevant later dependencies proportionately, and record untested behavior rather than requiring a full playthrough or silently claiming one.  Each derived carrier needs its own clean-start evidence.
+
+Select and report applicable checks:
 
 - cold boot,
 - reset/restart if relevant,

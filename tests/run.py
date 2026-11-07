@@ -12,6 +12,8 @@ def main():
     if not suites:
         raise SystemExit('No tests found')
     env = dict(os.environ, PYTHONDONTWRITEBYTECODE='1', PYTHONUTF8='1')
+    # Tests must resolve helpers from this checkout, not an absent or stale caller root.
+    env['PUBLIC_TOOLKIT_ROOT'] = str(root)
     # The public gate must not silently borrow private/user-installed fixtures.
     for name in ('PYTHONPATH', 'C64_RND_PROJECT', 'C64_RND_RUN_DIR',
                  'C64_RND_SHELL_DIR', 'C64_ROM_DIR'):

@@ -8,9 +8,11 @@ Run commands from the repository root with Python 3.10 or newer.  Use `python3` 
 python -B -m unittest discover -s tests -v
 python -B -m unittest discover -s shared/6502/tests -v
 python -B -m unittest discover -s skills/6502-code-reuse/scripts/tests -v
-python -B -m unittest discover -s skills/6502-disassembly/scripts/region-evidence/tests -v
+PUBLIC_TOOLKIT_ROOT="$PWD" python -B -m unittest discover -s skills/6502-disassembly/scripts/region-evidence/tests -v
 python -B -m unittest discover -s skills/6502-size-reduction/tests -v
 ```
+
+The regional-evidence command above uses POSIX environment syntax.  In PowerShell, first set `$env:PUBLIC_TOOLKIT_ROOT = (Get-Location).Path`, then run its `python` command without the environment prefix.  The variable must point at this repository, not a different checkout.
 
 These are a **subset**, not an alternative claim that all bundled tests passed.  The repository checks cover layout, relative Markdown file links, machine-path markers, and selected shared-tool behavior.  Skill-local suites exercise synthetic examples and rejection boundaries.
 
@@ -32,6 +34,8 @@ Before running it, supply:
 For Windows acquisition, the [VICE/ROM acquisition handoff](IMPORTING-VICE-ROMS.md) identifies a verified VICE archive and maps its BASIC, KERNAL, and 1541 ROM files to the local asset directory with size/hash checks. Installing Windows VICE alone does not satisfy the GCC/POSIX test prerequisites.
 
 No ROM images are bundled.  Without the required images, the ROM-dependent tests **fail**, rather than silently being skipped or downloading inputs.  Keep local ROM files out of a redistributed copy.
+
+The full runner sets `PUBLIC_TOOLKIT_ROOT` to its own resolved repository root, overriding an absent or stale caller value.  No manual setting is needed when using that runner.
 
 For reproducibility, `tests/run.py` clears `PYTHONPATH`, `C64_ROM_DIR`, `C64_RND_PROJECT`, `C64_RND_RUN_DIR`, and `C64_RND_SHELL_DIR` in its subprocesses.  Setting one of those environment variables does not provision inputs for this runner.  Individual tools can use the configuration described in their own documentation.
 

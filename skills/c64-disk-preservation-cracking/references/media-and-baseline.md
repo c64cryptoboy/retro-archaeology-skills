@@ -19,6 +19,12 @@ Record:
 - whether flux-level capture exists,
 - known emulator compatibility.
 
+### Capture ancestry and observation boundary
+
+Record acquisition identity, source disk and side when known, conversion or extraction lineage, and the tool/profile used for each representation.  A G64 and an NBZ with matching filename stems may derive from one capture; separate filenames and hashes do not establish independent acquisitions.  If lineage is unknown, say so.  A second implementation can cross-check a calculation without supplying an independent historical disk observation.
+
+Keep these claims distinct: recovered logical bytes, represented raw geometry, emulator-observed behavior, and physical-drive behavior.  A stored track's bit zero is not automatically a common spindle index across tracks.  Equal logical sectors, identical raw tracks, or a circular rotation match do not by themselves establish physical head position or angular registration.  Conversely, a strict reader's refusal or unrecognized record does not by itself prove that the original disk is bad or that its protection was identified.
+
 ### Image format implications
 
 #### D64

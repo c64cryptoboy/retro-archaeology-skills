@@ -9,7 +9,7 @@ import json
 from collections import defaultdict, deque
 from pathlib import Path
 
-from dis6502 import ops, fmt
+from dis6502 import ops, fmt, validate_extent
 
 BRANCHES = {'BPL', 'BMI', 'BVC', 'BVS', 'BCC', 'BCS', 'BNE', 'BEQ'}
 TERMINATORS = {'BRK', 'RTS', 'RTI'}
@@ -48,6 +48,7 @@ def target(ins):
 
 
 def analyze(mem, base, entries, maximum):
+    validate_extent(mem, base)
     end = base + len(mem)
     queue = deque(entries)
     seen, instructions, edges = set(), {}, []
@@ -69,7 +70,7 @@ def analyze(mem, base, entries, maximum):
                 stops.append({'at': pc, 'reason': 'invalid_or_truncated_opcode'})
                 break
             mnemonic, mode = ins['mnemonic'], ins['mode']
-            next_pc = pc + ins['length']
+            next_pc = (pc + ins['length']) & 0xffff
 
             # Record absolute operands as data xrefs except transfers, which are CFG edges.
             if mode in {'abs', 'abx', 'aby'} and mnemonic not in {'JSR', 'JMP'}:
@@ -150,7 +151,10 @@ def main():
     if len(blob) < 3:
         parser.error('PRG must include a two-byte load address and at least one byte')
     base = blob[0] | (blob[1] << 8)
-    result = analyze(blob[2:], base, args.entry or [base], args.max_instructions)
+    try:
+        result = analyze(blob[2:], base, args.entry or [base], args.max_instructions)
+    except ValueError as exc:
+        parser.error(str(exc))
     if args.json:
         print(json.dumps(result, indent=2))
     else:

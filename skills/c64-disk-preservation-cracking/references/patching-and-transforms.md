@@ -107,11 +107,11 @@ When a deterministic transform is found:
 
 1. identify source bytes,
 2. identify destination,
-3. determine key/state,
+3. determine key/state, including relevant flags, mapping, stack contents, outstanding return addresses, and self-modifying operands,
 4. determine loop bounds,
 5. reproduce the transform,
-6. compare output against runtime memory,
-7. continue disassembly on the decoded form.
+6. for execution or runnable-artifact claims, compare output against a coherent runtime capture; otherwise label the reproduction conditional and retain missing inputs,
+7. continue disassembly on the decoded form without converting predicted code into an execution claim.
 
 It is acceptable to write a small temporary Python program to reproduce a clearly understood transformation.
 
@@ -127,7 +127,17 @@ No general loader-transform simulator is bundled with this skill.  If using an e
 
 For a reproduced EOR/decode loop, retain the exact transform, inputs, output bounds, and emitted binary identity.  A bespoke transform script is not evidence of general loader support.
 
-Never trust a simulation until its output has been checked against at least one runtime observation.
+A bounded static reproduction can prove a conditional transformation without a new runtime trial when source bytes, instruction semantics, inputs or explicit parameters, and bounds support that claim.  Do not invent missing inputs, select an unobserved seed merely because it produces plausible code, or call predicted bytes an observed state.  Before relying on the result as actually executed output or as validation of a runnable artifact, check it against an appropriate runtime observation.  See [result lifetime and full state](controlled-bypass-evidence.md#track-the-lifetime-and-full-state-of-a-result).
+
+### Calculate read-time XOR coverage before changing covered code
+
+When code bytes or moving operands contribute to an XOR-derived key, write an inclusion table for each stage.  Record the exact bytes read, their values at the time of each read, any repeated reads, the initial accumulator, intentional mutations, and which downstream bytes or decisions consume the result.  Include self-modifying addresses, copies, aliases, and stage boundaries; a static interval alone may not describe the read sequence.
+
+For a fixed XOR read sequence, the change in its result is the XOR of the changes to the values actually read, including any change to the initial accumulator.  Equal changes cancel only when their contributions have the required multiplicity in that same sequence.  Matching load and store operands do not establish cancellation if the span includes only one of them.  If the intervention changes addresses, iteration count, read order, or writes between reads, derive the changed sequence first rather than applying a fixed-coverage formula blindly.
+
+Use bounded controls that distinguish the explanation: a single covered change, a cancelling covered pair, and a change outside the key's coverage but inside a downstream transformed region.  Compare predicted keys and the available output bytes; never invent an unavailable tail.  Keep these XOR-specific properties separate from other checksum or transformation algorithms.
+
+A replacement can preserve local registers and flags yet change a later key because its instruction bytes are read as data.  Conversely, preserving an aggregate XOR does not prove identical code, cycles, full memory, or later behavior.  Call a code-derived decoder a decoder unless an actual acceptance comparison is established; conditional arithmetic is not execution or runnable-artifact validation.
 
 ## Phase 10 — Analyze C64 and 1541 together
 

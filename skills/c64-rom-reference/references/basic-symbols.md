@@ -205,7 +205,7 @@ Expression routines are not standalone math APIs. They generally expect:
 
 | Address | Suggested symbol | Meaning |
 |---|---|---|
-| `$B08B` | `PTRGET` | Find/create variable; parse variable name |
+| `$B08B` | `PTRGET` | Parse variable/array reference at BASIC text pointer; return value/descriptor/element pointer (A=low, Y=high); may allocate; missing-scalar handling depends on caller |
 | `$B0E7` | `ORDVAR` | Search ordinary variable table |
 | `$B113` | `ISLETC` | Test A for `"A"`..`"Z"`: carry set iff letter, with A restored in binary mode; not variable creation |
 | `$B185` | `FINPTR` / scalar-value pointer | Return scalar record `$5F/$60` plus two in A/Y and `$47/$48`, skipping its name bytes; not an array path |
@@ -213,14 +213,20 @@ Expression routines are not standalone math APIs. They generally expect:
 | `$B1D1` | `ISARY` / array lookup and creation | Parse subscripts or DIM bounds, find or create array, and return element pointer for references, not the separate DIM tail; BASIC parser, workspace, and stack state required |
 | `$B245` | `BAD_SUBSCRIPT_ERROR` | Load X=$12 and enter BASIC error dispatcher `$A437` (BAD SUBSCRIPT); not element-offset calculation |
 | `$B34C` | `UMULT` | Unsigned 16×16 multiply for arrays: `$71/$72` times descriptor factor low byte at `($5F),Y`, high byte at offset Y−1; return X=low, A=Y=high.  Consumes `$71/$72`; overflow enters OUT OF MEMORY rather than wrapping. |
-| `$B37D` | `FRE` | FRE() |
-| `$B391` | `GIVAYF` | Convert signed 16-bit integer in A/Y to FAC |
+| `$B37D` | `FRE` | FRE(): evaluated argument; garbage-collect strings, then return free-byte count in FAC via signed 16-bit conversion; may relocate strings |
+| `$B391` | `GIVAYF` | Convert signed two's-complement 16-bit integer (A=high, Y=low) to FAC; sets numeric type and overwrites FAC and scratch state |
 | `$B39E` | `POS` | POS(): SEC / JSR `$FFF0` reads cursor column into Y, then falls through to `$B3A2` |
 | `$B3A2` | `SNGFLT` / unsigned Y to FAC | Set A=0 and branch to `$B391`; converts Y (0..255) to FAC without reading cursor position |
 | `$B3B3` | `DEF` | DEF FN |
 | `$B3E1` | `GETFNM` | Require FN token, parse numeric function name, and return definition-record pointer in A/Y and `$4E/$4F` (low/high); FN evaluation starts at `$B3F4` |
 
-`$B391` is a particularly useful reusable routine in machine-language programs because it converts a 16-bit integer to BASIC floating point.
+### Internal-call cautions
+
+`PTRGET` parses through `$7A/$7B`, not an A/Y name pointer.  It requires initialized BASIC parser, variable-table, and stack state; incoming `$10` affects name/array interpretation.  Ordinary scalar/array-element returns set `$47/$48`, but dummy-zero returns do not.  A missing scalar reached with stacked return-address low byte `$2A` returns the dummy pointer `$BF13` instead of allocating; the ROM tests only that low byte, not the full caller address.  TI$ also uses the dummy-pointer tail.  Parsing changes text/type/workspace state, and allocation can move array storage; this is not a pure lookup or a general-purpose standalone API.
+
+`FRE` receives an already evaluated argument, ignores its numeric value, and requires valid descriptor state for a string argument.  Its free-byte count uses signed conversion, so counts with bit 15 set become negative FAC values.  `GIVAYF` takes A=high and Y=low, the reverse register byte order of `PTRGET`'s returned pointer.  These are static contracts for mapped BASIC revision `901226-01`, with valid stock workspace and binary arithmetic mode, not new runtime validation or stable APIs.
+
+Evidence: the pinned [PTRGET paths](https://github.com/mist64/c64ref/blob/7cae8b91d5317d1d18ae8cdcaac03533389e6032/src/c64disasm/c64disasm_ms.txt#L3809-L3972), [array-element return](https://github.com/mist64/c64ref/blob/7cae8b91d5317d1d18ae8cdcaac03533389e6032/src/c64disasm/c64disasm_ms.txt#L4279-L4282), and [FRE/GIVAYF instructions](https://github.com/mist64/c64ref/blob/7cae8b91d5317d1d18ae8cdcaac03533389e6032/src/c64disasm/c64disasm_ms.txt#L4323-L4340).
 
 ---
 
@@ -405,7 +411,7 @@ $BDDD FOUT             FAC -> printable decimal
 
 6. **The ROM continues in `$E000-$E39F`.** Do not treat `$BFFF` as the end of BASIC functionality—only the end of the BASIC ROM chip/address region.
 
-7. **Prefer semantic comments.** For `JSR $B391`, a useful comment is `; convert signed 16-bit A/Y to BASIC float in FAC`, not merely `; call BASIC ROM`.
+7. **Prefer semantic comments.** For `JSR $B391`, a useful comment is `; convert signed 16-bit A=high/Y=low to BASIC float in FAC`, not merely `; call BASIC ROM`.
 
 ---
 
