@@ -38,6 +38,10 @@ Python tools need Python 3.10+. See [TESTING.md](TESTING.md) for additional prer
 
 Original material is [MIT-licensed](LICENSE); third-party and ROM-derived material has the qualifications recorded in [THIRD_PARTY_NOTICES.md](THIRD_PARTY_NOTICES.md).
 
+## Acknowledgments
+
+This collection was prepared using the Pi coding harness and OpenAI models, with human review and curation by David Youd.
+
 ## Contributions
 
 This repository is **not accepting pull requests**.
