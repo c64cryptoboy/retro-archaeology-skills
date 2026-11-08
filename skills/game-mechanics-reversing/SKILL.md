@@ -1,6 +1,6 @@
 ---
 name: game-mechanics-reversing
-description: Systematically reverse-engineer a game's complete player-visible and hidden mechanics with static-first whole-code accountability across BASIC, native code, bytecode/VMs, scripts, data files, and hardware behavior. Use when auditing commands, controls, state, update order, entities, items, combat, physics, randomness, progression, scoring, persistence, bugs, exploits, unfinished features, unreachable behavior, gameplay-purpose hypotheses for unusual design features, manual claims, implementation-aware gameplay tips, alternate strategies, recovery paths, or preparing evidence-backed walkthroughs and presenter notes.
+description: Systematically reverse-engineer a game's complete player-visible and hidden mechanics with static-first whole-code accountability across BASIC, native code, bytecode/VMs, scripts, data files, and hardware behavior. Use when auditing commands, controls, state, update order, entities, items, combat, physics, randomness, progression, scoring, persistence, bugs, exploits, unfinished features, unreachable behavior, gameplay-purpose hypotheses for unusual design features, manual claims, cross-port algorithm comparisons, implementation-aware gameplay tips, alternate strategies, recovery paths, or preparing evidence-backed walkthroughs and presenter notes.
 ---
 
 # Full game-mechanics reversing
@@ -21,6 +21,8 @@ For a substantial audit, read [the audit contract](references/audit-contract.md)
 | Fixes/restoration actually in scope | [Repair triage](references/repair-triage.md) | Per-candidate user disposition; conservative versus intent-dependent changes |
 | Tips, walkthrough, video or presentation | [Player guidance](references/player-guidance-and-presentation.md) plus purpose/closure phases above | [Presenter discovery ledger](assets/PRESENTER_DISCOVERY_LEDGER_TEMPLATE.md), revalidated route/alternatives/recovery |
 
+For read-only extraction from Apple DOS 3.3 `.do` images or Atari DOS 2.0 128-byte-sector ATR images, use the bundled [disk-image readers](references/disk-image-readers.md) before source analysis.  They preserve raw bytes and structural diagnostics, not decoded BASIC or repaired files; keep title-specific images and outputs outside this skill.
+
 Use narrower structure skills before semantics: `6502-disassembly`, then `6502-commenting`; `pcode-disassembly` for hosted VMs; `c64-rom-reference` for exact ROM/hardware contracts; disk preservation when legitimate protection gates access. Optionally hand verified rooms, exits, conditions, and one-way links to a mapping tool or worksheet.  Map drawing does not establish movement semantics.
 
 ## Rules that apply even before references are loaded
@@ -36,6 +38,8 @@ Use narrower structure skills before semantics: `6502-disassembly`, then `6502-c
 9. **Do not expand tests by inertia.** Static proof can settle deterministic complete code/data. Runtime belongs to ambiguous integration, stale state, timing/hardware, RNG or presentation. One coordinator owns a shared emulator; parallel work uses independent static surfaces.
 10. **Do not restore fragments automatically.** A missing assignment does not determine intended caps, locality, balance or persistence. New repair findings do not inherit approval. Keep practical player guidance separate from advocacy for patches.
 11. **No premature final route.** Feed viable alternate uses, traps and recovery paths into the mechanics/presenter ledgers. Reopen and revalidate affected route state, probabilities and logistics when new interactions emerge.
+12. **Supply the working hypothesis.** Do not make the user propose the explanation or stop at “not demonstrated.”  State the leading mechanism-based hypothesis, predicted direction of effect, strongest credible alternative, and smallest discriminating check.  Separate established behavior, expected consequence, and measured outcome.  Intended improvements support an expectation of benefit, not a guarantee; defects that undermine their mechanism support a directional prediction of harm.  Keep checks within the authorized scope.
+13. **Expect cross-port divergence.** For 8-bit ports, use the working prior that unintentional differences in gameplay-affecting algorithms are more likely than not, even with the same author.  Different porters, and especially lack of original source, increase that concern.  Test this premise rather than assume algorithmic equivalence from a shared title, design, or author account.  This is a revisable investigation prior, not an established defect or a measured population statistic.  Follow the cross-port pass in [Static discovery](references/static-discovery.md).
 
 ## Evidence packet per finding
 
