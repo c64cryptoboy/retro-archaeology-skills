@@ -13,6 +13,16 @@
 - Decide whether recurring automation is an internal analysis aid or a standalone capability before substantial implementation; prefer one deterministic core with thin adapters.
 - Never modify or redistribute the preserved original; work from copies.
 
+### Cross-port hypothesis pass, when comparison is in scope
+
+Use the divergence prior in [SKILL.md](../SKILL.md) to focus investigation, not to prejudge findings.  Shared authorship does not establish identical algorithms; another porter or reconstruction without original source raises the risk further.  Check each implementation independently against both the other ports and author/manual claims, which may describe a design, prototype, or different revision.
+
+- State the leading hypothesis before comparison: which gameplay algorithm may differ, how a plausible discrepancy would affect play, and what would disconfirm it.  Refine the prediction when code reveals a concrete mechanism; do not leave hypothesis-making to the user.
+- Compare semantic paths, not just text: signs, indices, discarded results, initialization, update order, guards, numeric/boolean semantics, RNG/ties, tables, and persistence.  A shared outline or matching routine name is not equivalence.
+- Separate algorithm differences from supplied data, trained personalities, difficulty, and runtime behavior.  Preserve intentional adaptations as a possible explanation rather than labeling every difference a bug.
+- For adaptive AI, distinguish move evaluation, feature/history recording, and training updates.  A reversed reward sign or inconsistent recorded feature supports a prediction of impaired learning; a training-only defect need not affect play with frozen weights.  Keep intended learning benefit, expected defect harm, and measured playing strength distinct.
+- Choose the smallest authorized discriminating check.  Static evidence can establish an algorithm difference; a controlled strength comparison needs matched starting weights, training exposure, opponents, and balanced sides, with tie/RNG policy accounted for.  Do not claim a win rate from a defect alone or launch a tournament merely to express a justified hypothesis.  Record contrary evidence and revise the prior when warranted.
+
 ### 2. Establish implementation structure
 
 Identify every gameplay-bearing layer: interpreted source, native code, VM/bytecode, scripts, data tables, overlays, resources, ROM/firmware, interrupts, and device behavior.

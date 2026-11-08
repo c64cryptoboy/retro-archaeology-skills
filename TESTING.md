@@ -10,11 +10,14 @@ python -B -m unittest discover -s shared/6502/tests -v
 python -B -m unittest discover -s skills/6502-code-reuse/scripts/tests -v
 PUBLIC_TOOLKIT_ROOT="$PWD" python -B -m unittest discover -s skills/6502-disassembly/scripts/region-evidence/tests -v
 python -B -m unittest discover -s skills/6502-size-reduction/tests -v
+python -B -m unittest discover -s skills/game-mechanics-reversing/tests -v
 ```
 
 The regional-evidence command above uses POSIX environment syntax.  In PowerShell, first set `$env:PUBLIC_TOOLKIT_ROOT = (Get-Location).Path`, then run its `python` command without the environment prefix.  The variable must point at this repository, not a different checkout.
 
 These are a **subset**, not an alternative claim that all bundled tests passed.  The repository checks cover layout, relative Markdown file links, machine-path markers, and selected shared-tool behavior.  Skill-local suites exercise synthetic examples and rejection boundaries.
+
+The game-mechanics reader suite uses synthetic DOS 3.3 and ATR/DOS 2.0 structures, including malformed allocation and safe-output negative controls.  Its output-path tests require symlink support and permission; its FIFO test is POSIX-only.  See the [reader contract](skills/game-mechanics-reversing/references/disk-image-readers.md) for the narrow format limits.
 
 Additional disk and p-code tests live beside their scripts.  Discover one test directory at a time; several modules have short import names and are intentionally isolated by the full runner.
 
