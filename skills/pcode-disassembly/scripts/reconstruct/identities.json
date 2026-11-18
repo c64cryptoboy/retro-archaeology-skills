@@ -39,6 +39,15 @@
       "check": "blitz"
     },
     {
+      "family": "blitz",
+      "role": "compiled-object",
+      "loadAddress": 2049,
+      "start": 2049,
+      "end": 8083,
+      "sha256": "3adcf88648de854150be7eb269a212a9bd5a4012b903488e17dee82bf9b1c10c",
+      "check": "blitz"
+    },
+    {
       "family": "petspeed",
       "role": "compiled-object",
       "loadAddress": 2049,
