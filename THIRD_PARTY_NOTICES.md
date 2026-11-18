@@ -41,6 +41,10 @@ Retain the relevant credits: Daryl Krans; Bangui Bob for RapidLok documentation 
 
 The [DOS 3.3 and ATR/DOS 2.0 readers](skills/game-mechanics-reversing/references/disk-image-readers.md) are newly authored raw filesystem readers.  Their documentation cites the format references used, including the Apple II DOS FAQ, Atari DOS documentation, and Joseph H. Allen's pinned `atari-tools` source.  The cited `atari-tools/atr.c` bears GPL-1.0-or-later terms; no upstream implementation, token tables, or source excerpts are bundled or executed by these readers.  Format-fact consultation is distinguished from code derivation, and the repository MIT license does not relicense those external references.  Tests construct synthetic images; no commercial disks or extracted programs are included.
 
+## PETSpeed compact BASIC reading
+
+The compact BASIC translator adapts [EgonOlsen71/PetspeedDecompy](https://github.com/EgonOlsen71/PetspeedDecompy/tree/3d4360e8b481c2157fccac0458f3556a2d3ea311) under the Unlicense.  Its [adaptation notice](skills/pcode-disassembly/scripts/petspeed/decompy_compat/NOTICE.md) and [upstream license](skills/pcode-disassembly/scripts/petspeed/decompy_compat/LICENSE.txt) accompany the code.  No example programs, compiled images, or generated listings from the upstream project are bundled.
+
 ## Analyzed formats and signatures
 
 The p-code tools include bounded compiler/runtime recognition data and format knowledge, not complete compiler distributions.  A matching signature is evidence within its stated contract, not proof of ownership, a license grant for the recognized program, or permission to redistribute a supplied input.

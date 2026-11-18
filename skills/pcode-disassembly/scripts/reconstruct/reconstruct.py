@@ -28,6 +28,13 @@ def reconstruct(data,raw_base=None):
     result['family']=family
     result.update(inputSha256=sha(data),identification=identity,contractsSha256=sha((HERE/'semantics.json').read_bytes()),
                   loadedRegions=decoded['loadedRegions'],selectedProfile=decoded['selectedProfile'],selectedProfileSha256=decoded['selectedProfileSha256'])
+    if family=='petspeed':
+        from petspeed_listing import RUNTIME, build
+        if decoded.get('runtimeSha256')==RUNTIME:
+            try:result['readingView']=build(prg,decoded)
+            except ValueError as exc:
+                result['readingRefusal']=str(exc)
+                result['limitations'].append('Numbered PETSpeed reading refused: '+str(exc))
     if family=='dtl':result['limitations'].append('External RTL-64 is not in this object; semantic interpretation assumes the evidenced runtime associated with this bootstrap.')
     if family=='austrospeed' and decoder_family=='austrospeed':result['limitations'].append('Separately pinned Austro runtime: multiplication uses an explicit VM operation; CLR/file-I/O/input/error paths differ from BLITZ. Missing array indices remain unknown, never repaired from presumed source syntax.')
     if family!=decoder_family:result['limitations'].append('Compiler identity and decoder contract differ: this exact runtime revision uses the evidenced '+decoder_family+' VM contract; the family label is retained separately.')
@@ -40,15 +47,22 @@ def reconstruct(data,raw_base=None):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('binary',type=Path)
     p.add_argument('--raw-base',type=lambda x:int(x,0));p.add_argument('--json-output',type=Path);p.add_argument('--text-output',type=Path)
-    p.add_argument('--basic-output',type=Path,help='Optional evidenced compact reading view (currently DTL only); exclusive-create output')
+    p.add_argument('--basic-output',type=Path,help='Optional compact DTL or numbered PETSpeed reading; exclusive-create output')
+    p.add_argument('--prg-output',type=Path,help='Tokenized BASIC V2 reading copy for the supported PETSpeed revision; not verified equivalent')
     a=p.parse_args()
     try:
         result=reconstruct(a.binary.read_bytes(),a.raw_base)
         outputs=[(a.json_output,json.dumps(result,indent=2)+'\n'),(a.text_output,render(result))]
         if a.basic_output is not None:outputs.append((a.basic_output,render_reading(result)))
+        if a.prg_output is not None:
+            from petspeed_listing import serialize
+            outputs.append((a.prg_output,serialize(result)))
         for path,text in outputs:
             if path is not None:
-                with path.open('x') as f:f.write(text)
+                if isinstance(text,bytes):
+                    with path.open('xb') as f:f.write(text)
+                else:
+                    with path.open('x',encoding='utf-8') as f:f.write(text)
         if a.text_output is None:print(render(result),end='')
     except (ValueError,OSError,KeyError,IndexError) as exc:p.exit(2,'Reconstruction refused: '+str(exc)+'\n')
 

@@ -108,11 +108,10 @@ new or revised human-facing listing.  The following family-admission boundaries
 must not be misread as a reason to retain redundant parentheses, raw binary-decimal
 expansions, or unjustified bookkeeping in another family's readable output.
 
-Share mechanisms and refusal tests, **not unproved VM semantics**. The current
-optional idiomatic projection is admitted for DTL only; BLITZ/Austro-Speed,
-Speedcompiler, PETSpeed and BASIC-64 retain their existing behavior. When revisiting
-one of them, use the following as a review checklist rather than silently enabling
-DTL's rules:
+Share mechanisms and refusal tests, **not unproved VM semantics**.  DTL's
+idiomatic projection and the [numbered PETSpeed reading](petspeed-tools.md#alternate-runtime-and-numbered-basic)
+have different admission rules.  When revisiting any family, apply the checklist
+without importing the other VM's rules:
 
 - **Separate evidence from presentation.** Preserve detailed groups, instruction
   bytes, encoded targets, warnings and indexes; make merged readings an additive
@@ -167,6 +166,16 @@ DTL's rules:
 `dtl_reading.py` supplies the presently evidenced family-specific admission rules.
 An additional family needs its own contracts and isolation/regression fixtures,
 not a renamed DTL adapter.
+
+## Discovery questions to ask before declaring a family covered
+
+| Question | Smallest useful comparison |
+|---|---|
+| Which runtime did we actually cover? | Try an independently sourced compiled object.  Compare its entry, runtime bytes, instruction boundaries, and handlers.  A new entry point can expose a whole missed edition; it does not authorize transplanting an opcode table. |
+| What survived compilation outside the instruction stream? | Decode the DATA, descriptor, or symbol region before seeing source.  Then compare field order, types, delimiters, and original bytes.  If names or line numbers might live only in a sidecar, compare two builds that differ only in a name or symbol-save setting. |
+| When did the VM read this value? | Select a channel through a variable, change the variable, then issue I/O.  Or read an effectful expression and use it twice.  Distinguish a captured value from a later evaluation: keep the capture or say unknown.  Counting calls alone does not test order. |
+| Can execution enter in the middle of the proposed statement? | Compare straight-line code with a branch to the second INPUT field, the assignment, or the inside of a folded predicate.  An encoded instruction boundary is not proof that the earlier operands or fields were evaluated. |
+| Which parts of the output did we invent, and what would expose that? | Put branch-looking text inside a quoted literal.  Keep generated names, line numbers, and grouped statements separate from retained data.  Compare with original source properties or native handlers: two tools sharing a backend, or a tokenizer round-trip, are not independent semantic evidence. |
 
 ## Validation boundary
 

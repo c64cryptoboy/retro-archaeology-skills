@@ -67,6 +67,13 @@ class SpeedLiftTests(unittest.TestCase):
   self.assertEqual([g['text'] for g in prints],['PRINT "A";','PRINT#<?>,','PRINT#3,','PRINT'])
   self.assertEqual(prints[0]['kind'],'partial');self.assertTrue(any('current output channel is unknown' in w for w in prints[0]['warnings']))
   self.assertFalse(prints[-1]['warnings'])
+ def test_file_selector_is_a_value_at_selection_not_a_live_variable(self):
+  slot=dict(slot=0,lowStorage=0x810,highStorage=0x888)
+  var=row('LOAD_INTEGER',**slot);assign=row('STORE_INTEGER_RESET',**slot)
+  r=program(const(3),assign,var,row('SELECT_OUTPUT'),const(4),assign,row('PRINT_NEWLINE'))
+  self.assertIn('CMD I_00%',text(r));self.assertEqual(r['groups'][-1]['text'],'PRINT#<?>,')
+  r=program(var,row('INPUT_FILE'),const(4),assign,row('INPUT_NEXT'))
+  self.assertIn('VM_INPUT_FILE(I_00%)',text(r));self.assertIn('VM_INPUT_NEXT(<?>)',text(r))
  def test_unknown_stack_aliasing_bounded(self):
   r=program(*[const(i) for i in range(14)],row('STORE_INTEGER_RESET',slot=0,lowStorage=0x810,highStorage=0x888))
   self.assertIn('I_00% = <?>',text(r))

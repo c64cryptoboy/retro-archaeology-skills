@@ -48,6 +48,15 @@
       "check": "petspeed"
     },
     {
+      "family": "petspeed",
+      "role": "compiled-object",
+      "loadAddress": 2049,
+      "start": 2086,
+      "end": 10240,
+      "sha256": "3b13c8c451db362fdd3fafa91832f3484dd9fd3eac0fcff792b82e9484a9131a",
+      "check": "petspeed"
+    },
+    {
       "family": "basic64",
       "role": "compiled-object",
       "loadAddress": 2049,

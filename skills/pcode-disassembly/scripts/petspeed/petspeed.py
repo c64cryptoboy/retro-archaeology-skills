@@ -29,6 +29,21 @@ def read_at(raw: bytes, base: int, address: int, count: int) -> bytes:
     return raw[address - base:address - base + count]
 
 
+def select_profile(prg: bytes, base_profile: dict) -> dict:
+    """Select a separate grammar only for the exact alternate runtime bytes."""
+    start, end = 0x0826, 0x2800
+    load = int.from_bytes(prg[:2], 'little')
+    if load == 0x0801 and len(prg) >= 2 + end - load:
+        region = prg[2 + start - load:2 + end - load]
+        if sha(region) == '3b13c8c451db362fdd3fafa91832f3484dd9fd3eac0fcff792b82e9484a9131a':
+            if __package__:
+                from .variant_2267 import build_profile
+            else:
+                from variant_2267 import build_profile
+            return build_profile(base_profile)
+    return base_profile
+
+
 def inspect_image(prg: bytes, profile: dict) -> tuple[bytes, int, dict]:
     if profile.get('schema') != 'petspeed-runtime-profile-v1':
         raise DecodeError('unsupported profile schema')
@@ -36,6 +51,8 @@ def inspect_image(prg: bytes, profile: dict) -> tuple[bytes, int, dict]:
         raise DecodeError('truncated PRG')
     base = int.from_bytes(prg[:2], 'little')
     raw = prg[2:]
+    if base + len(raw) > 0x10000:
+        raise DecodeError('PRG exceeds C64 address space')
     if base != profile['loadAddress']:
         raise DecodeError('unsupported load address')
     expected = bytes.fromhex(profile['entryBytes'])
@@ -267,15 +284,18 @@ def render(result: dict) -> str:
 def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('program', type=Path, help='compiled .WOW PRG')
-    parser.add_argument('--profile', type=Path, default=Path(__file__).with_name('petspeed_profile.json'))
+    parser.add_argument('--profile', type=Path, help='explicit profile; default: select a bundled hash-pinned revision')
     parser.add_argument('--map', type=Path, help='matching raw .W SEQ file (no PRG header)')
     parser.add_argument('--source', type=Path, help='numbered BASIC text for annotations')
     parser.add_argument('--json-output', type=Path)
     parser.add_argument('--text-output', type=Path)
     args = parser.parse_args()
     try:
-        profile = json.loads(args.profile.read_text())
-        result = disassemble(args.program.read_bytes(), profile,
+        prg = args.program.read_bytes()
+        profile = json.loads((args.profile or Path(__file__).with_name('petspeed_profile.json')).read_text())
+        if args.profile is None:
+            profile = select_profile(prg, profile)
+        result = disassemble(prg, profile,
                              args.map.read_bytes() if args.map else None,
                              args.source.read_text() if args.source else None)
     except (DecodeError, OSError, json.JSONDecodeError) as exc:

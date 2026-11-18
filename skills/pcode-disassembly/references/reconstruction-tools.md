@@ -149,8 +149,7 @@ portable library renderer. The default detailed text, original groups, rows,
 coverage, warnings and all existing indexes remain unchanged. Each projected line
 lists its original group/instruction ownership, transformation actions and modeled
 evaluation identities; retained temporaries and refusals remain inspectable.
-Other compiler families currently refuse this optional output rather than borrowing
-DTL semantics. Output files still use exclusive creation.
+PETSpeed has a separate [numbered BASIC and PRG export](petspeed-tools.md#alternate-runtime-and-numbered-basic) for one exact runtime.  Other compiler families refuse this optional output rather than borrowing DTL semantics. Output files still use exclusive creation.
 
 The current DTL adapter can inline an adjacent, single-use RND/PEEK/FRE/POS temporary only
 when the substituted structured expression preserves the **original instruction

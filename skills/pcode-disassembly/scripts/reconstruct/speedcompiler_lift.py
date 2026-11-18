@@ -3,7 +3,7 @@
 Presentation/provenance utilities are shared; this is not the BLITZ or FAC/ARG
 execution model. Unknown native effects remain explicit barriers.
 """
-from symbolic import Lifter,Expr,quoted
+from symbolic import Lifter,Expr,quoted,saved_channel
 
 
 class SpeedLifter(Lifter):
@@ -142,7 +142,7 @@ class SpeedLifter(Lifter):
    if n=='INPUT_PROMPT':args=[e(quoted(bytes.fromhex(v['payloadHex'])))];self.input=None
    if n in ('GET_FILE_STRING','INPUT_FILE'):
     args=[self.stack['ints'][0] if self.stack['ints'] else Expr('<?>')];self.stack['ints']=[]
-    if n=='INPUT_FILE':self.input=args[0].text
+    if n=='INPUT_FILE':self.input=saved_channel(args[0])
    if n=='INPUT_NEXT' and self.input is not None:args=[Expr(self.input)]
    # Input handlers do not share string-expression push semantics. READ_INTEGER
    # resets the integer depth; retain no unproven floating/string frames.
@@ -171,7 +171,7 @@ class SpeedLifter(Lifter):
   if n in ('CHECK_INDEX_BYTE','CHECK_INDEX_WORD','CHECK_STRING_LENGTH','CHECK_RETURN_STACK'):
    self.emit('REM VM '+n+' '+str(v),'structural');return
   if n=='SELECT_OUTPUT':
-   x=self.stack['ints'][0] if self.stack['ints'] else Expr('<?>');self.output=x.text;self.statement('CMD',[x]);self.stack['ints']=[];return
+   x=self.stack['ints'][0] if self.stack['ints'] else Expr('<?>');self.output=saved_channel(x);self.statement('CMD',[x]);self.stack['ints']=[];return
   if n=='RESTORE_CHANNELS':self.output=None;self.input=None;self.emit('REM restore default channels','structural');return
   # Native I/O, stack manipulation and byte-addressed character access have
   # known widths but incomplete high-level contracts; do not guess or retain facts.

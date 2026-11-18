@@ -18,7 +18,7 @@ def module(family):
     name='_pcode_binary_'+family
     if name not in sys.modules:
         path=ROOT/family/('blitz_pcode.py' if family=='blitz' else family+'.py')
-        spec=importlib.util.spec_from_file_location(name,path)
+        spec=importlib.util.spec_from_file_location(name,path,submodule_search_locations=[str(path.parent)] if family=='petspeed' else None)
         mod=importlib.util.module_from_spec(spec);sys.modules[name]=mod;spec.loader.exec_module(mod)
     return sys.modules[name]
 
@@ -57,6 +57,7 @@ def check_extent(prg):
 def inspect(prg,family):
     check_extent(prg)
     m=module(family);p=profile(family)
+    if family=='petspeed':p=m.select_profile(prg,p)
     if family in ('blitz','austrospeed'):return blitz_layout(prg,p)[1]['layout']
     if family=='dtl':
         d=m.Decoder(prg,p)
@@ -68,6 +69,7 @@ def decode(prg,family):
     """No source, maps, previous listings or filenames enter these decoders."""
     check_extent(prg)
     m=module(family);p=profile(family)
+    if family=='petspeed':p=m.select_profile(prg,p)
     if family=='speedcompiler':return m.disassemble(prg,p)
     if family=='dtl':
         report=m.Decoder(prg,p).decode()
@@ -104,8 +106,14 @@ def decode(prg,family):
         labels=['bootstrap/runtime/tables','startup pointers','pre-init opaque gap','init p-code','DATA','main p-code','scalar records','opaque appended record']
         regions=[dict(name=n,start=a,end=b) for n,a,b in zip(labels,bounds,bounds[1:])]
     elif family=='petspeed':
+        report['runtimeSha256']=p['runtimeSha256']
         l=report['layout'];bounds=[base,p['runtimeStart'],p['runtimeEnd'],l['data'],l['arrays'],l['initialization'],l['codeStart'],l['topCode'],end]
         labels=['bootstrap/header','runtime/tables','variable region','DATA (not lifted)','array region','initialization (not lifted)','main p-code','opaque trailing region']
+        from petspeed_data import RUNTIME_SHA256, decode_data_region
+        if p['runtimeSha256']==RUNTIME_SHA256:
+            section=prg[2+l['data']-base:2+l['arrays']-base]
+            report['petspeedData']=decode_data_region(section,l['data'],runtime_sha256=p['runtimeSha256'])
+            labels[3]='retained DATA: '+report['petspeedData']['status']
         regions=[dict(name=n,start=a,end=b) for n,a,b in zip(labels,bounds,bounds[1:])]
     elif family=='basic64':regions=[dict(name=r['kind'],start=r['start'],end=r['end']) for r in report['regions']]
     else:regions=[dict(name=r['name'],start=r['start'],end=r['end']) for r in report['regions']+report['otherRegions']]
