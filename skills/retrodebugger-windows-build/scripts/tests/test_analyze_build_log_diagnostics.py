@@ -71,6 +71,26 @@ class BuildLogCandidateTests(unittest.TestCase):
                           "LNK4099": 1, "D9002": 1}, result["warning_counts"])
         self.assertEqual("successful", result["status"])
 
+    def test_msvc_command_line_diagnostics(self):
+        error = "cl : Command line error D8021 : invalid numeric argument '/W9'"
+        warning = "cl.exe : Command line warning D9002 : ignoring unknown option"
+        for line, exit_code, errors, warnings in (
+            (error, 1, 1, {}), (warning, 0, 0, {"D9002": 1}),
+            ("echo " + error, 0, 0, {}), ("echo " + warning, 0, 0, {}),
+            ("link : Command line error D8021 : example", 0, 0, {}),
+        ):
+            with self.subTest(line=line):
+                result = self.analyze_text(line + "\n=== Build successful ===\n")
+                self.assertEqual((exit_code, errors, warnings),
+                                 (result["exit_code"], result["error_count"], result["warning_counts"]))
+
+    def test_echo_filename_is_not_an_echo_command(self):
+        diagnostic = "echo.cpp(10): error C2440: cannot convert"
+        for prefix, exit_code in (("1>", 1), ("1>echo ", 0)):
+            with self.subTest(prefix=prefix):
+                result = self.analyze_text(prefix + diagnostic + "\n=== Build successful ===\n")
+                self.assertEqual(exit_code, result["exit_code"])
+
     def test_msbuild_error_and_warning_codes(self):
         result = self.analyze_text(
             "MSBUILD : warning MSB3270: architecture mismatch\n"

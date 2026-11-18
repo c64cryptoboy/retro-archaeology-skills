@@ -82,9 +82,9 @@ For example:
 
 should be understood as something like:
 
-    ; Advance pointer by one 40-column screen row.
+    ; Advance the pointer by 40 bytes (D=0).
 
-The block-level explanation is more valuable than five individual opcode translations.
+A caller stepping through 40-byte records uses the same arithmetic as one stepping through a screen buffer with 40 bytes per row.  Only the screen caller justifies “advance to the next screen row.”
 
 ### 5. Identify memory semantics
 

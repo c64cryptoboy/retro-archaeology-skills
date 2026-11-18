@@ -78,7 +78,7 @@ Read [references/normalization-and-scoring.md](references/normalization-and-scor
 
 ### 4. Calibrate and write a pre-target lock
 
-Only lock a passing calibration. `calibrate_reuse6502.py --lock` records the analysis configuration, interpretation thresholds, source calibration hash, and current packaged-tool hashes.
+Only lock a passing calibration.  Missing controls or sensitivity runs are reported as exploratory evidence, not a passing gate. `calibrate_reuse6502.py --lock` records the analysis configuration, interpretation thresholds, source calibration hash, and current packaged-tool hashes.
 
 The validated defaults are a starting point, not a license to skip controls on a materially different corpus or CPU profile.
 
@@ -111,7 +111,7 @@ Read [references/evidence-and-audit.md](references/evidence-and-audit.md) before
 Include:
 
 - locked primary classification and configuration hash;
-- candidate/probable counts, supporting pairs, unique coverage, and chains;
+- candidate/probable location counts, distinct full-match families, supporting pairs, unique coverage, and chains;
 - sensitivity results without replacing primary evidence;
 - family-aware manual verdicts;
 - control comparison;

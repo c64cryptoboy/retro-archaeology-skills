@@ -76,6 +76,8 @@ Use for text adventures and other stateful command interfaces. Add rows for expe
 
 ## Randomness matrix
 
+Which states and weights give the first-attempt odds?  After a known failure, does retry restore the pre-attempt state, advance it, or draw independently?  Record conditional retry odds separately; leave them open if the retry policy is unknown.
+
 | Callsite/event | RNG state/seed | Call timing/order | Mapping/rerolls | Exact probability/distribution | Dependencies | Static derivation | Runtime cross-check | Status |
 |---|---|---|---|---|---|---|---|---|
 | | | | | | | | | |

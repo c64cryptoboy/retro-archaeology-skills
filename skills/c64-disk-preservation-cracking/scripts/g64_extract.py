@@ -210,13 +210,16 @@ def read_g64(path: Path) -> tuple[dict[tuple[int, int], DecodedSector], dict]:
         if length > max_track_size or offset + 2 + length > len(image):
             raise G64Error(f"invalid track length {length} in slot {slot}")
         decoded = decode_track(image[offset + 2:offset + 2 + length], slot)
+        speed_word = speeds[slot]
         slots.append({
             "slot": slot,
             "nominalTrack": slot // 2 + 1,
             "halfTrack": bool(slot & 1),
             "offset": offset,
             "length": length,
-            "speed": speeds[slot],
+            "speed": speed_word,
+            "constantZone": speed_word if speed_word <= 3 else None,
+            "speedMapOffset": speed_word if speed_word > 3 else None,
             "decodedSectors": len(decoded),
         })
         for sector in decoded:
@@ -300,7 +303,8 @@ def read_directory(sectors: dict[tuple[int, int], DecodedSector]) -> tuple[dict,
         directory_chain.append(f"{track}/{sector}")
         next_track, next_sector = data[0], data[1]
         for slot in range(8):
-            raw = data[2 + slot * 32:2 + (slot + 1) * 32]
+            raw_slot = data[slot * 32:(slot + 1) * 32]
+            raw = raw_slot[2:]
             file_type = raw[0]
             if file_type == 0:
                 continue
@@ -318,7 +322,7 @@ def read_directory(sectors: dict[tuple[int, int], DecodedSector]) -> tuple[dict,
                 "startTrack": raw[1],
                 "startSector": raw[2],
                 "reportedBlocks": int.from_bytes(raw[28:30], "little"),
-                "rawHex": raw.hex(),
+                "rawHex": raw_slot.hex(),
             })
         track, sector = next_track, next_sector
     disk["directoryChain"] = directory_chain
@@ -395,11 +399,14 @@ def main() -> None:
             raise SystemExit(f"no directory entry named {args.extract!r}")
         entry = matches[0]
         payload, chain = extract_chain(sectors, entry["startTrack"], entry["startSector"])
-        output = args.output or Path(f"{args.extract}.prg")
+        file_type = entry["type"]
+        suffix = file_type.lower() if file_type in FILE_TYPES.values() else "bin"
+        output = args.output or Path(f"{args.extract}.{suffix}")
         ensure_distinct_output(args.image, output)
         output.parent.mkdir(parents=True, exist_ok=True)
         output.write_bytes(payload)
-        load_address = int.from_bytes(payload[:2], "little") if len(payload) >= 2 else None
+        load_address = (int.from_bytes(payload[:2], "little")
+                        if file_type == "PRG" and len(payload) >= 2 else None)
         result["extraction"] = {
             "entry": entry,
             "output": str(output),

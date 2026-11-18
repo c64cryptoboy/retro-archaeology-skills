@@ -107,6 +107,58 @@ class SyntheticFiles(unittest.TestCase):
         return json.loads(report.getvalue())
 
 
+class ArchiveMetadataTests(SyntheticFiles):
+    def test_raw_directory_slots_match_source_and_exclude_neighbor(self):
+        bam = b"\x12\x01".ljust(256, b"\0")
+        directory = bytearray(directory_sector(0, 255, "FIRST"))
+        directory[224:] = directory_sector(0x12, 0x34, "LAST")[:32]
+        for prefix in (b"\x35\x24", b"\xaa\x55"):
+            with self.subTest(prefix=prefix):
+                directory[32:34] = prefix
+                image = container(track_bytes(record(18, 0, bam), record(18, 1, bytes(directory))))
+                sectors, _ = self.read_image(image)
+                _, entries = g.read_directory(sectors)
+                self.assertEqual([(e["slot"], e["name"], e["startTrack"], e["reportedBlocks"])
+                                  for e in entries], [(0, "FIRST", 1, 1), (7, "LAST", 1, 1)])
+                self.assertEqual([bytes.fromhex(e["rawHex"]) for e in entries],
+                                 [directory[:32], directory[224:]])
+
+    def test_declared_file_type_controls_default_suffix_and_address(self):
+        bam = b"\x12\x01".ljust(256, b"\0")
+        payload = b"\x00\x06HELLO".ljust(256, b"\0")
+        source = self.root / "fixture.g64"
+        previous = Path.cwd()
+        self.addCleanup(os.chdir, previous)
+        os.chdir(self.root)
+        for file_type, suffix, address in ((0x82, "prg", 0x4548), (0x81, "seq", None),
+                                           (0x87, "bin", None)):
+            with self.subTest(file_type=file_type):
+                directory = bytearray(directory_sector(0, 255, "TEST"))
+                directory[2] = file_type
+                source.write_bytes(container(track_bytes(record(18, 0, bam),
+                                                         record(18, 1, bytes(directory)),
+                                                         record(1, 0, payload))))
+                extraction = self.run_cli(source)["extraction"]
+                self.assertEqual(extraction["output"], f"TEST.{suffix}")
+                self.assertEqual(Path(extraction["output"]).read_bytes(), b"HELLO")
+                self.assertEqual(extraction["loadAddress"], address)
+
+    def test_speed_word_distinguishes_zone_from_map_offset(self):
+        track = track_bytes(record())
+        constant = container(track)
+        offset = len(constant)
+        mapped = bytearray(constant)
+        mapped[16:20] = offset.to_bytes(4, "little")
+        mapped.extend(b"\x1b" * ((len(track) + 3) // 4))
+        for image, word, zone, pointer in ((constant, 3, 3, None), (mapped, offset, None, offset)):
+            with self.subTest(speed_word=word):
+                sectors, meta = self.read_image(image)
+                self.assertEqual(g.require_sector(sectors, 1, 0).data, bytes(range(256)))
+                slot, = meta["slots"]
+                self.assertEqual((slot["speed"], slot["constantZone"], slot["speedMapOffset"]),
+                                 (word, zone, pointer))
+
+
 class OutputIdentityTests(SyntheticFiles):
     def setUp(self):
         super().setUp()

@@ -1074,7 +1074,7 @@ def scan_cfg_candidates(data: bytes, *, base_address: int,
         }
     flow_edges = tuple(
         FlowEdge(edge.source, edge.target, edge.kind)
-        for edge in edges if edge.internal
+        for edge in edges
     )
     known = analyze_known_state(
         instructions, flow_edges, entries=entry_states, call_summaries=call_summaries

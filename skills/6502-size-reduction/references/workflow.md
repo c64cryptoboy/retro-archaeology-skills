@@ -38,6 +38,8 @@ Ask whether source/domain meaning admits a smaller representation: narrower inpu
 
 The Stage-3 compactor can pack an asserted contiguous all-code region and repair retained relative plus internal direct JSR/JMP control references. Do not use that bounded claim for mixed code/data or surrounding-image integration. A complete image must additionally repair absolute data addresses, external callers, vectors, pointer tables, split low/high fields, computed initialization, and SMC operands under an explicit manifest. Retain old bodies if any reference remains unresolved.
 
+When selected edits include both a known-flag short jump and another rule, the compactor first packs the other rewrites, then checks the jump on the rewritten CFG.  It can use a different proven flag or retain the `JMP` if the proof is lost.  Declare live state for every exit: a conditional edge leaving the region observes `terminal_live` even if its internal successor overwrites that state.
+
 ## 8. Verify
 
 1. Static identity/boundary/layout/reference gates.
@@ -47,7 +49,11 @@ The Stage-3 compactor can pack an asserted contiguous all-code region and repair
 5. Whole-image changed-byte authorization.
 6. Emulator/hardware checks for I/O, interrupts, banking, or timing.
 
-For cycle policy, report original/new cycles per relevant path—not only an average.
+For entry-event comparisons, configure `RoutineSpec.observed_pcs` on both sides, using each side's actual addresses.  A watched checkpoint that neither run visits yields two empty streams; an unwatched checkpoint is missing evidence and fails comparison.
+
+`tests/test_compaction6502.py` exercises one masked bit test followed by a short jump across all 256 values of one flat-RAM byte.  It compares the exit, final registers and flags, allowed writes, and a relocated path checkpoint for unchanged, single-rule, and combined outputs.  A stale-flag branch is the negative control.  This tests one interaction, not all rules, initial states, or hardware timing.
+
+For cycle policy, report original/new cycles per relevant path -- not only an average.
 
 ## 9. Report and promote
 

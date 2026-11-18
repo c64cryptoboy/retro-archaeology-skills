@@ -3,7 +3,7 @@
 No original source, map or annotated-disassembly input. Unsupported effects and
 joins kill facts. Text is a reading aid, not automatically runnable BASIC.
 """
-from dataclasses import dataclass, field
+from dataclasses import dataclass, field, replace
 from decimal import Decimal, localcontext
 from fractions import Fraction
 import json
@@ -22,6 +22,7 @@ class Expr:
     stable:bool=False  # Display value cannot be re-read from mutable VM state.
     producer:int|None=None  # Original evaluation site, not a later consumer/call.
     display_node:display.DisplayExpr|None=None  # Presentation only; text remains canonical.
+    word_literal:int|None=None  # BASIC-64 integer word, retained through bit-preserving pushes only.
 
 
 def number(value):
@@ -41,6 +42,10 @@ def quoted(data):
             parts.append(f'CHR$({b})')
     if buf:parts.append('"'+buf+'"')
     return '+'.join(parts) or '""'
+
+
+# Not the same as an executed file selector whose operand is the expression '<?>'.
+UNKNOWN_OUTPUT = object()
 
 
 class Lifter:
@@ -100,7 +105,7 @@ class Lifter:
     def wipe(self,io=False):
         self.regs={};self.stack={k:[] for k in self.stacks};self.limit=None;self.step=None;self.destination_type=None
         self.for_zero_ready=None
-        if io:self.output='<?>';self.input='<?>';self.readmode=None
+        if io:self.output=UNKNOWN_OUTPUT;self.input='<?>';self.readmode=None
 
     def get(self,key):
         if key.startswith('#'):return Expr(key[1:])
@@ -131,6 +136,15 @@ class Lifter:
                             'evidenceAddresses':sorted(set().union(*(e.deps for e in args))|{r['address'] for r in self.pending})})
         self.pending=[]
         if reset:self.wipe()
+
+    def emit_print(self,tail='',*,file_separator=',',kind='inferred',args=(),warnings=(),reset=False):
+        prefix='PRINT'
+        if self.output is UNKNOWN_OUTPUT:
+            warnings=(*warnings,'The current output channel is unknown; PRINT does not imply screen output.')
+            kind='partial'
+        elif self.output is not None:
+            prefix='PRINT#'+self.output+file_separator
+        self.emit(prefix+tail,kind,args=args,warnings=warnings,reset=reset)
 
     def barrier(self,reason):
         if self.pending:self.emit('REM UNRESOLVED: '+reason,'unresolved')
@@ -166,6 +180,10 @@ class Lifter:
         if rule.get('signedWord') and value>=32768:value-=65536
         return number(value)
 
+    def address_operand(self,e):
+        # The same word is signed in arithmetic, but an address uses all 16 bits.
+        return replace(e,text=str(e.word_literal)) if e.word_literal is not None else e
+
     def label(self,target):return '<?>' if target is None else f'L_{target:04X}'
 
     def function(self,name,args,dst,effect=False,warning=''):
@@ -196,7 +214,11 @@ class Lifter:
 
     def standard(self,r,rule):
         op=rule['op'];v=r.get('operands',{});n=r['mnemonic']
-        if op=='constant':self.set(rule['dst'],self.expr(self.constant(r,rule)))
+        if op=='constant':
+            e=self.expr(self.constant(r,rule))
+            if self.family=='basic64' and n=='CONST_WORD_INTEGER' and type(v.get('value')) is int and 0<=v['value']<=65535:
+                e.word_literal=v['value']
+            self.set(rule['dst'],e)
         elif op=='literal':self.set(rule['dst'],self.expr(rule['value']))
         elif op=='load':
             view={**r,'operands':{**v,rule['field']:rule['fixedAddress']}} if 'fixedAddress' in rule else r
@@ -216,7 +238,9 @@ class Lifter:
             if n in ('PUSH_FAC','FAC_TO_ARG') and self.family=='basic64':
                 text='VM_ROUND('+text+')'
                 if n=='FAC_TO_ARG':self.set('fac',self.expr(text,[e],warning))
-            self.set(rule['dst'],self.expr(text,[e],warning))
+            moved=self.expr(text,[e],warning)
+            if self.family=='basic64' and n=='PUSH_INTEGER':moved.word_literal=e.word_literal
+            self.set(rule['dst'],moved)
         elif op=='binary':
             if rule.get('leftFirst'):left=self.get(rule['left']);right=self.get(rule['right'])
             else:right=self.get(rule['right']);left=self.get(rule['left'])
@@ -235,6 +259,7 @@ class Lifter:
         elif op=='function':
             args=[self.get(x) for x in rule['args']]
             if rule.get('reverseArgs'):args.reverse()
+            if self.family=='basic64' and n=='PEEK_INTEGER':args[0]=self.address_operand(args[0])
             self.function(rule['name'],args,rule['dst'],rule.get('effect',False),rule.get('warning',''))
         elif op=='store':
             e=self.get(rule['src']);name=self.var(r,rule['field'],rule.get('page3',False))
@@ -250,15 +275,14 @@ class Lifter:
             self.set(rule['dst'],Expr(tmp,{r['address']},e.warnings,
                                      display_node=display.temporary(tmp) if self.family=='dtl' else None))
         elif op=='print_function':
-            e=self.get(rule['src']);prefix='PRINT' if self.output is None else 'PRINT#'+self.output+', '
-            self.emit(prefix+' '+rule['name']+'('+self.shown(e)+');',args=[e],reset=True)
+            e=self.get(rule['src'])
+            self.emit_print(' '+rule['name']+'('+self.shown(e)+');',file_separator=', ',args=[e],reset=True)
         elif op=='print_comma':
-            self.emit('PRINT ,' if self.output is None else 'PRINT#'+self.output+', ,',reset=True)
+            self.emit_print(' ,',reset=True)
         elif op in ('print','newline'):
-            prefix='PRINT' if self.output is None else 'PRINT#'+self.output+', '
-            if op=='newline':self.emit(prefix,reset=True)
+            if op=='newline':self.emit_print(file_separator=', ',reset=True)
             else:
-                e=self.get(rule['src']);self.emit(prefix+' '+self.shown(e)+rule.get('suffix','' if rule.get('newline') else ';'),args=[e],reset=True)
+                e=self.get(rule['src']);self.emit_print(' '+self.shown(e)+rule.get('suffix','' if rule.get('newline') else ';'),file_separator=', ',args=[e],reset=True)
             if rule.get('restoreChannels'):self.output=None;self.input=None
         elif op=='simple':
             text={'RESTORE_DATA':'RESTORE','NEW_AND_EXIT':'NEW','CLEAR_AND_RESTORE':'CLR'}.get(n,n)
@@ -289,6 +313,7 @@ class Lifter:
             args=[self.get(x) for x in rule['args']]
             if rule.get('reverseArgs'):args.reverse()
             if rule.get('reverseFirstTwo'):args[:2]=reversed(args[:2])
+            if self.family=='basic64' and n in ('POKE_BYTE','SYS','WAIT_BITS'):args[0]=self.address_operand(args[0])
             self.emit(rule['name']+' '+', '.join(self.shown(x) for x in args),args=args,reset=True,
                       statement=Statement('statement',tuple(display.node(x) for x in args),target=rule['name'],origin=r['address']))
             if rule.get('killsMemory'):self.wipe(io=True)
@@ -482,6 +507,13 @@ class Lifter:
             else:
                 value=self.get('fac');self.emit(dest.text+' = '+value.text,args=[dest,value],reset=True)
             return True
+        if self.family=='basic64' and n=='SET_ERROR_TARGET':
+            address=v.get('value')
+            if address==0 and 'target' not in v:text='REM disable custom error target'
+            elif type(address) is int and 0<address<=65535 and address==v.get('target'):
+                text=f'REM set runtime error target ${address:04X}'
+            else:return False
+            self.emit(text,'structural');self.wipe(io=True);return True
         if self.family=='basic64' and 'arrayBase' in v:
             rank=len(v['extentsReversed']);store=n.startswith('STORE')
             value=self.get('ss' if 'STRING' in n else 'iv' if 'INTEGER' in n else 'fac') if store else None
@@ -663,6 +695,9 @@ class Lifter:
                 else:self.barrier(r['mnemonic']+' semantics not yet modeled')
             if self.family=='dtl':self.capture_dtl_value(r)
         if self.pending:self.emit('REM UNRESOLVED trailing expression','unresolved')
+        if self.family=='blitz':
+            from blitz_for import fold_literal_headers
+            self.groups=fold_literal_headers(self.groups,self.report.get('scalarRecords',[]),self.targets)
         result={'schema':'pcode-basic-reconstruction-v1','family':self.identity_family,'sourceSupplied':False,'mapsUsed':False,
                 'groups':self.groups,'symbols':self.symbols,'instructionCount':len(self.rows),
                 'coverage':{kind:sum(len(g['instructions']) for g in self.groups if g['kind']==kind) for kind in ('inferred','embedded','structural','partial','unresolved')},

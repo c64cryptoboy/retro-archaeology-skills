@@ -17,6 +17,7 @@ cd analysis
 python3 -B rnd_query.py rank '7e 2a d3 ab c6'
 python3 -B rnd_query.py fac-to-seed '9f f1 ea b4 2a'
 python3 -B rnd_query.py components
+python3 -B rnd_query.py ti-range 61 3600
 python3 -B rnd_query.py verify-results
 ```
 
@@ -33,7 +34,8 @@ python3 -B rnd_query.py preimages '7e 2a d3 ab c6'
 ## Choose the relevant reference
 
 - [Results](analysis/FINAL_REPORT.md): graph inventory, statistics, useful seeds, and a complete small orbit.
-- [Seed reference](analysis/SEED_REFERENCE.md): canonical-domain derivation, negative-FAC image and inverse, shell maxima, expression-only proof, integer clock seeds, and `RND(0)`.
+- [Seed reference](analysis/SEED_REFERENCE.md): canonical-domain derivation, negative-FAC image and inverse, shell maxima, verified expression and bounded literal search, integer clock seeds, and `RND(0)`.
+- [Worked turn schedules](analysis/REPRODUCE.md#which-draws-does-a-turn-test): replay the same seed with and without discarded draws.
 - [Reproduction](analysis/REPRODUCE.md): requirements, commands, bounded tests, and the explicit exhaustive-run gate.
 - [Validation](analysis/VALIDATION.md): exact transition contracts, differential evidence, metadata layout, restart recovery, and negative controls.
 - [Sources](analysis/SOURCES.md): prior work, historical design evidence, attribution, and unresolved ROM-derived-code provenance.

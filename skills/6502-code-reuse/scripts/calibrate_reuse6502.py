@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 import argparse
+from copy import deepcopy
 import json
 import os
 from pathlib import Path
@@ -12,6 +13,14 @@ from typing import Any
 import anchor_scan6502 as anchor
 import reuse_align6502 as align
 from region_manifest import sha256
+
+
+LOCKED_TOOLS = (
+    "anchor_scan6502.py", "reuse_align6502.py", "exact_anchor_controls6502.py",
+    "region_manifest.py", "calibrate_reuse6502.py", "run_locked_reuse6502.py",
+    "dis6502.py", "../../../shared/6502/dis6502.py",
+)
+CONTROL_KINDS = ("left-byte-shuffle", "left-window-token-order-shuffle", "random-same-size-as-left")
 
 
 def load_json(path: Path, expected_format: str) -> dict[str, Any]:
@@ -44,9 +53,66 @@ def summarize_report(report: dict[str, Any]) -> list[dict[str, Any]]:
             "exactAnchors": comparison["exactAnchors"],
             "exactClusters": comparison["exactClusters"],
             **comparison["aggregate"],
+            "distinctProbableFamilies": len({
+                align.full_match_identity(match) for match in comparison["matches"]
+                if match["classification"] == "probable-shared-routine"
+            }),
         }
         for comparison in report["comparisons"]
     ]
+
+
+def input_pair(report: dict[str, Any]) -> list:
+    return [report.get("left"), report.get("right")]
+
+
+def gate_failures(report: dict[str, Any]) -> list[str]:
+    """Evaluate the retained evidence, not just a stored pass flag."""
+    config = report["lockedConfiguration"]["analysisConfiguration"]
+    known = report["knownPositive"]
+    controls = report["anchorControls"]
+    failures = []
+    if not any(c["distinctProbableFamilies"] >= 3 for c in known["comparisons"]):
+        failures.append("known positive needs three distinct probable full matches")
+    expected_controls = {
+        "instructionCount": config["seedInstructionCount"],
+        **{key: config[key] for key in ("minUniqueMnemonics", "maxOccurrencesPerRegion", "maxPairsPerFingerprint")},
+    }
+    if (not all(known["inputs"]) or controls["inputs"] != known["inputs"]
+            or any(controls["configuration"].get(k) != v for k, v in expected_controls.items())):
+        failures.append("anchor controls must use the known pair and primary anchor settings")
+    for kind in CONTROL_KINDS:
+        if not controls["byKind"].get(kind, {}).get("trials"):
+            failures.append(f"missing anchor control trials: {kind}")
+    if controls["maximumAcceptedAnchorPairs"] != 0:
+        failures.append("generated control contains accepted anchors")
+    unrelated = report["unrelatedRealProgramControls"]
+    if not any(item["comparisons"] and item["configuration"] == config
+               and item["decoderProfile"] == report["lockedConfiguration"]["decoderProfile"]
+               for item in unrelated["reports"]):
+        failures.append("missing unrelated comparison under primary settings")
+    if unrelated["maximumProbableSharedRoutines"] != 0:
+        failures.append("unrelated control contains probable routines")
+    if report["commonIdiomControl"]["classification"] == "probable-shared-routine":
+        failures.append("common idiom classified as probable")
+
+    known_regions = {(c["leftRegion"], c["rightRegion"]) for c in known["comparisons"]}
+    for key, value in (("seed", 6), ("seed", 10), ("paired", 12), ("paired", 20)):
+        variant = deepcopy(config)
+        if key == "seed":
+            variant["seedInstructionCount"] = value
+        else:
+            variant["classificationThresholds"]["probableSharedRoutine"]["minimumPairedInstructions"] = value
+        if not any(
+            run["inputs"] == known["inputs"] and run["configuration"] == variant
+            and run["decoderProfile"] == report["lockedConfiguration"]["decoderProfile"]
+            and run["comparisons"] and known_regions == {
+                (c["leftRegion"], c["rightRegion"]) for c in run["comparisons"]
+            }
+            for run in known["sensitivityRuns"]
+        ):
+            failures.append(f"missing known-positive sensitivity: {key}={value}")
+    return failures
 
 
 def calibrate(
@@ -68,7 +134,8 @@ def calibrate(
 
     known_summary = summarize_report(known)
     unrelated_summary = [
-        {"path": str(path), "comparisons": summarize_report(report)}
+        {"path": str(path), "configuration": report["configuration"], "decoderProfile": report["decoderProfile"],
+         "sha256": sha256(path.read_bytes()), "comparisons": summarize_report(report)}
         for path, report in unrelated
     ]
     control_trials = [
@@ -113,16 +180,11 @@ def calibrate(
     tool_dir = Path(__file__).resolve().parent
     tool_hashes = {
         name: sha256((tool_dir / name).read_bytes())
-        for name in (
-            "anchor_scan6502.py",
-            "reuse_align6502.py",
-            "exact_anchor_controls6502.py",
-            "region_manifest.py",
-        )
+        for name in LOCKED_TOOLS
     }
 
     locked_configuration = {
-        "version": 1,
+        "version": 2,
         "createdBeforeTargetComparison": True,
         "decoderProfile": known["decoderProfile"],
         "analysisConfiguration": known["configuration"],
@@ -149,18 +211,12 @@ def calibrate(
     }
 
     idiom = common_idiom_control()
-    passes = (
-        max_control_anchors == 0
-        and max_unrelated_probable == 0
-        and idiom["classification"] != "probable-shared-routine"
-        and any(item["probableSharedRoutines"] >= 3 for item in known_summary)
-    )
-    return {
+    report = {
         "format": "6502-reuse-calibration",
-        "version": 1,
-        "stage3GatePassed": passes,
+        "version": 2,
         "knownPositive": {
             "path": str(known_path),
+            "inputs": input_pair(known),
             "sha256": sha256(known_path.read_bytes()),
             "comparisons": known_summary,
             "sensitivityRuns": [
@@ -168,6 +224,8 @@ def calibrate(
                     "path": str(path),
                     "sha256": sha256(path.read_bytes()),
                     "configuration": sensitivity_report["configuration"],
+                    "inputs": input_pair(sensitivity_report),
+                    "decoderProfile": sensitivity_report["decoderProfile"],
                     "comparisons": summarize_report(sensitivity_report),
                 }
                 for path, sensitivity_report in sensitivity
@@ -175,6 +233,8 @@ def calibrate(
         },
         "anchorControls": {
             "path": str(anchor_controls_path),
+            "inputs": input_pair(controls),
+            "configuration": controls["configuration"],
             "sha256": sha256(anchor_controls_path.read_bytes()),
             "trialCount": len(control_trials),
             "maximumAcceptedAnchorPairs": max_control_anchors,
@@ -202,21 +262,20 @@ def calibrate(
             "caution": "These are controls, not proof that no historical code relationship exists.",
         },
         "lockedConfiguration": locked_configuration,
-        "rationale": [
-            "The supplied known-positive produces multiple long probable routines and broad unique-byte coverage.",
-            "Random, byte-order-shuffled, and per-window token-order-shuffled controls produce no eight-instruction anchors.",
-            "Unrelated real-game controls produce no probable routines; the strongest result is one eight-instruction candidate.",
-            "An identical eight-instruction common idiom remains candidate-only because it does not meet the 16-instruction probable threshold.",
-            "Thresholds and tool hashes must be locked before the target comparison to prevent post-hoc tuning.",
-        ],
     }
+    report["gateFailures"] = gate_failures(report)
+    report["stage3GatePassed"] = not report["gateFailures"]
+    return report
 
 
 def build_lock(
     report: dict[str, Any], calibration_path: Path, lock_path: Path
 ) -> dict[str, Any]:
-    if not report.get("stage3GatePassed"):
+    if (report.get("format") != "6502-reuse-calibration" or report.get("version") != 2
+            or not report.get("stage3GatePassed") or gate_failures(report)):
         raise ValueError("cannot lock a calibration that did not pass")
+    if json.loads(calibration_path.read_text()) != report:
+        raise ValueError("source calibration differs from supplied report")
     lock = dict(report["lockedConfiguration"])
     lock["format"] = "6502-reuse-locked-investigation-configuration"
     lock["createdBeforeTargetComparison"] = True
@@ -230,7 +289,8 @@ def build_lock(
 def render_markdown(report: dict[str, Any]) -> str:
     known = max(
         report["knownPositive"]["comparisons"],
-        key=lambda item: item["probableSharedRoutines"],
+        key=lambda item: item["distinctProbableFamilies"],
+        default=None,
     )
     unrelated = report["unrelatedRealProgramControls"]
     idiom = report["commonIdiomControl"]
@@ -239,10 +299,12 @@ def render_markdown(report: dict[str, Any]) -> str:
         "",
         f"**Gate passed:** {'yes' if report['stage3GatePassed'] else 'no'}",
         "",
+        *[f"- {reason}" for reason in report["gateFailures"]],
+        "",
         "## Separation observed",
         "",
-        f"- Known-positive probable routines: **{known['probableSharedRoutines']}**",
-        f"- Known-positive unique covered bytes: **{known['uniqueLeftBytes']} / {known['uniqueRightBytes']}**",
+        f"- Known-positive distinct probable families: **{known['distinctProbableFamilies'] if known else 0}**",
+        f"- Known-positive unique covered bytes: **{known['uniqueLeftBytes'] if known else 0} / {known['uniqueRightBytes'] if known else 0}**",
         f"- Maximum random/shuffle control anchors: **{report['anchorControls']['maximumAcceptedAnchorPairs']}**",
         f"- Maximum unrelated-control probable routines: **{unrelated['maximumProbableSharedRoutines']}**",
         f"- Maximum unrelated-control candidates: **{unrelated['maximumCandidateSimilarities']}**",
@@ -252,6 +314,8 @@ def render_markdown(report: dict[str, Any]) -> str:
         "",
     ]
     for sensitivity in report["knownPositive"]["sensitivityRuns"]:
+        if not sensitivity["comparisons"]:
+            continue
         strongest = max(
             sensitivity["comparisons"],
             key=lambda item: item["probableSharedRoutines"],
@@ -309,7 +373,7 @@ def main() -> None:
         args.markdown.write_text(render_markdown(report))
         print(f"wrote {args.markdown}")
     if not report["stage3GatePassed"]:
-        raise SystemExit("Stage 3 calibration gate did not pass")
+        raise SystemExit("Stage 3 calibration gate did not pass: " + "; ".join(report["gateFailures"]))
     if args.lock:
         args.lock.parent.mkdir(parents=True, exist_ok=True)
         lock = build_lock(report, args.output_json, args.lock)

@@ -101,10 +101,12 @@ Probable shared routine:
 
 Whole-comparison interpretation:
 
-- strong shared-code lineage: at least 3 probable routines, 48 supporting pairs, and 256 unique bytes per side;
+- strong shared-code lineage: at least 3 distinct probable full-match families, 48 supporting pairs, and 256 unique bytes per side, counting the first reported location per family;
 - limited shared-routine evidence: at least 1 probable routine but not the strong gate;
 - candidate-only: candidates but no probable routines;
 - no detected reuse: no qualifying candidates under the locked configuration.
+
+Two locations share an automatic family only if both complete aligned instruction byte sequences match exactly, including unpaired instructions.  Seeds, subwindows, and addresses do not define family identity.  All reported locations remain inspectable.  Relocated clones, differently bounded matches, and semantic relatives still need manual review; distinct byte pairs are not proof of independent ancestry.
 
 These thresholds were validated on one research corpus. Recalibrate when CPU profiles, capture types, or expected edit patterns materially differ.
 

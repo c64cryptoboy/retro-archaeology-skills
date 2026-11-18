@@ -128,6 +128,7 @@ class RunResult:
     entry_events: tuple[EntryEvent, ...] = ()
     exception_type: str | None = None
     exception_message: str | None = None
+    observed_pcs: frozenset[int] = frozenset()
 
     @property
     def reached_legal_exit(self):
@@ -235,6 +236,7 @@ def run_routine_on_cpu(spec: RoutineSpec, initial: InitialState,
         entry_events=tuple(entry_events),
         exception_type=exception_type,
         exception_message=exception_message,
+        observed_pcs=spec.observed_pcs,
     )
 
 

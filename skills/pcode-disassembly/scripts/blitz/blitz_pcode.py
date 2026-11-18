@@ -467,6 +467,21 @@ def render_record(record: dict[str, Any]) -> str:
     return f"{address}  {raw} {record['mnemonic']:<22} {operand}".rstrip()
 
 
+@dataclass(frozen=True)
+class _FetchView(Image):
+    """Instruction-local view.  Only the opcode was sampled at this fetch."""
+    fetch: int
+    opcode: int
+    changed_addresses: set[int]
+
+    def read(self, address: int, length: int) -> bytes:
+        raw = super().read(address, length)
+        for operand in range(max(address, self.fetch + 1), address + length):
+            if operand in self.changed_addresses:
+                raise DecodeError(f"patched operand byte at ${operand:04X} is not established for this fetch")
+        return bytes([self.opcode]) + raw[1:] if address == self.fetch else raw
+
+
 def validate_trace(image: Image, profile: dict[str, Any], trace_path: Path) -> dict[str, Any]:
     trace = json.loads(trace_path.read_text())
     names = variable_names(image, profile)
@@ -475,22 +490,27 @@ def validate_trace(image: Image, profile: dict[str, Any], trace_path: Path) -> d
         int(item["address"]): (int(item["original"]), int(item["observed"]))
         for item in trace.get("memoryPatches", [])
     }
+    changed_addresses = {address for address, (old, new) in overrides.items() if old != new}
     rows = []
     errors = []
     for index, entry in enumerate(entries):
         address = int(entry["address"])
-        record = decode_one(image, profile, address, names)
+        original_opcode = image.read(address, 1)[0]
         logged_opcode = int(entry["opcode"])
-        override = overrides.get(address)
-        opcode_ok = record["opcode"] == logged_opcode or (
-            override is not None
-            and record["opcode"] == override[0]
-            and logged_opcode == override[1]
-        )
-        if not opcode_ok:
-            errors.append(
-                {"index": index, "kind": "opcode-mismatch", "record": record, "logged": logged_opcode}
-            )
+        record = {"address": address, "originalOpcode": original_opcode, "opcode": logged_opcode, "size": None}
+        changed = logged_opcode != original_opcode
+        if changed and overrides.get(address) != (original_opcode, logged_opcode):
+            errors.append({"index": index, "kind": "opcode-mismatch", "record": record, "logged": logged_opcode})
+        else:
+            try:
+                view = (_FetchView(image.path, image.load, image.data, image.sha256, address,
+                                   logged_opcode, changed_addresses) if changed_addresses else image)
+                record.update(decode_one(view, profile, address, names))
+                if record["size"] is None:
+                    raise DecodeError(record["diagnostic"])
+            except DecodeError as exc:
+                record["diagnostic"] = str(exc)
+                errors.append({"index": index, "kind": "undecodable-fetch", "record": record})
         next_address = int(entries[index + 1]["address"]) if index + 1 < len(entries) else None
         if next_address is not None and record["size"] is not None:
             allowed, _ = successors(record, profile)

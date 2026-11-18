@@ -9,6 +9,7 @@ import json
 from pathlib import Path
 from typing import Any
 
+import calibrate_reuse6502 as calibration
 import reuse_align6502 as align
 
 
@@ -26,6 +27,10 @@ def verify_lock(lock_path: Path) -> dict[str, Any]:
         raise LockedRunError("not a locked 6502 reuse configuration")
     if not lock.get("createdBeforeTargetComparison"):
         raise LockedRunError("configuration lacks pre-target lock declaration")
+    if lock.get("version") != 2:
+        raise LockedRunError("legacy or unsupported lock; recalibration required")
+    if set(lock.get("toolSha256", {})) != set(calibration.LOCKED_TOOLS):
+        raise LockedRunError("incomplete or unexpected locked tool set")
     tool_dir = Path(__file__).resolve().parent
     mismatches = []
     for name, expected in lock.get("toolSha256", {}).items():
@@ -35,13 +40,15 @@ def verify_lock(lock_path: Path) -> dict[str, Any]:
             mismatches.append({"tool": name, "expected": expected, "actual": actual})
     if mismatches:
         raise LockedRunError(f"locked tool hash mismatch: {mismatches}")
-    calibration = lock.get("sourceCalibration")
-    if calibration:
-        source = Path(calibration["path"])
-        if not source.is_absolute():
-            source = lock_path.parent / source
-        if not source.is_file() or digest(source) != calibration["sha256"]:
-            raise LockedRunError("source calibration hash mismatch")
+    reference = lock.get("sourceCalibration")
+    if not reference or not reference.get("path"):
+        raise LockedRunError("missing source calibration")
+    source = lock_path.parent / reference["path"]
+    if not source.is_file() or digest(source) != reference.get("sha256"):
+        raise LockedRunError("source calibration hash mismatch")
+    report = json.loads(source.read_text())
+    if lock != calibration.build_lock(report, source, lock_path):
+        raise LockedRunError("lock differs from passing source calibration")
     return lock
 
 
@@ -70,28 +77,18 @@ def overall_evidence(report: dict[str, Any], lock: dict[str, Any]) -> dict[str, 
             elif match["classification"] == "candidate-similarity":
                 candidates.append(item)
 
-    left_by_region: dict[str, list[tuple[int, int]]] = {}
-    right_by_region: dict[str, list[tuple[int, int]]] = {}
-    supporting = 0
+    families = {}
     for item in probable:
-        comparison, match = item["comparison"], item["match"]
-        left_by_region.setdefault(comparison["leftRegion"], []).append(
-            (match["leftStart"], match["leftEndExclusive"])
-        )
-        right_by_region.setdefault(comparison["rightRegion"], []).append(
-            (match["rightStart"], match["rightEndExclusive"])
-        )
-        supporting += match["metrics"]["supportingPairs"]
-    unique_left = sum(union_size(intervals) for intervals in left_by_region.values())
-    unique_right = sum(union_size(intervals) for intervals in right_by_region.values())
+        families.setdefault(align.full_match_identity(item["match"]), item)
+    locations = coverage(probable)
+    independent = coverage(families.values())
 
     interpretation = lock["comparisonInterpretation"]
     strong = interpretation["strongSharedCodeLineage"]
     if (
-        len(probable) >= strong["minimumProbableSharedRoutines"]
-        and unique_left >= strong["minimumUniqueBytesEachSide"]
-        and unique_right >= strong["minimumUniqueBytesEachSide"]
-        and supporting >= strong["minimumSupportingInstructionPairs"]
+        len(families) >= strong["minimumProbableSharedRoutines"]
+        and min(independent["uniqueLeftBytes"], independent["uniqueRightBytes"]) >= strong["minimumUniqueBytesEachSide"]
+        and independent["supportingInstructionPairs"] >= strong["minimumSupportingInstructionPairs"]
     ):
         classification = "strong-shared-code-lineage"
     elif len(probable) >= interpretation["limitedSharedRoutineEvidence"]["minimumProbableSharedRoutines"]:
@@ -104,15 +101,38 @@ def overall_evidence(report: dict[str, Any], lock: dict[str, Any]) -> dict[str, 
     return {
         "classification": classification,
         "probableSharedRoutines": len(probable),
+        "distinctProbableFamilies": len(families),
+        "familyRepresentativeTotals": independent,
         "candidateSimilarities": len(candidates),
-        "uniqueLeftBytes": unique_left,
-        "uniqueRightBytes": unique_right,
-        "supportingInstructionPairs": supporting,
+        **locations,
         "cautions": [
             "Similarity does not establish copying direction, authorship, or legal provenance.",
             "A null result is bounded by captured/resident bytes, supported opcodes, normalization, and edit thresholds.",
-            "Counts use reported deduplicated matches; per-region aggregate fields remain available in the full report.",
+            "The strong gate counts the first reported location per exact full-match family.",
         ],
+    }
+
+
+def coverage(items) -> dict[str, int]:
+    left_by_region: dict[str, list[tuple[int, int]]] = {}
+    right_by_region: dict[str, list[tuple[int, int]]] = {}
+    supporting = 0
+    for item in items:
+        comparison, match = item["comparison"], item["match"]
+        left_by_region.setdefault(comparison["leftRegion"], []).append(
+            (match["leftStart"], match["leftEndExclusive"])
+        )
+        right_by_region.setdefault(comparison["rightRegion"], []).append(
+            (match["rightStart"], match["rightEndExclusive"])
+        )
+        supporting += match["metrics"]["supportingPairs"]
+    unique_left = sum(union_size(intervals) for intervals in left_by_region.values())
+    unique_right = sum(union_size(intervals) for intervals in right_by_region.values())
+
+    return {
+        "uniqueLeftBytes": unique_left,
+        "uniqueRightBytes": unique_right,
+        "supportingInstructionPairs": supporting,
     }
 
 
@@ -157,6 +177,7 @@ def render_markdown(report: dict[str, Any]) -> str:
         f"**Primary classification:** `{evidence['classification']}`",
         "",
         f"- Probable shared routines: **{evidence['probableSharedRoutines']}**",
+        f"- Distinct exact probable families: **{evidence['distinctProbableFamilies']}**",
         f"- Candidate similarities: **{evidence['candidateSimilarities']}**",
         f"- Unique covered bytes: left **{evidence['uniqueLeftBytes']}**, right **{evidence['uniqueRightBytes']}**",
         f"- Supporting instruction pairs: **{evidence['supportingInstructionPairs']}**",

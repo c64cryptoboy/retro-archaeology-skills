@@ -124,8 +124,9 @@ class AppleDos33Tests(unittest.TestCase):
         self.assertNotIn('files/entry-000/payload.bin', artifacts)
 
     def test_leading_and_internal_gaps_preserve_observed_bytes_only(self):
-        for start, pairs, gaps in ((5, ((1, 0),), [0, 1, 2, 3, 4]),
-                                   (0, ((1, 0), (0, 0), (1, 1)), [1])):
+        for start, pairs, gaps, zero_pair, unlisted in (
+                (5, ((1, 0),), [0, 1, 2, 3, 4], [], [0, 1, 2, 3, 4]),
+                (0, ((1, 0), (0, 0), (1, 1)), [1], [1], [])):
             with self.subTest(start=start):
                 disk = Disk()
                 disk.entry(count=1 + sum(pair != (0, 0) for pair in pairs))
@@ -136,11 +137,48 @@ class AppleDos33Tests(unittest.TestCase):
                 entry = manifest['files'][0]
                 self.assertIn('file_gaps', codes(manifest))
                 self.assertEqual(entry['gaps'], gaps)
+                self.assertEqual(entry['zero_pair_gaps'], zero_pair)
+                self.assertEqual(entry['unlisted_gaps'], unlisted)
+                self.assertTrue(entry['allocation_chain_complete'])
                 self.assertEqual(entry['assembly'], 'not_assembled')
                 self.assertNotIn('files/entry-000/allocated.bin', artifacts)
                 self.assertNotIn('files/entry-000/payload.bin', artifacts)
                 self.assertEqual(artifacts['files/entry-000/data-0000.bin'], b'a' * 256)
                 self.assertEqual(len(entry['data_sectors']), len(pairs) - pairs.count((0, 0)))
+
+    def test_text_records_with_and_without_an_empty_slot(self):
+        for sparse in (False, True):
+            with self.subTest(sparse=sparse):
+                disk = Disk()
+                disk.entry(file_type=0, count=3)
+                disk.ts_list(pairs=[(1, 0)] + ([(0, 0)] if sparse else []) + [(1, 1)])
+                records = [b'a' * 256, b'b' * 256]
+                for sector, record in enumerate(records):
+                    disk.sector(1, sector)[:] = record
+                manifest, artifacts = disk.read()
+                entry = manifest['files'][0]
+                self.assertEqual([item['file_sector'] for item in entry['data_sectors']],
+                                 [0, 2] if sparse else [0, 1])
+                self.assertEqual([artifacts[item['artifact']] for item in entry['data_sectors']], records)
+                self.assertEqual(entry['zero_pair_gaps'], [1] if sparse else [])
+                self.assertEqual(entry['unlisted_gaps'], [])
+                if sparse:
+                    self.assertEqual(codes(manifest), {'file_gaps'})
+                    self.assertNotIn('files/entry-000/allocated.bin', artifacts)
+                else:
+                    self.assertEqual(manifest['issues'], [])
+                    self.assertEqual(artifacts['files/entry-000/allocated.bin'], b''.join(records))
+
+    def test_invalid_listed_coordinate_is_not_unlisted_or_zero(self):
+        disk = Disk()
+        disk.entry()
+        disk.ts_list(pairs=((35, 0), (1, 0)))
+        manifest, _ = disk.read()
+        entry = manifest['files'][0]
+        self.assertIn('invalid_data_coordinate', codes(manifest))
+        self.assertEqual(entry['gaps'], [0])
+        self.assertEqual(entry['zero_pair_gaps'], [])
+        self.assertEqual(entry['unlisted_gaps'], [])
 
     def test_catalog_and_ts_cycles(self):
         disk = Disk().basic()

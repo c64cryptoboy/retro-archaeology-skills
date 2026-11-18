@@ -537,11 +537,11 @@ trajectory after seeding despite having different numeric arguments.
   `mu=58,680`, and `lambda=58,078`.
 - The four source expressions were validated live on a stock-ROM C64 during the original investigation.
 
-## Expression-only direct seed proof
+## Direct expression seed and bounded literal search
 
 ### Result
 
-Under ordinary C64 BASIC V2 numeric-literal syntax, the canonical state
+The canonical state
 
 ```text
 RNDX = 77 0a 47 03 00
@@ -566,21 +566,16 @@ The negative-RND shuffle maps this to `77 0a 47 03 00`.  A live stock-ROM C64 ru
 
 This state has exactly one valid normalized negative-FAC preimage: `80 81 23 45 00`.  Consequently, an alternate FAC preimage cannot make the same seed literal-accessible.
 
-### Why one numeric literal cannot seed it
+### What the literal search establishes
 
-The exact input magnitude is approximately `0.504444420337677`.  Every ordinary finite decimal spelling can be normalized to a significant-digit integer `D` and net decimal scale.  For a value in `[0.1,1)`, an `n`-digit `D` must have net scale `10^-n`.  Moving the decimal point or using `E` notation changes only the spelling of this same pair.  Leading zeroes do not affect accumulation; trailing zeroes are additional significant-digit steps and were included.
+No sampled literal produced the target FAC.  The search tried normalized spellings `-.D` at lengths 1 through 38, using binary search and nearby probes rather than enumerating every digit string.  FIN rounds while accumulating digits, before the final decimal scaling.  Adjacent equal-length digit strings need not produce ordered magnitudes:
 
-The pinned ROM's FIN routine first accumulates all digits using positive `FAC = FAC*10 + digit`, then applies the decimal-point/exponent scale.  These operations and their rounding are monotone.  For each significant length 1 through 38, a binary search found the adjacent parser outputs bracketing the target but never the target itself.  At the useful precision the gap is clear:
+| Literal | FIN magnitude | Relative to target `80 81 23 45 00` |
+|---|---|---|
+| `-.504444420399` | `80 81 23 45 01` | Above |
+| `-.504444420400` | `80 81 23 44 ff` | Below |
 
-```text
-lower FAC: 80 81 23 44 ff
-target:    80 81 23 45 00
-upper FAC: 80 81 23 45 01
-```
-
-For 39 or more target-sized significant digits, the unscaled accumulator starts near `5.04e38`, exceeding the approximately `1.7e38` FAC maximum before FIN applies the decimal scale.  The ROM therefore takes its overflow path.  Thus no longer decimal spelling closes the gap.
-
-The search covered optional decimal-point placement and equivalent `E` notation through normalization, not merely decimal renderings near the mathematical value.
+The reversal invalidates the binary-search exclusion argument.  It does not produce a matching literal either.  Whether any single literal reaches this seed remains unresolved; the expression and the unique FAC preimage are unaffected.  The retained search log is historical, not a proof.
 
 ### Validation
 
@@ -614,7 +609,7 @@ printf '%s\n' '-.311306466' | ./scratch/generated_fin "$ROM_DIR/basic.bin" "$ROM
 The output is the input literal, a tab, and FAC bytes `7f9f638fa5ff`, including the
 separate negative sign byte.  The generator creates source, not an executable;
 no compiled binary is bundled.  This single parser check does not rerun the
-historical reachability searches or establish their proof by itself.
+historical search or establish literal exclusion.
 
 The generated C contains mechanically ROM-derived code and is included with the same provenance/licensing-uncertainty notices as `generated_rnd_cycle.c`; its redistribution status is unresolved, and inclusion is not a license grant.
 

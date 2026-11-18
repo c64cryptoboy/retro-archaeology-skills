@@ -10,7 +10,13 @@ def main():
     args=p.parse_args(); base, old=load_prg(args.before); after_base,new=load_prg(args.after)
     if base != after_base or len(old) != len(new): p.error('images must have identical load address and length')
     watched=set()
-    if args.cfg_json: watched |= {x['pc'] for x in read_json(args.cfg_json)['instructions']}
+    if args.cfg_json:
+        for ins in read_json(args.cfg_json)['instructions']:
+            if ins.get('invalid') or ins.get('truncated'):
+                continue
+            size = len(ins.get('bytes', []))
+            if size == ins.get('length'):
+                watched.update(range(ins['pc'], ins['pc'] + size))
     if args.executed_json:
         raw=read_json(args.executed_json); watched |= set(raw.get('executedPcs',raw) if isinstance(raw,dict) else raw)
     changes=[]

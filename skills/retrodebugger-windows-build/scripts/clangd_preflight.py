@@ -69,9 +69,10 @@ def classify(log, process):
         reasons.append("missing_or_ambiguous_completion")
     if "Compile command from CDB is:" not in log or "Generic fallback command" in log:
         reasons.append("explicit_compile_command_not_confirmed")
-    context_codes = ("pp_file_not_found", "pp_hash_error", "fatal_too_many_errors",
-                     "drv_", "err_drv_", "module_not_found", "module_file_not_found")
-    if any(any(code in line for code in context_codes) for line in diagnostics):
+    context_codes = {"pp_file_not_found", "pp_hash_error", "fatal_too_many_errors",
+                     "module_not_found", "module_file_not_found"}
+    diagnostic_ids = (line[1:line.index("]")] for line in diagnostics)
+    if any(code in context_codes or code.startswith(("drv_", "err_drv_")) for code in diagnostic_ids):
         reasons.append("context_or_parse_blocker")
     if len(errors) != len(diagnostics):
         reasons.append("non_diagnostic_tool_errors")

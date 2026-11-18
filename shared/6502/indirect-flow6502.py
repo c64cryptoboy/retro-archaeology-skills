@@ -14,10 +14,12 @@ def main():
     for ins in instructions:
         if ins.get('mnemonic')=='JMP' and ins.get('mode')=='ind' and not ins.get('truncated'):
             pointer=operand_word(ins); writes=[]
+            # NMOS JMP (indirect) wraps the high-byte fetch within the pointer's page.
+            high_addr = (pointer & 0xff00) | ((pointer + 1) & 0xff)
             for writer in instructions:
                 if writer.get('mnemonic') in {'STA','STX','STY'} and writer.get('mode')=='abs' and not writer.get('truncated'):
                     dest=operand_word(writer)
-                    if dest in {pointer,(pointer+1)&0xffff}: writes.append({'pc':writer['pc'],'mnemonic':writer['mnemonic'],'byte':'low' if dest==pointer else 'high'})
+                    if dest in {pointer, high_addr}: writes.append({'pc':writer['pc'],'mnemonic':writer['mnemonic'],'byte':'low' if dest==pointer else 'high'})
             sites.append({'pc':ins['pc'],'pointer':pointer,'staticPointerByteWrites':writes,
                           'status':'unresolved; inspect runtime pointer value and writers'})
     dump({'loadAddress':base,'indirectJumpSites':sites,

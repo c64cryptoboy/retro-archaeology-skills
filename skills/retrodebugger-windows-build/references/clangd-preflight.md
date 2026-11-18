@@ -21,7 +21,7 @@ The output directory must be new.  The helper saves the command, raw log, input 
 | 1 | The check completed with source findings. |
 | 2 | Coverage unavailable: missing context, fallback command, tool failure, timeout, incomplete log, or changed input. |
 
-Review raw logs and `result.json`, not only the exit code.  An unfamiliar diagnostic format may require classifier maintenance; this is not a universal clangd protocol parser.  Feature-check failures remain tool errors even when usable compiler diagnostics are present.  In particular, `tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.` must not be suppressed to produce a clean result.
+Review raw logs and `result.json`, not only the exit code.  Context blockers are identified by bracketed diagnostic IDs, not message text: an undeclared `drv_init` is a source finding, while `[pp_file_not_found]` means coverage is unavailable.  An unfamiliar diagnostic format may require classifier maintenance; this is not a universal clangd protocol parser.  Feature-check failures remain tool errors even when usable compiler diagnostics are present.  In particular, `tweak: ExtractFunction ==> FAIL: Cannot extract break/continue without corresponding loop/switch statement.` must not be suppressed to produce a clean result.
 
 ## Explicit translation-unit scope
 

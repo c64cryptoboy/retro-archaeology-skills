@@ -147,7 +147,13 @@ class SemanticTests(unittest.TestCase):
         self.assertEqual(texts(r),'PRINT 9,')
     def test_io_selection_not_assumed_at_join(self):
         r=program('petspeed',row('GOTO',operands={'target':0x1003}),row('CONST_U8_FAC',3),row('SELECT_OUTPUT_CHANNEL'),row('PRINT_NEWLINE'))
-        self.assertIn('PRINT#<?>',texts(r))
+        g=r['groups'][-1];self.assertEqual((g['text'],g['kind']),('PRINT','partial'))
+        self.assertTrue(any('current output channel is unknown' in w for w in g['warnings']))
+    def test_unknown_selected_file_is_not_an_unknown_ambient_channel(self):
+        r=program('petspeed',row('SELECT_OUTPUT_CHANNEL'),row('PRINT_NEWLINE'),row('RESTORE_CHANNELS'),row('PRINT_NEWLINE'))
+        selected,restored=r['groups'][1],r['groups'][-1]
+        self.assertEqual((selected['text'].strip(),selected['kind']),('PRINT#<?>,','partial'))
+        self.assertEqual((restored['text'],restored['kind']),('PRINT','inferred'))
     def test_pet_for_limit_captured_before_initialization(self):
         r=program('petspeed',row('LOAD_FAC_VAR',operands={'variable':0x2800}),row('FOR_LIMIT'),row('CONST_U8_FAC',2),row('FOR_ENTER',0x2800),row('END'))
         self.assertIn('T_LIMIT_1001 = V_2800',texts(r));self.assertIn('FOR V_2800 = 2 TO T_LIMIT_1001',texts(r))
@@ -168,7 +174,9 @@ class SemanticTests(unittest.TestCase):
         self.assertIn('V_2800 = <?>',texts(r))
     def test_unknown_kills_stale_fac_and_channel(self):
         r=program('petspeed',row('CONST_U8_FAC',19),row('UNMODELED_EFFECT'),store(),row('PRINT_NEWLINE'))
-        self.assertIn('V_2800 = <?>',texts(r));self.assertIn('PRINT#<?>',texts(r))
+        self.assertIn('V_2800 = <?>',texts(r))
+        g=r['groups'][-1];self.assertEqual((g['text'],g['kind']),('PRINT','partial'))
+        self.assertTrue(any('current output channel is unknown' in w for w in g['warnings']))
     def test_target_join_kills_stale_value(self):
         r=program('petspeed',row('CONST_U8_FAC',19),store(),row('GOTO',operands={'target':0x1001}))
         self.assertIn('V_2800 = <?>',texts(r))
@@ -218,10 +226,10 @@ class SemanticTests(unittest.TestCase):
     def test_dtl_fn_can_change_channel_and_usr_still_invalidates(self):
         r=program('dtl',row('INTEGER_BYTE',2),row('FN_CALL',operands={'name':'F','value':1}))
         self.assertEqual(r['coverage']['partial'],0)
-        from symbolic import Lifter
+        from symbolic import Lifter, UNKNOWN_OUTPUT
         call=Lifter('dtl',{'instructions':[]});call.current={'address':0x1000};call.output='3';call.input='4'
         call.function('FN F',[call.expr('1',stable=True)],'stack',True)
-        self.assertEqual((call.output,call.input),('<?>','<?>'))
+        self.assertIs(call.output,UNKNOWN_OUTPUT);self.assertEqual(call.input,'<?>')
         r=program('dtl',row('INTEGER_BYTE',5),row('INTEGER_BYTE',2),row('FUNCTION',operands={'operation':'USR'}),row('ADD'),row('STORE_REAL_SCALAR',operands={'name':'B','value':1}))
         self.assertIn('B = <?> + T_1002',texts(r))
     def test_other_family_fn_does_not_inherit_dtl_stack_preservation(self):

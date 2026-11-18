@@ -1,4 +1,3 @@
-import hashlib
 import json
 import sys
 import tempfile
@@ -13,6 +12,7 @@ from calibrate_reuse6502 import build_lock
 from make_region_manifest6502 import create_manifest
 from reuse_align6502 import analyze_manifests
 from run_locked_reuse6502 import run_locked
+from reuse_fixture import complete_calibration
 
 
 LEFT = bytes.fromhex(
@@ -49,38 +49,8 @@ class EndToEndSyntheticTest(unittest.TestCase):
             self.assertGreaterEqual(match["metrics"]["relationalExact"], 16)
             self.assertEqual(match["metrics"]["different"], 0)
 
-            tool_hashes = {
-                name: hashlib.sha256((SCRIPTS / name).read_bytes()).hexdigest()
-                for name in (
-                    "anchor_scan6502.py",
-                    "reuse_align6502.py",
-                    "exact_anchor_controls6502.py",
-                    "region_manifest.py",
-                )
-            }
-            calibration = {
-                "stage3GatePassed": True,
-                "lockedConfiguration": {
-                    "version": 1,
-                    "decoderProfile": "shared official NMOS 6502 subset",
-                    "analysisConfiguration": report["configuration"],
-                    "comparisonInterpretation": {
-                        "strongSharedCodeLineage": {
-                            "minimumProbableSharedRoutines": 3,
-                            "minimumUniqueBytesEachSide": 256,
-                            "minimumSupportingInstructionPairs": 48,
-                        },
-                        "limitedSharedRoutineEvidence": {
-                            "minimumProbableSharedRoutines": 1
-                        },
-                        "candidateOnly": {
-                            "minimumCandidateSimilarities": 1,
-                            "maximumProbableSharedRoutines": 0,
-                        },
-                    },
-                    "toolSha256": tool_hashes,
-                },
-            }
+            calibration, _ = complete_calibration(root)
+            self.assertTrue(calibration["stage3GatePassed"], calibration["gateFailures"])
             calibration_path = root / "calibration.json"
             lock_path = root / "lock.json"
             calibration_path.write_text(json.dumps(calibration))

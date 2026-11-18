@@ -176,6 +176,27 @@ def command_components(args: argparse.Namespace) -> None:
               f"{row['medianMu']:>10} {row['maxMu']:>7} {row['basin']:>13}")
 
 
+def ti_range_counts(first: int, last: int) -> dict[int, int]:
+    if first < 1 or last < first:
+        raise ValueError("require 1 <= FIRST <= LAST; TI=0 takes the separate timer path")
+    data = json.loads((HERE / "scratch/ti-seed-prefixes.json").read_text(encoding="utf-8"))
+    counts = {row["maxTI"]: {d["lambda"]: d["seeds"] for d in row["distribution"]}
+              for row in data["prefixes"]}
+    for boundary in (first - 1, last):
+        if boundary and boundary not in counts:
+            raise ValueError(f"range unavailable: prefix ending at {boundary} is not retained")
+    before = counts[first - 1] if first > 1 else {}
+    return {period: count - before.get(period, 0) for period, count in counts[last].items()}
+
+
+def command_ti_range(args: argparse.Namespace) -> None:
+    counts = ti_range_counts(args.first, args.last)
+    print(f"TI {args.first} through {args.last}: {args.last - args.first + 1} integer ticks")
+    print("lambda  ticks")
+    for period, count in sorted(counts.items()):
+        print(f"{period:>6} {count:>6}")
+
+
 def command_verify(args: argparse.Namespace) -> None:
     manifest = args.run_dir / "final-output-sha256.txt"
     entries: dict[str, str] = {}
@@ -228,6 +249,10 @@ def main() -> int:
     item.add_argument("--component-depth", type=Path,
                       default=DEFAULT_RUN_DIR / "component-depth.csv")
     item.set_defaults(function=command_components)
+    item = sub.add_parser("ti-range", help="subtract retained prefix counts for inclusive TI ticks")
+    item.add_argument("first", type=int, metavar="FIRST")
+    item.add_argument("last", type=int, metavar="LAST")
+    item.set_defaults(function=command_ti_range)
     item = sub.add_parser("verify-results", help="verify retained compact output hashes")
     item.add_argument("--run-dir", type=Path, default=DEFAULT_RUN_DIR)
     item.set_defaults(function=command_verify)

@@ -21,10 +21,11 @@ from routine_runner import InitialState, RoutineSpec, build_memory, run_routine 
 
 
 class EquivalenceTests(unittest.TestCase):
-    def run_code(self, code, *, start=0x8000, exit_pc=0x9000, flags=cpu6502.FU):
+    def run_code(self, code, *, start=0x8000, exit_pc=0x9000, flags=cpu6502.FU,
+                 observed_pcs=()):
         memory = build_memory([(start, bytes(code))])
         return run_routine(
-            RoutineSpec(start, {exit_pc}, max_instructions=100),
+            RoutineSpec(start, {exit_pc}, max_instructions=100, observed_pcs=observed_pcs),
             InitialState(memory, flags=flags),
         )
 
@@ -172,6 +173,25 @@ class EquivalenceTests(unittest.TestCase):
         self.assertFalse(changed.equivalent)
         self.assertEqual(changed.differences[0].category, "entry_events")
         self.assertEqual(changed.differences[0].rule, "character-stream")
+
+    def test_checkpoint_coverage_is_distinct_from_visits(self):
+        # The second load erases the A difference before exit.
+        for pc, left_watch, right_watch, expected in (
+            (0x8002, (), (), 'entry_event_coverage'),
+            (0x8002, (0x8002,), (), 'entry_event_coverage'),
+            (0x8002, (), (0x8002,), 'entry_event_coverage'),
+            (0x8002, (0x8002,), (0x8002,), 'entry_events'),
+            (0x8100, (0x8100,), (0x8100,), None),  # watched but never visited
+        ):
+            with self.subTest(pc=pc, left=left_watch, right=right_watch):
+                def execute(value, watch):
+                    return self.run_code([0xA9, value, 0xA9, 0, 0x4C, 0, 0x90],
+                                         observed_pcs=watch)
+                contract = self.contract(event_rules=(EntryEventRule('A', pc, pc, {'a'}, 0),))
+                result = compare_runs(execute(1, left_watch), execute(2, right_watch), contract)
+                self.assertEqual(result.equivalent, expected is None)
+                self.assertEqual([d.category for d in result.differences],
+                                 [] if expected is None else [expected])
 
     def test_contract_rejects_overlap_and_missing_exit_pairs(self):
         rule1 = MemoryRule("one", 0x2000, 0x3000, 2, MemoryPolicy.FINAL_STATE)

@@ -1,4 +1,6 @@
 import json
+import subprocess
+import sys
 import tempfile
 import unittest
 from pathlib import Path
@@ -111,6 +113,52 @@ class BlitzPcodeTests(unittest.TestCase):
         }))
         result = bp.validate_trace(image, self.profile, trace)
         self.assertEqual(result["errors"], [])
+
+    def test_trace_width_change_cli(self):
+        prg = self.root / "width.prg"
+        original = bytes.fromhex("00 20 b5 b1 b2")
+        prg.write_bytes(original)
+        profile = self.root / "profile.json"
+        profile.write_text(json.dumps({**self.profile, "layout": {},
+                                       "sourcePrgSha256": bp.load_prg(prg).sha256}))
+        patch = {"address": 0x2000, "original": 0xB5, "observed": 0xA6}
+        trace = self.root / "trace.json"
+        report = self.root / "report.json"
+        for opcode, patches, offset, error in [
+            (0xA6, [patch], 1, "unexpected-transition"),
+            (0xA6, [patch], 2, None),
+            (0xB5, [], 1, None),
+            (0xA6, [], 2, "opcode-mismatch"),
+        ]:
+            with self.subTest(opcode=opcode, patches=patches, offset=offset):
+                trace.write_text(json.dumps({"memoryPatches": patches, "entries": [
+                    {"address": 0x2000, "opcode": opcode},
+                    {"address": 0x2000 + offset, "opcode": original[2 + offset]},
+                ]}))
+                proc = subprocess.run([sys.executable, "-B", bp.__file__, "--profile", str(profile),
+                                       "validate-trace", str(prg), str(trace), "--json-output", str(report)],
+                                      capture_output=True, text=True)
+                self.assertEqual(proc.returncode, int(error is not None), proc.stdout + proc.stderr)
+                result = json.loads(report.read_text())
+                self.assertEqual([e["kind"] for e in result["errors"]], [error] if error else [])
+                if patches:
+                    row = result["records"][0]
+                    self.assertEqual((row["originalOpcode"], row["opcode"]), (0xB5, 0xA6))
+                    self.assertEqual((row["mnemonic"], row["size"], row["bytes"]), ("CONST_U8", 2, "a6 b1"))
+        self.assertEqual(prg.read_bytes(), original)
+
+    def test_untimed_patch_cannot_establish_branch_operand(self):
+        trace = self.root / "trace.json"
+        trace.write_text(json.dumps({
+            "memoryPatches": [{"address": 0x1012, "original": 0x30, "observed": 0x20}],
+            "entries": [{"address": 0x1010, "opcode": 0x52}, {"address": 0x1030, "opcode": 0x4F}],
+        }))
+        result = bp.validate_trace(bp.load_prg(self.prg), self.profile, trace)
+        row = result["records"][0]
+        self.assertFalse(row["transitionOk"])
+        self.assertIn("operand byte at $1012 is not established", row["diagnostic"])
+        self.assertNotIn("target", row)
+        self.assertEqual([error["kind"] for error in result["errors"]], ["undecodable-fetch"])
 
     def test_conservative_for_next_pairing(self):
         records = [

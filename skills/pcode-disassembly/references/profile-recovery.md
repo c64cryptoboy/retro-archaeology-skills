@@ -86,6 +86,8 @@ python3 blitz_pcode.py --profile profile.json validate-trace \
 python3 annotate_listing.py out.json annotations.json annotated.txt
 ```
 
+BLITZ `validate-trace` reports `originalOpcode` from the PRG separately from the logged `opcode`.  A declared opcode replacement is decoded at that fetch only.  Operands come from the preserved PRG, not a live operand capture: declare every changed byte in `memoryPatches`.  If an operand overlaps a changed byte, the untimed patch list cannot establish its value at that fetch, so validation refuses the instruction rather than guessing a successor.
+
 Use `--allow-hash-mismatch` only for deliberate compatibility research. It bypasses provenance refusal, not actual incompatibility.
 
 The deterministic gate must check:

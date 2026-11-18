@@ -27,4 +27,4 @@ From the skill directory, run:
 python3 -B examples/pointer_step.py
 ```
 
-The script checks ordinary addition, the last no-carry input, the first carry input, and 16-bit wraparound against a direct arithmetic oracle.  Its eight-instruction bound prevents an accidental infinite loop.  The bundled CPU's empty-stack RTS stop is a test convention, not a hardware stack experiment.  These four cases illustrate the static argument; they do not prove emulator accuracy, decimal behavior, interrupt safety, or the routine's purpose in an unknown program.
+The script checks ordinary addition, the last no-carry input, the first carry input, and 16-bit wraparound against a direct arithmetic oracle.  It also checks X/Y preservation and return N/Z against the low result byte without carry or the updated high byte with carry.  Its eight-instruction bound prevents an accidental infinite loop.  The bundled CPU's empty-stack RTS stop is a test convention, not a hardware stack experiment.  These four cases illustrate the static argument; they do not prove emulator accuracy, decimal behavior, interrupt safety, or the routine's purpose in an unknown program.
