@@ -154,6 +154,11 @@ class SemanticTests(unittest.TestCase):
         selected,restored=r['groups'][1],r['groups'][-1]
         self.assertEqual((selected['text'].strip(),selected['kind']),('PRINT#<?>,','partial'))
         self.assertEqual((restored['text'],restored['kind']),('PRINT','inferred'))
+    def test_selected_channel_is_not_a_later_scalar_read(self):
+        for selector,consumer,use in [('SELECT_OUTPUT_CHANNEL','PRINT_NEWLINE','PRINT#<?>,'),('SELECT_INPUT_CHANNEL','GET_STRING','GET#<?>,')]:
+            r=program('petspeed',row('LOAD_FAC_VAR',operands={'variable':0x2800}),row(selector),
+                      row('CONST_U8_FAC',4),store(),row(consumer))
+            self.assertIn(selector+' V_2800',texts(r));self.assertIn(use,texts(r));self.assertNotIn('#V_2800',texts(r))
     def test_pet_for_limit_captured_before_initialization(self):
         r=program('petspeed',row('LOAD_FAC_VAR',operands={'variable':0x2800}),row('FOR_LIMIT'),row('CONST_U8_FAC',2),row('FOR_ENTER',0x2800),row('END'))
         self.assertIn('T_LIMIT_1001 = V_2800',texts(r));self.assertIn('FOR V_2800 = 2 TO T_LIMIT_1001',texts(r))

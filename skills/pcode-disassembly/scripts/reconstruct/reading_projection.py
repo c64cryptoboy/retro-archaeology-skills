@@ -99,7 +99,9 @@ def render_reading(report):
     """Portable compact renderer; detailed evidence remains in report['groups']."""
     view = report.get('readingView')
     if view is None:
-        raise ValueError('No evidenced reading projection for this compiler family')
+        raise ValueError(report.get('readingRefusal') or 'No evidenced reading projection for this compiler family')
+    if view.get('schema') == 'petspeed-numbered-reading-v1':
+        return ''.join(f"{line['number']} {line['text']}\n" for line in view['lines'])
     lines = ['; BASIC-like reading projection; not original or runnable BASIC.',
              '; Original groups, warnings, encoded targets and bytes remain in the detailed report.',
              '; ' + view['scope']]

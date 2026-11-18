@@ -48,6 +48,11 @@ def quoted(data):
 UNKNOWN_OUTPUT = object()
 
 
+def saved_channel(expr):
+    """Keep a literal file number, not an expression that would be re-evaluated later."""
+    return expr.text if re.fullmatch(r'[0-9]{1,3}',expr.text) and int(expr.text)<=255 else '<?>'
+
+
 class Lifter:
     stacks={'stack','ss','alt'}
     def __init__(self,family,report,capture_sites=(),false_test_sites=(),*,readable=True):
@@ -59,6 +64,7 @@ class Lifter:
         self.rows=report['instructions'];self.groups=[];self.pending=[];self.regs={};self.stack={k:[] for k in self.stacks}
         self.reading_statements=[];self.reading_arguments=[]
         self.symbols={};self.arrays={};self.output=None;self.input=None;self.readmode=None
+        self.input_fields=[];self.input_prefix_known=False
         self.array_index=None;self.array_accesses={}
         self.limit=None;self.step=None;self.current=None;self.destination_type=None
         self.capture_sites=frozenset(capture_sites);self.fn_capture_candidates=set()
@@ -105,6 +111,7 @@ class Lifter:
     def wipe(self,io=False):
         self.regs={};self.stack={k:[] for k in self.stacks};self.limit=None;self.step=None;self.destination_type=None
         self.for_zero_ready=None
+        self.input_fields=[];self.input_prefix_known=False
         if io:self.output=UNKNOWN_OUTPUT;self.input='<?>';self.readmode=None
 
     def get(self,key):
@@ -537,15 +544,18 @@ class Lifter:
                 e.reference=True;self.set('stack',e)
             return True
         if self.family=='blitz' and n=='INPUT_BEGIN':
-            self.input_fields=[];return True
+            self.input_fields=[];self.input_prefix_known=True;return True
         if self.family=='blitz' and n in ('INPUT_FIRST','INPUT_NEXT','INPUT_FINAL'):
-            e=self.get('stack')
-            if not hasattr(self,'input_fields'):self.input_fields=[]
-            self.input_fields.append(e)
+            self.input_fields.append(self.get('stack'))
             if n=='INPUT_FINAL':
-                prefix='INPUT' if self.input is None else 'INPUT#'+self.input+','
-                fields=self.input_fields;self.input_fields=[]
-                self.emit(prefix+' '+', '.join(x.text for x in fields),args=fields,reset=True)
+                fields=self.input_fields
+                items=', '.join(x.text for x in fields)
+                if self.input_prefix_known:
+                    prefix='INPUT' if self.input is None else 'INPUT#'+self.input+','
+                    self.emit(prefix+' '+items,args=fields,reset=True)
+                else:
+                    self.emit('REM INPUT continuation: '+items,'partial',args=fields,reset=True,
+                              warnings=['Earlier field list is unknown on this entry; only the observed suffix is shown.'])
             return True
         if self.family=='blitz' and n in ('OPEN','LOAD','SAVE','VERIFY'):
             count=r.get('value',0)
@@ -566,14 +576,14 @@ class Lifter:
             self.set('stack',self.expr(self.constant(r,{})));return True
         if n in ('SELECT_OUTPUT_FILE','SELECT_OUTPUT_CHANNEL','SELECT_INPUT_FILE','SELECT_INPUT_CHANNEL','SELECT_GET_FILE'):
             src='stack' if self.family=='blitz' else 'iv' if self.family=='basic64' else 'fac';e=self.get(src)
-            if 'OUTPUT' in n:self.output=e.text
-            else:self.input=e.text
+            if 'OUTPUT' in n:self.output=saved_channel(e)
+            else:self.input=saved_channel(e)
             self.emit('REM '+n+' '+e.text,'structural',args=[e]);return True
         if n in ('RESTORE_DEFAULT_CHANNELS','RESTORE_CHANNELS'):
             self.output=None;self.input=None;self.emit('REM restore default I/O channels','structural');return True
         if n=='SELECT_DATA_INPUT':self.readmode='READ';self.emit('REM select DATA cursor','structural');return True
         if n in ('INPUT_BEGIN','INPUT_PROMPT','SELECT_FILE_INPUT'):
-            if n=='SELECT_FILE_INPUT':self.input=self.get('iv').text
+            if n=='SELECT_FILE_INPUT':self.input=saved_channel(self.get('iv'))
             self.readmode='INPUT';self.emit('REM '+n+(' '+quoted(bytes.fromhex(v['payloadHex'])) if 'payloadHex' in v else ''),'partial',warnings=['Input field grouping/retry control remains partial.']);return True
         if self.family!='blitz' and n in ('NEXT','NEXT_VARIABLE','NEXT_NAMED'):
             suffix=' '+self.var(r) if n!='NEXT' else ''
@@ -761,6 +771,12 @@ def lift(family,report,*,readable=True):
             text=module('dtl').basic_text(encoded,profile('dtl')['basicTokens'])
         data.append({**row,'text':text,'kind':'embedded' if text is not None else 'opaque',
                      'caveat':'Strict observed DATA-text envelope only; original DATA line numbers/grouping are unavailable.'})
+    if 'petspeedData' in report:
+        section=report['petspeedData']
+        result['petspeedData']=section
+        data.extend(section['records'])
+        if section['error']:
+            result['limitations'].append('PETSpeed DATA source spelling withheld: '+section['error']['reason'])
     result['retainedData']=data
     if family=='dtl' and readable:
         from dtl_reading import build_reading

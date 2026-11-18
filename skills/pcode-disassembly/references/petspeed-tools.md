@@ -9,15 +9,28 @@ python3 -X utf8 scripts/petspeed/petspeed.py PROGRAM.WOW \
 python3 -X utf8 -m unittest discover -s scripts/petspeed -q
 ```
 
-Only `petspeed.py` and its adjacent `petspeed_profile.json` are needed. Python 3.10+ standard library only. Tests use synthetic bytes and require no commercial software, emulator or network access.
+Keep the `scripts/petspeed/` directory together, including `variant_2267.py` for the alternate runtime. Python 3.10+ standard library only. Tests use synthetic bytes and require no commercial software, emulator or network access.
 
 `--source` requires the matching raw SEQ `.W` map. Supplied BASIC is annotation, not recovered or authenticated source. Preserve duplicate source anchors and the opaque map footer instead of inventing meaning. Output files must be fresh.
 
 Unknown runtime fingerprints, lengths/selectors, truncated instructions and invalid boundaries refuse. The profile includes compact families, 122 explicit primary entries and eight secondary selectors. These counts are structural knowledge, not independently executed language-feature coverage.
 
-Opcode `$AB` is the one-byte `ZERO_ARG` primitive: `$6C/$6D := 0`, integer tag `$B6 := 1`, no inline operand, normal p-code fallthrough. The pinned runtime's dispatch word `$087C` selects `$1408`; its handler tails to the shared `$0926` cursor increment without another operand fetch. This does not clear all ARG payload bytes or write FAC. Admission remains limited to runtime `[$0826,$2800)` SHA-256 `cee17449b6e9700af4642546477c06dbb42413888fa5e594ebded33014c5dbaf`. Static handler evidence and synthetic grammar/refusal tests are not target-execution or whole-program equivalence evidence.
+Opcode `$AB` is the one-byte `ZERO_ARG` primitive: `$6C/$6D := 0`, integer tag `$B6 := 1`, no inline operand, normal p-code fallthrough. The pinned runtime's dispatch word `$087C` selects `$1408`; its handler tails to the shared `$0926` cursor increment without another operand fetch. This does not clear all ARG payload bytes or write FAC. That classic profile is pinned to runtime `[$0826,$2800)` SHA-256 `cee17449b6e9700af4642546477c06dbb42413888fa5e594ebded33014c5dbaf`. Static handler evidence and synthetic grammar/refusal tests are not target-execution or whole-program equivalence evidence.
 
 ON-table and function-definition grammars validate every encoded control destination. Keep function descriptors, body entries, skip targets and source-line operands distinct. Complete declared-main-p-code decoding does not establish reachability, full compiler-language support or interpreted/compiled equivalence.
+
+## Alternate runtime and numbered BASIC
+
+The standalone decoder and `scripts/reconstruct/reconstruct.py` select the alternate grammar only for the exact runtime `[$0826,$2800)` SHA-256 `3b13c8c451db362fdd3fafa91832f3484dd9fd3eac0fcff792b82e9484a9131a` and a valid executable layout with `JMP $2267`.  A matching jump or dispatch table alone is not enough.  An explicit standalone `--profile` selects only that profile.
+
+```sh
+python3 scripts/reconstruct/reconstruct.py program.prg --text-output annotated.txt \
+  --json-output evidence.json --basic-output numbered.bas --prg-output numbered.prg
+```
+
+The numbered view adapts [PetspeedDecompy](https://github.com/EgonOlsen71/PetspeedDecompy/tree/3d4360e8b481c2157fccac0458f3556a2d3ea311).  Use it to read statements and follow branches; use the detailed view to check instruction addresses, operands, and unresolved semantics.  Line numbers and aliases are generated; array shapes are inferred, and DATA fields can be regrouped.  The text escapes nonprinting bytes for display.  The optional tokenized PRG preserves the generated token bytes, not the original source or a guarantee of equivalent execution.  Neither input nor output is run.  Compact translation can refuse an object whose instructions all have known lengths; in that case the detailed report remains available without the export options.  See also [related tools and independent checks](compiled-basic-related-tools.md).
+
+The JSON reading view links generated lines to emission addresses, records each encoded destination separately from the line it maps to, and retains each DATA field's address, tag, text bytes, numeric suffix, and the separate footer.  The frontend checks that the compact and detailed instruction boundaries agree (the compact view omits the terminal END marker).  It also refuses direct branches into scalar stores with an unproved incoming value, nonnormalized floating literals, and changes in the number of `RND`, `PEEK`, or `FRE` calls.  Equal counts do not establish evaluation order or reachability.  For the classic `JMP $2245` runtime, the detailed report recovers supported DATA records independently; it does not enable the alternate numbered exporter.
 
 ## Semantic clock-reading support
 
