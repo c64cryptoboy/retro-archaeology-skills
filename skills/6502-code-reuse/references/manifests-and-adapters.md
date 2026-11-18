@@ -69,11 +69,11 @@ Physical RAM can contain coherent code beneath ROM or I/O. Establish mapping/con
 
 - canonical 2 KiB CPU internal RAM;
 - physical work RAM where supported;
-- complete physical PRG ROM;
+- bank-bounded scan regions covering all physical PRG bytes once, plus the complete flat PRG file, disabled by default;
 - current mirrored/banked CPU-visible reconstruction, disabled by default;
 - a known-byte mask for the current view.
 
-Prefer the complete physical PRG region over the current CPU view when searching all banks. The current view is useful for runtime address mapping, not independent evidence.
+Use the scan regions for automatic matching.  Each region is one physical 8 KiB page, or consecutive pages witnessed together in one readable, consecutive CPU mapping in the snapshot.  Add a match's region offset to `source.prgOffset` for its flat PRG offset or to `source.fileOffset` for its iNES offset.  This partition can miss code spanning nonconsecutive physical pages or adjacencies in another mapper state; audit those separately.  The current CPU view is not independent evidence.  Re-extract older manifests that enabled the flat PRG by default.
 
 Snapshot and ROM hashes must match the intended capture set. Mapper support is bounded by the adapter implementation; reject unsupported states rather than inventing a mapping.
 

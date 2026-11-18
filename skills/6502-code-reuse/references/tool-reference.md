@@ -78,12 +78,13 @@ python3 scripts/calibrate_reuse6502.py \
 
 The gate requires:
 
-- zero accepted anchors in generated controls;
-- zero probable routines in unrelated controls;
+- at least one actual trial of each generated control kind on the known pair under primary anchor settings, with zero accepted anchors;
+- at least one unrelated comparison under the primary configuration and decoder, with zero probable routines across the supplied controls;
+- all four prescribed sensitivity configurations on the known pair, with other settings unchanged;
 - the common eight-instruction idiom below probable;
-- at least one known-positive comparison with three probable routines.
+- at least one known-positive comparison with three distinct probable full-match families.
 
-`--lock` is written only after a passing gate. It records core tool hashes and a relative hash-pinned source calibration.
+`--lock` is written only after a passing gate. The version 2 lock binds the settings to a hash-pinned passing source calibration and the complete tool hash set, including the shared decoder.  The report lists gate failures even when no lock is issued.  Keep historical locks unchanged; regenerate calibration evidence and mint a new lock before a new primary run.
 
 ## `run_locked_reuse6502.py`
 

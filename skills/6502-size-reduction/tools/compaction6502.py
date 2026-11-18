@@ -10,7 +10,7 @@ region/reference assertions.
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, replace
 
 from dataflow6502 import ARCH_RESOURCES
 from cfg_reduction6502 import (  # noqa: E402
@@ -373,6 +373,17 @@ def _address_map(items):
     return mapping
 
 
+def _checked_scan(data, base_address, config):
+    try:
+        scan = scan_cfg_candidates(data, base_address=base_address, config=config)
+    except CFGScanError as exc:
+        raise CompactionError(str(exc)) from exc
+    if scan.limit_reached or scan.issues:
+        details = '; '.join(scan.issues) or 'instruction limit reached'
+        raise CompactionError(f'CFG discovery is incomplete: {details}')
+    return scan
+
+
 def compact_code_region(data: bytes, *, base_address: int,
                         config: CompactionConfig) -> CompactionResult:
     """Compact one complete declared code region and repair direct control flow."""
@@ -385,13 +396,7 @@ def compact_code_region(data: bytes, *, base_address: int,
         max_instructions=config.max_instructions,
         external_calls_preserve_decimal=config.external_calls_preserve_decimal,
     )
-    try:
-        scan = scan_cfg_candidates(data, base_address=base_address, config=scan_config)
-    except CFGScanError as exc:
-        raise CompactionError(str(exc)) from exc
-    if scan.limit_reached or scan.issues:
-        details = '; '.join(scan.issues) or 'instruction limit reached'
-        raise CompactionError(f'CFG discovery is incomplete: {details}')
+    scan = _checked_scan(data, base_address, scan_config)
 
     instructions = tuple(sorted(scan.instructions, key=lambda item: item.pc))
     by_pc = {item.pc: item for item in instructions}
@@ -426,6 +431,31 @@ def compact_code_region(data: bytes, *, base_address: int,
         )
 
     selected, warnings = _select_candidates(scan.candidates, config)
+    others = tuple(c for c in selected if c.rule != 'known-flag-short-jump')
+    if others and len(others) < len(selected):
+        # A short jump introduces a flag read that was absent from the original
+        # liveness graph.  Recompute its proof after all other selected edits.
+        stage = _emit(data, base_address, config, instructions, others, [], len(scan.candidates))
+        mapping = dict(stage.address_map)
+        staged_config = replace(scan_config, entries=tuple(mapping[pc] for pc in config.entries))
+        rescanned = _checked_scan(stage.compacted, base_address, staged_config)
+        jumps = {c.start: c for c in rescanned.candidates
+                 if c.rule == 'known-flag-short-jump' and c.timing_admissible}
+        refreshed = list(others)
+        for original in selected:
+            if original.rule != 'known-flag-short-jump':
+                continue
+            current = jumps.get(mapping[original.start])
+            if current is None:
+                warnings.append(f'${original.start:04X} short jump skipped after CFG recheck')
+            else:
+                refreshed.append(replace(original, replacement_bytes=current.replacement_bytes,
+                                         proof=current.proof))
+        selected = refreshed
+    return _emit(data, base_address, config, instructions, selected, warnings, len(scan.candidates))
+
+
+def _emit(data, base_address, config, instructions, selected, warnings, candidate_count):
     items = _layout(instructions, selected, base_address)
     mapping = _address_map(items)
     end = base_address + len(data)
@@ -688,5 +718,5 @@ def compact_code_region(data: bytes, *, base_address: int,
         data, compacted, base_address, config.entries, relocated_entries,
         tuple(sorted(mapping.items())), tuple(applied), tuple(repairs),
         tuple(provenance), tuple(dict.fromkeys(warnings)), config.timing_policy,
-        len(scan.candidates), config.declared_smc_operand_fields,
+        candidate_count, config.declared_smc_operand_fields,
     )

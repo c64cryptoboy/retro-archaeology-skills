@@ -107,6 +107,17 @@ def simple_functions(output, result, targets, tokens, uses):
     return fold_functions(output, result, targets, tokens, uses, instruction_events)
 
 
+def run_pair(left, right, targets):
+    """The compiler emits 49 58 (clear, transfer to bootstrap) for bare RUN."""
+    if len(left['rows']) != 1 or len(right['rows']) != 1:
+        return False
+    rows = left['rows'] + right['rows']
+    return ([(r['mnemonic'], r['bytes'], r.get('control')) for r in rows] ==
+            [('CLEAR_OR_RUN', '49', 'runtime-managed'), ('RUN_BOOTSTRAP', '58', 'runtime-managed-transfer')] and
+            all(r.get('length') == 1 and r.get('grammar') == 'none' for r in rows) and
+            not corridor_reason(rows, targets))
+
+
 def build_reading(report, result, statements, arguments, targets, tokens):
     groups = result['groups']
     assert len(groups) == len(statements) == len(arguments)
@@ -191,6 +202,11 @@ def build_reading(report, result, statements, arguments, targets, tokens):
                 entry['statement'] = replace(statement, boolean_false=True)
                 entry['text'] = render_statement(entry['statement'])
                 entry['actions'].append(dict(kind='boolean-complement'))
+        if complete and entry['text'] == 'RUN' and output and run_pair(output[-1], entry, targets):
+            clear = output.pop()
+            entry['indices'] = clear['indices'] + entry['indices']
+            entry['rows'] = clear['rows'] + entry['rows']
+            entry['actions'].append(dict(kind='fold-bare-run'))
         output.append(entry)
     output = simple_functions(output, result, targets, tokens, uses)
     projected = []

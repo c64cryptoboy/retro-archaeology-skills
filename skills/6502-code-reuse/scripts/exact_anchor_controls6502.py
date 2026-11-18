@@ -68,8 +68,8 @@ def run_controls(
     max_occurrences: int,
     max_pairs: int,
 ) -> dict[str, Any]:
-    _, left_regions = anchor.load_regions(left_manifest)
-    _, right_regions = anchor.load_regions(right_manifest)
+    left_source, left_regions = anchor.load_regions(left_manifest)
+    right_source, right_regions = anchor.load_regions(right_manifest)
     comparisons = []
     for left in left_regions:
         for right in right_regions:
@@ -148,6 +148,8 @@ def run_controls(
     return {
         "format": "6502-exact-anchor-controls",
         "version": 1,
+        "left": {"manifest": str(left_manifest), "artifact": left_source["artifact"]},
+        "right": {"manifest": str(right_manifest), "artifact": right_source["artifact"]},
         "configuration": {
             "instructionCount": instruction_count,
             "shuffleTrials": shuffle_trials,
@@ -193,7 +195,7 @@ def main() -> None:
         counts = [trial["relational"]["acceptedAnchorPairs"] for trial in comparison["trials"]]
         print(
             f"{comparison['leftRegion']} vs {comparison['rightRegion']}: "
-            f"control anchor pairs min={min(counts)} max={max(counts)}"
+            f"control anchor pairs min={min(counts, default=None)} max={max(counts, default=None)}"
         )
 
 

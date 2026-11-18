@@ -157,7 +157,7 @@ def explain(record: dict[str, Any], stack: list[str], labels: dict[int, dict[str
             basic_summary(state, f"IF {condition} THEN GOTO {target}")
             sense = "if true"
         else:
-            basic_summary(state, f"IF NOT {condition} THEN GOTO {target}")
+            basic_summary(state, f"IF ({condition}) = 0 THEN GOTO {target}")
             sense = "if false"
         return f"{sense}: {condition} -> {target}"
     if op == "ON_GOTO":

@@ -428,6 +428,8 @@ def load_regions(manifest_path: Path) -> tuple[dict[str, Any], list[dict[str, An
     for region in manifest["regions"]:
         if not region["scanByDefault"]:
             continue
+        if region["id"] == "ines-prg-rom" and region["source"].get("container") == "supporting-ines-rom":
+            raise ValueError("flat Nestopia PRG is not a scan region; re-extract the mapped PRG regions")
         data = (manifest_path.parent / region["path"]).read_bytes()
         mask = None
         if "knownMask" in region:

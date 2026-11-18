@@ -4,12 +4,14 @@ from __future__ import annotations
 import argparse
 import contextlib
 import io
+import json
 import shutil
 import tempfile
 import unittest
 from pathlib import Path
 
 import rnd_query
+import turn_schedule
 
 
 class RndQueryTests(unittest.TestCase):
@@ -56,6 +58,41 @@ class RndQueryTests(unittest.TestCase):
                      "medianMu": 2, "maxMu": 2, "basin": 10},
                 ],
             )
+
+    def test_retained_ti_ranges(self) -> None:
+        for first, last, expected in ((1, 60, 43), (61, 3600, 2894), (5184000, 5184000, 1)):
+            with self.subTest(first=first, last=last):
+                counts = rnd_query.ti_range_counts(first, last)
+                self.assertEqual(counts[58078], expected)
+                self.assertEqual(sum(counts.values()), last - first + 1)
+
+    def test_unavailable_ti_ranges(self) -> None:
+        for first, last, message in ((61, 3599, "not retained"), (60, 3600, "not retained"),
+                                     (0, 60, "timer path"), (61, 60, "FIRST <= LAST")):
+            with self.subTest(first=first, last=last), self.assertRaisesRegex(ValueError, message):
+                rnd_query.ti_range_counts(first, last)
+
+
+class TurnScheduleTests(unittest.TestCase):
+    def test_same_orbit_different_tested_draws(self) -> None:
+        orbit = json.loads(turn_schedule.ORBIT.read_text())
+        for extra, initial, cycle, discarded, hits in (
+            (False, [1, 2, 3, 4], [5, 6, 7, 8, 9, 10, 11], [], [9]),
+            (True, [1, 2, 3], [5, 6, 7, 8, 10], [4, 9, 11], []),
+        ):
+            with self.subTest(extra=extra):
+                prefix, loop = turn_schedule.replay(orbit, extra_below_half=extra)
+                self.assertEqual([t.tested for t in prefix], initial)
+                self.assertEqual([t.tested for t in loop], cycle)
+                turns = prefix + loop
+                self.assertEqual([t.discarded for t in turns if t.discarded is not None], discarded)
+                self.assertEqual([t.tested for t in turns if t.encounter], hits)
+
+    def test_truncated_orbit_is_not_a_turn_frequency(self) -> None:
+        orbit = json.loads(turn_schedule.ORBIT.read_text())
+        orbit["nodes"].pop()
+        with self.assertRaisesRegex(ValueError, "undetermined"):
+            turn_schedule.replay(orbit, extra_below_half=True)
 
 
 class RndResultVerificationTests(unittest.TestCase):

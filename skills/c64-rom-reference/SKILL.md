@@ -51,7 +51,7 @@ python3 scripts/rom-tool.py address dos1541 0x3fea
 
 ## Choose the relevant reference
 
-Load only the files relevant to the question, **before interpreting the corresponding address/call**. First choose C64 versus drive CPU and establish mapping; do not read every symbol table for one call. If a local image fails verification, retain its actual hash/revision and stop applying this profile's internal symbols until compatibility is established:
+Load only the files relevant to the question, **before interpreting the corresponding address/call**. First choose C64 versus drive CPU and establish mapping; do not read every symbol table for one call. On `MISMATCH`, record the observed size and SHA-256.  `expected_revision` names the manifest entry, not the revision of the supplied file.  Do not apply this profile's internal symbols until compatibility is established.
 
 - [BASIC ROM symbols (`$A000-$BFFF`)](references/basic-symbols.md) — BASIC parser, statements, variables, strings, floating-point internals, and official Microsoft source provenance. Its functional continuation at `$E000-$E39F` is intentionally in the KERNAL reference.
 - [KERNAL ROM symbols (`$E000-$FFFF`)](references/kernal-symbols.md) — documented jump-table calls, screen editor, IRQ, IEC, tape, and system internals.
@@ -63,7 +63,7 @@ Load only the files relevant to the question, **before interpreting the correspo
 ## Workflow
 
 1. **Establish the CPU and mapping.** Distinguish C64 CPU code from drive CPU code. On C64, inspect `$0001` before treating `$A000-$BFFF`, `$D000-$DFFF`, or `$E000-$FFFF` as the corresponding ROM/I/O. On a 1541, identify the actual DOS ROM revision if internal addresses matter.
-2. **Verify the local asset.** Run `rom-tool.py verify`; record a different ROM's revision/hash rather than applying this skill's internal labels to it.
+2. **Verify the local asset.** Run `rom-tool.py verify`; use `revision=` only from an `OK` result.
 3. **Resolve the narrowest relevant reference.** Prefer documented KERNAL jump-table entries over internal-address labels. For BASIC and 1541 internals, inspect required workspace and calling state.
 4. **Use local evidence.** A ROM call or conventional RAM address is evidence, not a complete explanation. Track inputs, outputs, callers, banking, and overwritten vectors/workspace.
 5. **Escalate appropriately.** Use the local ROM/reference for static understanding; use bounded simulation only with explicit modeled hooks; use a suitable debugger for hardware, timing, banking, or live-device validation.

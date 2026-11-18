@@ -140,6 +140,10 @@ class FinalReportTests(unittest.TestCase):
         self.assertEqual(len(maximum_preimages), 1)
         self.assertEqual(len(maximum_preimages) + sum(count for _, count in outer), 84)
 
+    def test_adjacent_decimal_carry_reverses_fac_magnitude(self):
+        self.assertEqual(parse_decimal("-.504444420399"), bytes.fromhex("80 81 23 45 01 ff"))
+        self.assertEqual(parse_decimal("-.504444420400"), bytes.fromhex("80 81 23 44 ff ff"))
+
     def test_two_integer_literals_seed_same_state(self):
         target = bytes.fromhex("80 00 00 00 81")
         for literal, expected_fac in (

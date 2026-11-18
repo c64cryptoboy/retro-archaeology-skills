@@ -15,17 +15,19 @@ sys.path.insert(0, str(TOOLS))
 from compaction6502 import (  # noqa: E402
     CompactionConfig, CompactionError, compact_code_region,
 )
+from equivalence import EntryEventRule, ObservationContract, compare_runs  # noqa: E402
 from routine_runner import InitialState, RoutineSpec, run_routine  # noqa: E402
 
 
-def run(code, base, entry, *, a=0, x=0, y=0, flags=0x20, memory_values=None):
+def run(code, base, entry, *, a=0, x=0, y=0, flags=0x20, memory_values=None,
+        exit_pcs=(0x7000,), observed_pcs=()):
     memory = bytearray(65536)
     memory[base:base + len(code)] = code
     for address, value in (memory_values or {}).items():
         memory[address] = value
     memory[0x01FE:0x0200] = bytes((0xFF, 0x6F))
     return run_routine(
-        RoutineSpec(entry, {0x7000}, 100),
+        RoutineSpec(entry, exit_pcs, 100, observed_pcs=observed_pcs),
         InitialState(bytes(memory), a=a, x=x, y=y, sp=0xFD, flags=flags),
     )
 
@@ -109,6 +111,75 @@ class Compaction6502Tests(unittest.TestCase):
         self.assertEqual((repair.original_target, repair.final_target),
                          (0x800A, 0x8009))
         self.assertEqual(repair.final_bytes, bytes.fromhex('d0 05'))
+
+    def test_mask_and_short_jump_interaction_over_one_ram_byte(self):
+        # BNE after AND #$80 leaves Z known on fallthrough to JMP.  BMI
+        # after an unmasked load leaves N known there, not Z.
+        base, checkpoint = 0x8000, 0x8010  # LDA #0 after LDX #1
+        original = bytes.fromhex('a5 20 29 80 d0 03 4c 0e 80 a2 00 a9 00 60 a2 01 a9 00 60')
+        mask, jump = 'masked-bit-test-via-shift', 'known-flag-short-jump'
+        variants = []
+        for name, rules in [('unchanged', ()), ('mask', (mask,)), ('jump', (jump,)),
+                            ('default', None)]:
+            config = self.config() if rules is None else self.config(enabled_rules=rules)
+            result = compact_code_region(original, base_address=base, config=config)
+            expected = (mask, jump) if rules is None else rules
+            self.assertEqual([c.rule for c in result.applied], list(expected))
+            variants.append((name, result.compacted, dict(result.address_map)[checkpoint]))
+        # Frozen wrong composition: BMI is correct, but BEQ still uses stale Z.
+        variants.append(('stale Z', bytes.fromhex('a5 20 30 02 f0 05 a2 00 a9 00 60 a2 01 a9 00 60'),
+                         0x800D))
+        def execute(code, watch, value):
+            return run(code, base, base, memory_values={0x20: value}, observed_pcs={watch})
+
+        for value in range(256):
+            left = execute(original, checkpoint, value)
+            self.assertEqual(left.final.x, int(value < 0x80))
+            self.assertEqual(len(left.entry_events), int(value < 0x80))
+            for name, code, watch in variants:
+                contract = ObservationContract(
+                    exit_pairs={(0x7000, 0x7000)},
+                    entry_event_rules=(EntryEventRule('low path', checkpoint, watch,
+                                                     registers={'x'}, flags_mask=0),),
+                )
+                comparison = compare_runs(left, execute(code, watch, value), contract)
+                if name == 'stale Z' and 0 < value < 0x80:
+                    self.assertEqual({d.category for d in comparison.differences},
+                                     {'register', 'entry_events'})
+                else:
+                    self.assertTrue(comparison.equivalent, (name, value, comparison.differences))
+
+    def test_short_jump_kept_absolute_when_last_known_flag_is_lost(self):
+        # CMP #0 supplies known carry; LDX $21 makes N/Z unknown before JMP.
+        # Without the compare, a BCS could incorrectly fall through to INX.
+        original = bytes.fromhex('a9 00 c9 00 d0 05 a6 21 4c 0c 80 e8 18 60')
+        jump, compare = 'known-flag-short-jump', 'redundant-zero-compare-after-load'
+        for rules, expected in (((jump,), jump), ((jump, compare), compare)):
+            result = compact_code_region(original, base_address=0x8000,
+                                         config=self.config(enabled_rules=rules))
+            self.assertEqual([c.rule for c in result.applied], [expected])
+            comparison = compare_runs(run(original, 0x8000, 0x8000),
+                                      run(result.compacted, 0x8000, 0x8000),
+                                      ObservationContract(exit_pairs={(0x7000, 0x7000)}))
+            self.assertTrue(comparison.equivalent, comparison.differences)
+
+    def test_external_branch_exit_preserves_declared_live_carry(self):
+        original = bytes.fromhex('a5 20 c9 00 f0 0a 18 60')
+        for carry_live in (True, False):
+            config = self.config() if carry_live else self.config(
+                terminal_live=self.config().terminal_live - {'F:C'})
+            result = compact_code_region(original, base_address=0x8000, config=config)
+            self.assertEqual([c.rule for c in result.applied],
+                             [] if carry_live else ['redundant-zero-compare-after-load'])
+            for value, exit_pc in ((0, 0x8010), (1, 0x7000)):
+                kwargs = dict(memory_values={0x20: value}, exit_pcs={0x8010, 0x7000})
+                left = run(original, 0x8000, 0x8000, **kwargs)
+                right = run(result.compacted, 0x8000, 0x8000, **kwargs)
+                self.assertEqual(left.final.flags & 1, int(value == 0))
+                comparison = compare_runs(left, right, ObservationContract(
+                    exit_pairs={(exit_pc, exit_pc)}, flags_mask=0xFF if carry_live else 0xFE,
+                ))
+                self.assertTrue(comparison.equivalent, comparison.differences)
 
     def test_compacts_general_duplicate_idempotent_operation(self):
         original = bytes.fromhex('29 f0 29 f0 60')

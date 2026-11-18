@@ -244,22 +244,18 @@ def _normalized_edges(edges: Iterable[FlowEdge], instructions: Mapping[int, Flow
             continue
         if edge.source not in instructions:
             raise DataflowError(f'edge source ${edge.source:04X} is not an instruction')
-        if edge.target in instructions:
-            edge_set.add((edge.source, edge.target, edge.kind))
+        edge_set.add((edge.source, edge.target, edge.kind))
     branches = set(_BRANCH_FLAG)
     for instruction in instructions.values():
         pc, fallthrough = instruction.pc, instruction.pc + instruction.length
         if instruction.mnemonic in branches:
-            if instruction.operand in instructions:
-                edge_set.add((pc, instruction.operand, 'branch'))
-            if fallthrough in instructions:
-                edge_set.add((pc, fallthrough, 'fallthrough'))
+            edge_set.add((pc, instruction.operand, 'branch'))
+            edge_set.add((pc, fallthrough, 'fallthrough'))
         elif instruction.mnemonic == 'JMP':
-            if instruction.mode == 'abs' and instruction.operand in instructions:
+            if instruction.mode == 'abs':
                 edge_set.add((pc, instruction.operand, 'jump'))
         elif instruction.mnemonic not in {'RTS', 'RTI', 'BRK'}:
-            if fallthrough in instructions:
-                edge_set.add((pc, fallthrough, 'fallthrough'))
+            edge_set.add((pc, fallthrough, 'fallthrough'))
     result = defaultdict(list)
     for source, target, kind in sorted(edge_set):
         result[source].append(FlowEdge(source, target, kind))
@@ -293,7 +289,10 @@ def analyze_liveness(instructions: Iterable[FlowInstruction], edges: Iterable[Fl
         changed = False
         for pc in sorted(by_pc, reverse=True):
             outgoing = successors.get(pc, ())
-            new_out = frozenset().union(*(live_in[edge.target] for edge in outgoing)) if outgoing else terminal
+            # Each external successor observes the terminal contract, even if
+            # a different successor overwrites those resources internally.
+            new_out = (frozenset().union(*(live_in.get(edge.target, terminal) for edge in outgoing))
+                       if outgoing else terminal)
             effect = effects[pc]
             new_in = effect.reads | (new_out - effect.writes)
             if new_out != live_out[pc] or new_in != live_in[pc]:
@@ -423,6 +422,8 @@ def analyze_known_state(instructions: Iterable[FlowInstruction], edges: Iterable
         instruction = by_pc[pc]
         branch = _BRANCH_FLAG.get(instruction.mnemonic)
         for edge in successors.get(pc, ()):
+            if edge.target not in by_pc:
+                continue
             propagated = dict(outgoing_state)
             if branch and edge.kind in {'branch', 'fallthrough'}:
                 flag, taken_value = branch

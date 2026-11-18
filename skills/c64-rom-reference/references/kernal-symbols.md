@@ -119,15 +119,14 @@ Do not assume keyboard/jiffy-clock updates continue after a custom IRQ is instal
 
 | Address | Suggested symbol | Meaning |
 |---|---|---|
-| `$ED0C` | `TALK_INTERNAL` | Send TALK device command |
-| `$ED09` | `LISTEN_INTERNAL` | Send LISTEN device command |
+| `$ED09` | `TALK_INTERNAL` | Send TALK device command |
+| `$ED0C` | `LISTEN_INTERNAL` | Send LISTEN device command |
 | `$EDB9` | `SECND_INTERNAL` | Send secondary address after LISTEN |
 | `$EDC7` | `TKSA_INTERNAL` | Send secondary address after TALK |
 | `$EDDD` | `CIOUT_INTERNAL` | Output byte to IEC bus |
-| `$EE13` | `IEC_BIT_OUT` | Serial output timing/bit loop |
-| `$EE85` | `ACPTR_INTERNAL` | Receive byte from IEC bus |
-| `$EF06` | `UNTLK_INTERNAL` | Send UNTALK |
-| `$EF23` | `UNLSN_INTERNAL` | Send UNLISTEN |
+| `$EDEF` | `UNTLK_INTERNAL` | Send UNTALK |
+| `$EDFE` | `UNLSN_INTERNAL` | Send UNLISTEN |
+| `$EE13` | `ACPTR_INTERNAL` | Receive byte from IEC bus |
 | `$EF4A` | `IEC_CLOCK_DATA` | IEC handshake/line-control helper |
 | `$EF84` | `IEC_TIMEOUT` | IEC timeout/handshake path |
 | `$F0A4` | `IEC_STATUS` / message helper | Serial status/error handling |
@@ -218,8 +217,8 @@ An access to cassette workspace does **not** prove that the program is doing tap
 | `$FE47` | `NMI_DEFAULT` | Default RAM NMI vector target |
 | `$FE66` | `BRK_DEFAULT` | Default BRK vector target |
 | `$FE72` | `NMI_RS232` | NMI/RS-232 dispatch |
-| `$FEBC` | `IRQ_ENTRY` | Hardware IRQ/BRK entry |
-| `$FF48` | `IRQ_RETURN` | Restore registers and RTI |
+| `$FEBC` | `RESTORE_RTI` | Restore Y, X, and A, then return with RTI |
+| `$FF48` | `IRQ_ENTRY` | Hardware IRQ/BRK vector target; save registers, then dispatch through `($0316)` for BRK or `($0314)` for IRQ |
 | `$FCE2` | `RESET_CHECK` | Reset/startup preparation |
 | `$FD02` | `CHECK_ROM` | ROM/signature/startup checks |
 | `$FD15` | `RESTOR_INTERNAL` | Restore default RAM vectors |
@@ -399,14 +398,14 @@ $EA7E IRQ continuation
 $EA81 IRQ exit
 
 IEC:
-$ED09 LISTEN internal
-$ED0C TALK internal
+$ED09 TALK internal
+$ED0C LISTEN internal
 $EDB9 SECND internal
 $EDC7 TKSA internal
 $EDDD CIOUT internal
-$EE85 ACPTR internal
-$EF06 UNTLK internal
-$EF23 UNLSN internal
+$EDEF UNTLK internal
+$EDFE UNLSN internal
+$EE13 ACPTR internal
 
 I/O:
 $F13E GETIN internal
@@ -429,8 +428,8 @@ $FD50 RAMTAS internal
 $FDA3 IOINIT internal
 $FE47 NMI default
 $FE66 BRK default
-$FEBC IRQ entry
-$FF48 IRQ return
+$FEBC restore registers and RTI
+$FF48 hardware IRQ/BRK entry
 ```
 
 ---

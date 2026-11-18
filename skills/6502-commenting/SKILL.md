@@ -31,7 +31,7 @@ Read only applicable references, but read them **before** the corresponding anal
 - Interpret arithmetic using actual widths, wraparound, carry/borrow, signedness and relevant decimal/CPU behavior. A plausible formula is a hypothesis until checked.
 - Analyze tables with their consumers: entry count/width, pointer or numeric interpretation, index formula and parallel-table relationships.
 - Keep neutral labels until supported. One access is not enough to rename a location `player_hp`; “likely” and “context pending” are useful, honest outcomes.
-- Prefer a block comment such as “advance pointer by one 40-column row” over repeating LDA/ADC/STA meanings. Comment individual instructions when constants, flag setup or hardware effects carry nonobvious meaning.
+- Prefer a block comment such as “advance the pointer by 40 bytes (D=0)” over repeating LDA/ADC/STA meanings.  Call the stride a screen row only when the caller establishes that layout.  Comment individual instructions when constants, flag setup or hardware effects carry nonobvious meaning.
 - Simulations are evidence tools, not independent truth. Supply material state, keep tests bounded and check against a known or observed case when practical. Never claim a Python model proves the real program merely because it agrees with itself.
 - Use focused runtime observations when they resolve a specific uncertainty; they do not prove unobserved paths. Preserve evidence and identify assumptions/limits.
 

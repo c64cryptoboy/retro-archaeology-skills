@@ -519,6 +519,14 @@ def match_json(match: ExtendedMatch, match_id: str) -> dict[str, Any]:
     }
 
 
+def full_match_identity(match: dict[str, Any]) -> tuple[tuple[str, ...], ...]:
+    """Both complete instruction byte sequences, not offsets, seeds, or token shapes."""
+    return tuple(
+        tuple(column[side]["bytes"] for column in match["columns"] if column[side] is not None)
+        for side in ("left", "right")
+    )
+
+
 def interval_union_size(intervals: Sequence[tuple[int, int]]) -> int:
     if not intervals:
         return 0

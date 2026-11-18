@@ -19,7 +19,7 @@ The bundled defaults reproduce the validated primary model:
 - seed k=8;
 - candidate: at least 8 paired instructions and 70% support;
 - probable: at least 16 paired, 80% support, 8 relational-exact pairs, seed frequency product at most 16;
-- strong whole-pair evidence: at least 3 probable routines, 48 supporting pairs, and 256 unique bytes per side.
+- strong whole-pair evidence: at least 3 distinct probable full-match families, 48 supporting pairs, and 256 unique bytes per side, counting one representative per family.
 
 If the new corpus differs materially, calibrate alternatives before the target rather than after it.
 

@@ -125,14 +125,15 @@ class SpeedLifter(Lifter):
    if n=='MID_STRING':args+=[self.get('ints')]
    args+=[count];fn={'LEFT_STRING':'VM_LEFT$','RIGHT_STRING':'VM_RIGHT$','MID_STRING':'VM_MID$'}[n]
    self.spush(self.expr(fn+'('+', '.join(x.text for x in args)+')',args,['Runtime byte-count/string-slice semantics retained.']));return
-  if n=='PRINT_LITERAL':self.statement('PRINT' if self.output is None else 'PRINT#'+self.output+',',[e(quoted(bytes.fromhex(v['payloadHex']))+';')]);return
-  if n=='PRINT_NEWLINE':self.statement('PRINT' if self.output is None else 'PRINT#'+self.output+',',[]);return
+  if n=='PRINT_LITERAL':
+   value=e(quoted(bytes.fromhex(v['payloadHex']))+';');self.emit_print(' '+value.text,args=[value]);return
+  if n=='PRINT_NEWLINE':self.emit_print();return
   if n in ('PRINT_FLOAT','PRINT_INTEGER','PRINT_UNSIGNED','PRINT_STRING'):
    kind='floats' if n=='PRINT_FLOAT' else 'strings' if n=='PRINT_STRING' else 'ints';value=self.get(kind)
    if n in ('PRINT_INTEGER','PRINT_UNSIGNED'):
     value=self.expr(('VM_I16' if n=='PRINT_INTEGER' else 'VM_U16')+'('+value.text+')',[value])
    value=self.expr(value.text+';',[value])
-   self.statement('PRINT' if self.output is None else 'PRINT#'+self.output+',',[value],'Native formatting/channel state applies; trailing newline is a separate instruction.');self.float_live=False if kind=='floats' else self.float_live;return
+   self.emit_print(' '+value.text,kind='partial',args=[value],warnings=['Native formatting/channel state applies; trailing newline is a separate instruction.']);self.float_live=False if kind=='floats' else self.float_live;return
   if n in ('PRINT_TAB','PRINT_SPC','PRINT_COMMA'):
    args=[] if n=='PRINT_COMMA' else [self.stack['ints'][0] if self.stack['ints'] else Expr('<?>')]
    self.statement('VM_'+n,args,'Runtime cursor/spacing behavior.');self.stack['ints']=[];return

@@ -126,6 +126,8 @@ def read_image(data: bytes) -> tuple[dict, dict[str, bytes]]:
         lists = []
         observed = []
         slots = {}
+        listed_slots = set()
+        zero_pair_slots = set()
         allocation_complete = True
         while track:
             if not valid(track, sector):
@@ -144,9 +146,11 @@ def read_image(data: bytes) -> tuple[dict, dict[str, bytes]]:
             for pair in range(TS_PAIRS):
                 pair_offset = 12 + pair * 2
                 data_track, data_sector = raw[pair_offset:pair_offset + 2]
-                if data_track == data_sector == 0:
-                    continue
                 index = start + pair
+                listed_slots.add(index)
+                if data_track == data_sector == 0:
+                    zero_pair_slots.add(index)
+                    continue
                 if not valid(data_track, data_sector):
                     issue('invalid_data_coordinate',
                           f'file sector {index} points to {data_track}/{data_sector}', entry_id)
@@ -168,8 +172,11 @@ def read_image(data: bytes) -> tuple[dict, dict[str, bytes]]:
 
         maximum = max(slots, default=-1)
         gaps = [index for index in range(maximum + 1) if index not in slots]
+        zero_pair_gaps = [index for index in gaps if index in zero_pair_slots]
+        unlisted_gaps = [index for index in gaps if index not in listed_slots]
         count = len(lists) + len(observed)
         entry.update(ts_lists=lists, data_sectors=observed, gaps=gaps,
+                     zero_pair_gaps=zero_pair_gaps, unlisted_gaps=unlisted_gaps,
                      allocation_chain_complete=allocation_complete,
                      observed_sector_references=count, assembly='not_assembled',
                      payload_status='not_assembled')
@@ -177,7 +184,9 @@ def read_image(data: bytes) -> tuple[dict, dict[str, bytes]]:
             issue('catalog_allocation_mismatch',
                   f'catalog says {entry["catalog_sectors"]} sectors; observed {count} references', entry_id)
         if gaps:
-            issue('file_gaps', f'{len(gaps)} missing logical sectors before sector {maximum}', entry_id)
+            issue('file_gaps', f'{len(gaps)} gaps before logical sector {maximum}; '
+                  f'{len(zero_pair_gaps)} with an observed 0/0 pair, '
+                  f'{len(unlisted_gaps)} outside observed T/S lists', entry_id)
         if gaps or not allocation_complete:
             continue
 

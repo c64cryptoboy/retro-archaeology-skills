@@ -43,8 +43,9 @@ def verify(args: argparse.Namespace) -> int:
         digest = hashlib.sha256(data).hexdigest()
         valid = len(data) == rom.size and digest == rom.sha256
         status = "OK" if valid else "MISMATCH"
+        revision_field = "revision" if valid else "expected_revision"
         print(
-            f"{name}: {status}; revision={rom.revision}; size={len(data)} "
+            f"{name}: {status}; {revision_field}={rom.revision}; size={len(data)} "
             f"(expected {rom.size}); sha256={digest}"
         )
         failures += not valid

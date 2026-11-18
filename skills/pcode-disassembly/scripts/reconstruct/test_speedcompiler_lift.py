@@ -60,6 +60,13 @@ class SpeedLiftTests(unittest.TestCase):
  def test_string_print_newline_is_separate(self):
   r=program(row('CONST_STRING',payloadHex='4142'),row('PRINT_STRING'),row('PRINT_NEWLINE'))
   self.assertEqual(text(r),'PRINT "AB";\nPRINT')
+ def test_channel_loss_is_not_a_file_selection(self):
+  r=program(row('GOTO',target=0x2001),row('PRINT_LITERAL',payloadHex='41'),row('SELECT_OUTPUT'),row('PRINT_NEWLINE'),
+            const(3),row('SELECT_OUTPUT'),row('PRINT_NEWLINE'),row('RESTORE_CHANNELS'),row('PRINT_NEWLINE'))
+  prints=[g for g in r['groups'] if g['text'].startswith('PRINT')]
+  self.assertEqual([g['text'] for g in prints],['PRINT "A";','PRINT#<?>,','PRINT#3,','PRINT'])
+  self.assertEqual(prints[0]['kind'],'partial');self.assertTrue(any('current output channel is unknown' in w for w in prints[0]['warnings']))
+  self.assertFalse(prints[-1]['warnings'])
  def test_unknown_stack_aliasing_bounded(self):
   r=program(*[const(i) for i in range(14)],row('STORE_INTEGER_RESET',slot=0,lowStorage=0x810,highStorage=0x888))
   self.assertIn('I_00% = <?>',text(r))

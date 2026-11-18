@@ -13,7 +13,8 @@ from typing import Any
 SUCCESS_MARKER = "=== Build successful ==="
 # Require a diagnostic-shaped line, not quoted commands or source/caret excerpts.
 DIAGNOSTIC = re.compile(
-    r"^(?!\s*(?:\d+>)?\s*(?:\+\s*)?(?:echo|Write-Host|Write-Output)\b)\s*(?:\d+>)?\s*(?:"
+    r"^(?!\s*(?:\d+>)?\s*(?:\+\s*)?(?:echo|Write-Host|Write-Output)(?=\s|$))\s*(?:\d+>)?\s*(?:"
+    r"cl(?:\.exe)?\s*:\s*Command\s+line\s+|"
     r"(?:(?:[A-Z]:)?[^:\"<>|]*\(\d+(?:,\d+)?\)|(?:[A-Z]:)?[^:\"<>|]+:\d+(?::\d+)?|"
     r"(?:[A-Z]:)?[^:\"<>|]*\.(?:lib|obj|vcxproj|csproj|targets|props)(?:\([^\"<>|]*\))?|"
     r"(?:clang(?:-cl|\+\+)?|cl|link|lld-link|ld(?:\.lld)?|msbuild)(?:\.exe)?)\s*:\s*"
@@ -22,7 +23,7 @@ DIAGNOSTIC = re.compile(
     re.IGNORECASE,
 )
 PROJECT_PREFIX = re.compile(r"^\s*\d+>\s*")
-ECHO_COMMAND = re.compile(r"^\s*(?:\+\s*)?(?:echo|Write-Host|Write-Output)\b", re.IGNORECASE)
+ECHO_COMMAND = re.compile(r"^\s*(?:\+\s*)?(?:echo|Write-Host|Write-Output)(?=\s|$)", re.IGNORECASE)
 ERROR_PATTERNS = (
     re.compile(r"^\s*(?:\d+>)?\s*CMake Error(?:\s|:)", re.IGNORECASE),
     re.compile(r"^\s*(?:[^\"<>|]*\.ps1\s*:\s*)?(?:[\w.-]+\s+)?build failed\b", re.IGNORECASE),

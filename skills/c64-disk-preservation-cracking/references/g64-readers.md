@@ -12,9 +12,17 @@ python3 -B -m unittest discover -s scripts/tests -v
 
 The reader checks standard GCR framing and checksums, then follows DOS directory and file chains.  Directory-sector evidence preserves traversal order.  Duplicate-sector diagnostics identify the actual selected physical candidate and distinguish identical from conflicting valid payloads.  Conflicting otherwise-valid duplicates use the documented existing first-valid selection; the diagnostic is not a consensus or strict-conflict refusal.  Missing or corrupt required sectors fail rather than becoming zero-filled payloads.
 
+Each directory entry’s `rawHex` covers its aligned 32-byte slot, including the directory-chain link in slot zero.  Extraction preserves all chain payload bytes.  The default suffix follows the declared file type (`.prg`, `.seq`, etc.), or `.bin` for an unknown type.  Only a declared PRG with at least two bytes gets a conventional little-endian `loadAddress`; otherwise it is null.  The declared type does not prove how a program uses the bytes.
+
+In each track slot, `speed` retains the raw G64 speed-table word for compatibility.  Values zero through three populate `constantZone`; larger values populate `speedMapOffset` instead.  The other field is null.  The reader does not validate or decode the referenced map or infer physical timing.
+
 Track records overlapping the G64 header/offset/speed-table area are rejected.  Extraction refuses stable path, symlink, and hardlink aliases of the input image.  This is not race-proof or atomic output: concurrent filesystem changes remain outside the guarantee, and an unrelated existing output file can still be overwritten.  Always choose a fresh derivative destination.  Preserve original captures and hashes before extraction.
 
 Scope remains standard-sector/DOS interpretation, not every container extension, custom filesystem, physical timing effect, or protection format.  Faster loading alone does not imply a different disk encoding.  A standard-reader failure does not establish that no recoverable custom data exists.
+
+### Paired-capture cross-check
+
+Compare the same side by logical track/sector, disk ID, and a hash of the complete sector payload, not just sector counts.  A linear capture can end between a valid header and its data while a circular representation includes both; do not join by payload hash alone.  A readable sector inventory can coexist with a directory-chain refusal.  Record both outcomes.  A folder label is provenance, not proof of the protection or density mechanism.
 
 ## Narrow RapidLok-like recognition
 

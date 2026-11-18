@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Targeted search over normalized negative decimal literals -.D (1..73 digits)."""
+"""Heuristic search over normalized negative decimal literals -.D (1 through 38 digits)."""
 from pathlib import Path
 import subprocess
 import sys
@@ -29,6 +29,7 @@ def parse(digits: str) -> bytes:
 # approximately 1.7e38 FAC maximum. FIN accumulates all digits before applying
 # the decimal-point/exponent scale, so target-equivalent literals with 39 or
 # more significant digits take the ROM overflow path.
+# FIN output magnitudes can reverse across decimal carries; bisection only samples.
 for n in range(1, 39):
     lo, hi = 10 ** (n - 1), 10 ** n - 1
     while lo < hi:
@@ -53,4 +54,4 @@ for n in range(1, 39):
 p.stdin.close()
 if p.wait() != 0:
     raise SystemExit(p.returncode)
-print("not reachable with 1..38 significant digits; target-equivalent 39+ digit accumulators overflow before scaling")
+print("no match in sampled literals of lengths 1 through 38; literal reachability remains unresolved")

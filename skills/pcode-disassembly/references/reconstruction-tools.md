@@ -381,7 +381,9 @@ Other VM families do not inherit this rule.
 - Embedded tokenized BASIC is labeled separately. Control bytes appear as
   display escapes or `CHR$` expressions; display escaping is not original text.
 - Joins, loop entries, calls and unsupported effects discard symbolic facts.
-  Unknown output-channel state remains explicit rather than guessed as console.
+  After output-channel evidence is lost, `PRINT` is marked partial and warns that
+  it need not mean screen output.  `PRINT#<?>` is reserved for an observed file
+  selection whose logical file number is unknown.
 - The detailed lifter materializes effectful expressions such as RND/PEEK/USR
   and clock reads once at their evaluation site. These internal captures record
   evaluation identities, **not actual memory layout/allocation or
@@ -390,6 +392,17 @@ Other VM families do not inherit this rule.
 - False branches use `expression = 0`, not BASIC's bitwise `NOT expression`;
   DTL direct comparison roots may instead use the opposite relation as above.
   PETSpeed FOR limit/step capture precedes its later loop-variable initialization.
+- BLITZ and Austro show a single `FOR I = 1 TO 3` header when adjacent small
+  literals initialize and bound the same real scalar with the default step.
+  All five instructions remain under the first label.  Explicit steps, dependent
+  bounds, and alternate entries inside the sequence keep the separate statements.
+- In the DTL compact view, the clear and bootstrap-transfer pair for bare `RUN`
+  reads as one statement unless its second instruction is a known entry point.
+  An independent `CLR` stays visible, as do both operations in the detailed listing.
+- BASIC-64 prints literal word addresses as unsigned for `PEEK`, `POKE`, `SYS`,
+  and `WAIT`, without changing signed arithmetic, computed addresses, or the value
+  being stored.  Installing or disabling a custom error target appears as a
+  runtime comment, not as an immediate jump or invented BASIC statement.
 - `VM_INT` and `VM_ROUND` denote runtime operations, not stock BASIC functions.
   Integer overflow, conversion, empty strings, errors, input retries, printing
   and function-parameter behavior can differ from interpreted BASIC.

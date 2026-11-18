@@ -25,6 +25,16 @@ Maintain an unusual-design queue while auditing: isolated or transient rooms, ra
 
 Inventory every RNG callsite and derive generator state, call order, mapping, rerolls, bias, and exact probability where possible. Prefer calculation or finite simulation over broad sampling.
 
+**Worked retry check.**  Suppose the first attempt tests one of four equally likely states (0, 1, 2, or 3) and succeeds only on 0.  First-attempt success is 1/4.  After a known miss, the original state is 1, 2, or 3, each with weight 1/3:
+
+| State tested on retry | Success on that retry, given the miss |
+|---|---|
+| Restore the pre-attempt state and repeat the same input and draws | 0: none of 1, 2, or 3 wins. |
+| Advance one state modulo four | 1/3: only 3 advances to 0. |
+| Draw independently and uniformly from all four states | 1/4: the miss does not affect the new draw. |
+
+Before recommending a retry, establish which transition the game uses and which draw it tests.  If either is unknown, leave retry odds open.
+
 ### 7. Perform the unfinished-feature/remnant pass
 
 Maintain a dedicated ledger. Search for:

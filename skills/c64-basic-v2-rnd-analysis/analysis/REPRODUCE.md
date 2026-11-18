@@ -101,9 +101,28 @@ python3 rnd_query.py components
 
 Use `--run-dir PATH` for `classify` and `verify-results` when outputs are elsewhere.  Use `--component-depth PATH` for `components`.
 
+## Which draws does a turn test?
+
+Run `python3 -B turn_schedule.py` to replay the bundled twelve-state orbit for `RND(-.311306466)`.  Discard the seed result (index 0).  Each turn tests its first positive draw `X` for an encounter (`X < 1/8`).  The checker uses the packed bytes, not printed decimals, and stops at the first repeated first-draw index.
+
+| Draw schedule | Transient first draws (no hits) | Repeating first draws | Encounters per repeating sequence |
+|---|---|---|---|
+| One draw per turn | 1, 2, 3, 4 | 5, 6, 7, 8, 9, 10, 11 | 1 in 7 |
+| Discard another draw if `X < 1/2` | 1, 2, 3 | 5, 6, 7, 8, 10 | 0 in 5 |
+
+Only index 9 wins.  In the second schedule, turn-start draw 8 consumes 9 as its extra draw.  The generator period remains seven; five is the repeating **turn** count.  These frequencies apply only to this seed and these schedules.  If the orbit is incomplete, call order is unknown, or unmodeled game state controls the draws, the encounter frequency is undetermined.
+
 ## Sequential integer `RND(-TI)` seeds
 
-The sequential-integer section of `SEED_REFERENCE.md` compares the exact component distribution of the
+For an inclusive range, subtract the bundled counts at `FIRST-1` and `LAST`:
+
+```bash
+python3 rnd_query.py ti-range 61 3600
+```
+
+Of these 3,540 integer ticks, 2,894 lead to period 58,078.  Retained prefix ends are 60, 3,600, 216,000, 1,000,000, 5,183,999, and 5,184,000.  Starting at tick 1 uses an empty prefix; it does not include the timer path at `TI=0`.  An uncached boundary is unavailable, not interpolated.
+
+**Recomputation (external metadata required).**  The sequential-integer section of `SEED_REFERENCE.md` compares the exact component distribution of the
 positive integer clock seeds against the all-valid-negative-FAC state
 population.  It reuses the retained canonical metadata and finishes in seconds:
 
@@ -312,7 +331,7 @@ python3 render_component_depth.py \
 ## Evidence map
 
 - `FINAL_REPORT.md`: statistics, components, useful seeds, and interpretation.
-- `SEED_REFERENCE.md`: domain derivation, negative-FAC mapping, shell maxima, literal proof, clock-seed distributions, and timer sampling.
+- `SEED_REFERENCE.md`: domain derivation, negative-FAC mapping, shell maxima, bounded literal search, clock-seed distributions, and timer sampling.
 - `VALIDATION.md`: oracle contracts, differential evidence, metadata schema, restart tests, and sampling limitations.
 - `SOURCES.md`: lineage, prior work, constant rationale, and unresolved generated-code provenance.
 - `LOCAL_ARTIFACTS.md`: external metadata identity and verification limits.

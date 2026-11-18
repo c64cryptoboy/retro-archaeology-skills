@@ -366,6 +366,26 @@ def output_info(path: Path, data: bytes, **extra: object) -> dict:
     return result
 
 
+def physical_prg_ranges(size: int, segments: list[dict]):
+    """Partition once; every multi-page run must have one contiguous CPU mapping."""
+    pages = {
+        segment["cpuStart"]: segment["sourceOffset"] for segment in segments
+        if segment.get("known") and segment.get("source") == "prg-rom"
+        and segment["cpuEndExclusive"] - segment["cpuStart"] == PRG_PAGE_SIZE
+    }
+    start = 0
+    while start < size:
+        length = PRG_PAGE_SIZE
+        for address, offset in pages.items():
+            if offset == start:
+                span = PRG_PAGE_SIZE
+                while pages.get(address + span) == start + span:
+                    span += PRG_PAGE_SIZE
+                length = max(length, span)
+        yield start, start + length
+        start += length
+
+
 def extract_to_directory(
     snapshot_path: Path, rom_path: Path, output_dir: Path
 ) -> dict:
@@ -443,10 +463,29 @@ def extract_to_directory(
                 },
             )
         )
+    prg_offset = parse_ines(rom)["prgOffset"]
+    for start, end in physical_prg_ranges(len(result["prgRom"]), metadata["segments"]):
+        block = result["prgRom"][start:end]
+        name = f"nes-prg-{start:06x}.bin"
+        (output_dir / name).write_bytes(block)
+        regions.append(region_record(
+            region_id=f"ines-prg-{start:06x}",
+            path=name,
+            data=block,
+            kind="cpu-program-rom",
+            cpu_profile="2a03",
+            source={
+                "container": "supporting-ines-rom",
+                "artifactPath": str(rom_path),
+                "fileOffset": prg_offset + start,
+                "prgOffset": start,
+            },
+        ))
     regions.extend(
         [
             region_record(
                 region_id="ines-prg-rom",
+                scan_by_default=False,
                 path=outputs["prgRom"]["path"],
                 data=result["prgRom"],
                 kind="cpu-program-rom",
@@ -454,7 +493,7 @@ def extract_to_directory(
                 source={
                     "container": "supporting-ines-rom",
                     "artifactPath": str(rom_path),
-                    "fileOffset": parse_ines(rom)["prgOffset"],
+                    "fileOffset": prg_offset,
                     "meaning": "physical PRG ROM bytes in bank order; no single CPU base address",
                 },
             ),

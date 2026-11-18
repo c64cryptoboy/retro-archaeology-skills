@@ -65,6 +65,19 @@ class DTLReadingTests(unittest.TestCase):
         self.assertIn('A = RND(RD)',render_reading(new))
         self.assertEqual(new,lift('dtl',report));self.assertEqual(report,before)
 
+    def test_bare_run_owns_clear_and_bootstrap_only_in_compact_view(self):
+        clear = instruction('CLEAR_OR_RUN','49',control='runtime-managed')
+        run = instruction('RUN_BOOTSTRAP','58',control='runtime-managed-transfer')
+        r = lift('dtl',place([deepcopy(clear),deepcopy(clear),deepcopy(run),deepcopy(clear)]))
+        self.assertEqual([g['text'] for g in r['groups']],['CLR','CLR','RUN','CLR'])
+        self.assertEqual(reading(r),'CLR\nRUN\nCLR')
+        folded = r['readingView']['groups'][1]
+        self.assertEqual(folded['sourceGroups'],[1,2]);self.assertEqual(folded['instructionAddresses'],[0x4001,0x4002])
+        self.assertEqual(folded['actions'],[dict(kind='fold-bare-run')])
+        branch = instruction('GOTO','480000',grammar='xor_target',control='jump');branch['targets']=[0x4004]
+        targeted = lift('dtl',place([branch,deepcopy(clear),deepcopy(run)]))
+        self.assertEqual([g['text'] for g in targeted['readingView']['groups']][-2:],['CLR','RUN'])
+
     def test_peek_direct_comparison_retains_branch_target(self):
         condition=instruction('IF_SKIP_FALSE','4f02',grammar='relative8',control='conditional')
         condition['targets']=[0x4100]

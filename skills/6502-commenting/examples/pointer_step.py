@@ -5,7 +5,7 @@ from pathlib import Path
 import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[3] / "shared" / "6502"))
-from cpu6502 import Cpu6502Emulator, FU  # noqa: E402
+from cpu6502 import Cpu6502Emulator, FN, FU, FZ  # noqa: E402
 
 # $8000: LDA $10; CLC; ADC #$28; STA $10; BCC $800B; INC $11; RTS
 PROGRAM = bytes.fromhex("a5 10 18 69 28 85 10 90 02 e6 11 60")
@@ -24,8 +24,13 @@ def main():
         else:
             raise AssertionError("synthetic routine did not return within eight instructions")
         result = cpu.get_mem(0x10) | cpu.get_mem(0x11) << 8
-        assert result == (initial + 40) & 0xFFFF
+        expected = (initial + 40) & 0xFFFF
+        assert result == expected
         assert (cpu.x, cpu.y) == (0x12, 0x34)
+        low_sum = (initial & 0xFF) + 40
+        flag_byte = expected >> 8 if low_sum > 0xFF else low_sum
+        expected_nz = (flag_byte & FN) | (FZ if flag_byte == 0 else 0)
+        assert (cpu.flags & (FN | FZ)) == expected_nz, f"wrong return N/Z for ${initial:04X}"
         print(f"${initial:04X} -> ${result:04X}")
     print("Four synthetic cases passed; this is CPU-model evidence, not hardware validation.")
 

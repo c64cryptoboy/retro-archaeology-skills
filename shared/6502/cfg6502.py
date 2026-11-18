@@ -5,6 +5,7 @@ Only official opcodes in dis6502.py are decoded.  Targets outside the PRG are
 reported but never decoded, so this tool does not guess at ROM or banked RAM.
 """
 import argparse
+import hashlib
 import json
 from collections import defaultdict, deque
 from pathlib import Path
@@ -47,9 +48,26 @@ def target(ins):
     return None
 
 
-def analyze(mem, base, entries, maximum):
+def check_inline_jsr(mem, base, note):
+    """Check the file identity and direct call, not the supplied return semantics."""
+    digest = hashlib.sha256(base.to_bytes(2, 'little') + bytes(mem)).hexdigest()
+    if note['sha256'].lower() != digest:
+        raise ValueError('inline JSR conflict: SHA-256 does not match the complete PRG')
+    offset = note['site'] - base
+    if not (0 <= offset and offset + 4 <= len(mem)) or mem[offset] != 0x20:
+        raise ValueError('inline JSR conflict: site must contain a complete JSR and argument byte')
+    if word(mem[offset:offset + 3]) != note['callee']:
+        raise ValueError('inline JSR conflict: encoded target does not match supplied callee')
+    if not note['siteEvidence'].strip() or not note['calleeEvidence'].strip():
+        raise ValueError('inline JSR requires site evidence and evidence for the adjusted return')
+    return {**note, 'argument': note['site'] + 3, 'value': mem[offset + 3],
+            'continuation': (note['site'] + 4) & 0xffff}
+
+
+def analyze(mem, base, entries, maximum, *, inline_jsr=None):
     validate_extent(mem, base)
     end = base + len(mem)
+    note = check_inline_jsr(mem, base, inline_jsr) if inline_jsr is not None else None
     queue = deque(entries)
     seen, instructions, edges = set(), {}, []
     data_xrefs, stops = defaultdict(list), []
@@ -84,7 +102,10 @@ def analyze(mem, base, entries, maximum):
                 break
             if mnemonic == 'JSR':
                 add_edge(pc, target(ins), 'call')
-                add_edge(pc, next_pc, 'fallthrough')
+                if note and pc == note['site']:
+                    add_edge(pc, note['continuation'], 'analyst_supplied_continuation')
+                else:
+                    add_edge(pc, next_pc, 'fallthrough')
                 break
             if mnemonic == 'JMP' and mode == 'abs':
                 add_edge(pc, target(ins), 'jump')
@@ -101,7 +122,7 @@ def analyze(mem, base, entries, maximum):
                 break
             pc = next_pc
 
-    return {
+    result = {
         'loadAddress': base, 'endAddressExclusive': end,
         'entries': sorted(entries),
         'instructions': [instructions[pc] for pc in sorted(instructions)],
@@ -111,6 +132,27 @@ def analyze(mem, base, entries, maximum):
         'stops': stops,
         'limitReached': len(instructions) >= maximum,
     }
+
+    if note:
+        if note['site'] not in seen:
+            raise ValueError('inline JSR not applied: site not reached within the analysis budget')
+        arg = note['argument']
+        # Include entry/edge evidence even when the instruction budget stopped decoding.
+        note['codeConflict'] = (arg in result['entries'] or any(e['to'] == arg for e in edges)
+                                or any(pc <= arg < pc + len(i['bytes']) for pc, i in instructions.items()))
+        result['inlineJsr'] = note
+    return result
+
+
+def inline_jsr_summary(note):
+    lines = [f"PRG SHA-256: {note['sha256']}",
+             f"JSR ${note['site']:04X} to ${note['callee']:04X}; inline argument "
+             f"${note['argument']:04X} = ${note['value']:02X}; analyst-supplied continuation "
+             f"${note['continuation']:04X} (not observed execution).",
+             f"Site evidence: {note['siteEvidence']}", f"Callee evidence: {note['calleeEvidence']}"]
+    if note['codeConflict']:
+        lines.append('Conflict: independent code evidence overlaps the inline argument; both interpretations retained.')
+    return lines
 
 
 def print_report(result):
@@ -125,6 +167,9 @@ def print_report(result):
     for edge in result['edges']:
         external = '' if edge['internal'] else ' (outside PRG)'
         print(f"${edge['from']:04X} -> ${edge['to']:04X}  {edge['kind']}{external}")
+    if 'inlineJsr' in result:
+        print('\nAnalyst-supplied inline JSR:')
+        print('\n'.join(inline_jsr_summary(result['inlineJsr'])))
     if result['dataXrefs']:
         print('\nAbsolute data references:')
         for item in result['dataXrefs']:
@@ -146,13 +191,24 @@ def main():
                         help='entry address (repeatable; default is PRG load address)')
     parser.add_argument('--max-instructions', type=int, default=10000)
     parser.add_argument('--json', action='store_true', help='emit structured JSON')
+    parser.add_argument('--inline-jsr', nargs=5, action='append',
+                        metavar=('SHA256', 'SITE', 'CALLEE', 'SITE_EVIDENCE', 'CALLEE_EVIDENCE'),
+                        help='one reviewed call consuming one inline byte; hash the complete PRG, '
+                             'use 0x-prefixed hex addresses, and quote each evidence string')
     args = parser.parse_args()
     blob = args.prg.read_bytes()
     if len(blob) < 3:
         parser.error('PRG must include a two-byte load address and at least one byte')
     base = blob[0] | (blob[1] << 8)
     try:
-        result = analyze(blob[2:], base, args.entry or [base], args.max_instructions)
+        note = None
+        if args.inline_jsr:
+            if len(args.inline_jsr) != 1:
+                parser.error('only one inline JSR contract is supported')
+            sha, site, callee, site_evidence, callee_evidence = args.inline_jsr[0]
+            note = dict(sha256=sha, site=int(site, 0), callee=int(callee, 0),
+                        siteEvidence=site_evidence, calleeEvidence=callee_evidence)
+        result = analyze(blob[2:], base, args.entry or [base], args.max_instructions, inline_jsr=note)
     except ValueError as exc:
         parser.error(str(exc))
     if args.json:

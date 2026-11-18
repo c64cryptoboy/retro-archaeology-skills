@@ -26,6 +26,20 @@ class PreflightTests(unittest.TestCase):
         self.assertEqual(result['status'], 'findings')
         self.assertEqual(len(result['diagnostics']), 1)
 
+    def test_context_blocker_uses_diagnostic_id_only(self):
+        for code, message, blocker in (
+            ('undeclared_var_use', "Use of undeclared identifier 'drv_init'", False),
+            ('undeclared_var_use', "Use of undeclared identifier 'audio_init'", False),
+            ('drv_unknown_argument', 'Unknown argument', True),
+            ('err_drv_invalid_value', 'Invalid option value', True),
+            ('pp_file_not_found', 'Missing header', True),
+        ):
+            with self.subTest(code=code, message=message):
+                log = BAD.replace('init_conversion_failed', code).replace('Cannot initialize a parameter', message)
+                result = classify(log, {**OK, 'exit_code': 3})
+                self.assertEqual(result['status'], 'unavailable' if blocker else 'findings')
+                self.assertEqual(result['reasons'], ['context_or_parse_blocker'] if blocker else [])
+
     def test_missing_header_not_a_pass_or_source_finding(self):
         text = BAD.replace('init_conversion_failed', 'pp_file_not_found')
         self.assertEqual(classify(text, {**OK, 'exit_code': 3})['status'], 'unavailable')

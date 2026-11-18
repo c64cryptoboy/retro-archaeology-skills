@@ -250,6 +250,15 @@ def compare_runs(left: RunResult, right: RunResult,
         ))
 
     for rule in contract.entry_event_rules:
+        left_watched = rule.left_pc in left.observed_pcs
+        right_watched = rule.right_pc in right.observed_pcs
+        if not (left_watched and right_watched):
+            differences.add(Difference(
+                "entry_event_coverage",
+                "checkpoint was not watched on both runs",
+                rule=rule.name, left=left_watched, right=right_watched,
+            ))
+            continue
         left_events = _entry_event_stream(left, rule, "left")
         right_events = _entry_event_stream(right, rule, "right")
         if left_events != right_events:
