@@ -194,6 +194,22 @@ class SemanticTests(unittest.TestCase):
     def test_typed_store_does_not_forge_preserved_fac(self):
         r=program('petspeed',row('CONST_U8_FAC',19),store(),row('STORE_FAC_VAR',operands={'variable':0x2808}))
         self.assertIn('V_2808 = <?>',texts(r))
+    def test_overwritten_rnd_result_preserves_both_calls_in_order(self):
+        # Same destination is intentional: the first value dies but its effect does not.
+        cases = (
+            ('petspeed', [row('CONST_I16_FAC',-7)], row('ONE_FAC'), store(), 'V_2800', '-7'),
+            ('basic64', [row('CONST_SIGNED_WORD_FAC',-7)], row('CONST_BYTE_FAC',1), store('basic64'), 'V_0300', '-7'),
+            ('blitz', [row('CONST_SMALL',7), row('NEGATE')], row('CONST_SMALL',1), row('STORE_VAR',variable='A'), 'A', '(-7)'),
+        )
+        for family,seed,one,dest,name,arg in cases:
+            with self.subTest(family=family):
+                result=program(family,*seed,row('RND'),dest,one,row('RND'),dest)
+                first=0x1000+len(seed)
+                self.assertEqual(texts(result).splitlines(),[
+                    f'T_{first:04X} = RND({arg})', f'{name} = T_{first:04X}',
+                    f'T_{first+3:04X} = RND(1)', f'{name} = T_{first+3:04X}',
+                ])
+
     def test_effectful_function_materialized_once(self):
         r=program('petspeed',row('CONST_U8_FAC',1),row('RND'),row('PUSH_FAC'),row('POP_ARG'),row('ADD'),store())
         self.assertEqual(texts(r).count('RND('),1);self.assertIn('(T_1001 + T_1001)',texts(r))

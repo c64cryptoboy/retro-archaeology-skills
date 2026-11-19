@@ -57,6 +57,12 @@ Read the relevant proof before making an impossibility claim.  Read all of the r
 
 Report the population, weighting, cycle inclusion, five-byte state, rank, and ROM identity.  `mu` counts steps to the cycle; `lambda` is its length; `mu+lambda` counts unique internal states before repetition.
 
+## Checking a compiler's random-call sequence
+
+The [BASIC V2 compatibility suite](https://github.com/EgonOlsen71/compsuite/blob/587bd9cecb76ff027cafd05e7ad831eec129c397/src/compsuite.bas) overwrites the result of `RND(-7)` with `RND(1)`.  Only the first *assignment* is disposable; the reseed is observable.  On the pinned stock ROM, the reseed writes `68 60 83 00 00` to RNDX, and the next positive draw writes `7F 67 5B F1 3D` (about 0.45187333936).  Omitting the reseed **from power-on** gives `7E 3E 04 7E 4E`; an extra advance **after the correct draw** gives `7E 7B 93 46 8E`.  Run `python3 -m unittest test_negative_seed_image.NegativeSeedImageTests.test_overwritten_reseed_still_changes_the_next_draw` from the analysis directory to reproduce these controls.
+
+These are stock-ROM vectors, not a verdict about any compiler.  Examine the binary separately for call order, argument signs, state mutation, and the actual runtime implementation.  Two displayed calls are not proof of two equivalent effects.
+
 ## Optional data and validation
 
 Per-state classification requires an external **11,744,051,200-byte (10.9375-GiB)** `metadata.bin` plus its matching completed-run files:

@@ -78,6 +78,18 @@ Evidence against promotion includes:
 - plausible decoded data without control-flow evidence;
 - a negatively scored mismatch arbitrarily bridges two generic runs.
 
+## Check for a compiler before claiming programmer-level reuse
+
+A match can come from an emitter template, an optional runtime helper, or the input program.  Compare these separately.  A common helper is evidence about that helper; do not count every call site or every copy as an independent match between application authors.
+
+A worked control is Vic Cortes's [Micro Compiler, preserved and ported by EgonOlsen71](https://github.com/EgonOlsen71/microcompiler/tree/71551d432255f3eda552fa1c1e3b3335a3c11e41).  Here are three questions one can answer by compiling two-line programs with that revision, without running the produced code:
+
+- **Same source construct or shared helper?** Compile `A=4+2*3`, then change only `*` to `/`, each followed by `END`.  At load address `$C000`, the only differing payload byte is at `$C01B`: `CLC` versus `SEC` before the same subroutine call.  The appended helper is identical.  A comparison that ignores flag setup would declare the operations identical; a comparison that counts the helper as application logic would exaggerate shared implementation.  The addition is emitted first: do not infer ordinary BASIC V2 precedence.
+- **Relocation or different behavior?** Recompile the multiply example at `$9000`.  Excluding the PRG load header, only the high operand bytes of the entry jump, helper trampoline, and call change.  The absolute variable slots and workspace do not move.  Normalize operands by their *roles*, not by masking every address.
+- **Can the original source be identified uniquely?** With `END` fixed, `A=B`, `A=BETA`, and `A=BOX` produce identical files.  Separately, with `A=B` fixed, `END`, `STOP`, and `RETURN` produce identical files.  One form is a plausible reading, not a recovered spelling.  A 16-bit load/store or `RTS` alone is neither a compiler nor an author fingerprint.
+
+For the actual immediate-versus-memory templates and host SAVE differences, see the [native emission probes](../../6502-disassembly/references/microcompiler-emission.md).  For a suspected common compiler, retain a helper-absent control, a second load address, and an unrelated emitter or hand-coded confuser where available.  Without that last comparison, do not claim unique provenance.  The probes above concern one port and one configuration, not every version or every target.
+
 ## Candidate-specific frequency scans
 
 `candidate_signature6502.py` scans raw files at every byte offset for a selected complete portable-shape subsequence, retaining immediate values and allowing bounded target-only insertions.

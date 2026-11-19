@@ -134,6 +134,10 @@ def build_profile(base_profile: dict) -> dict:
             rule['evidence'] = ('Exact $2267 numeric corridor $1547 consumes 41/42; '
                                 'string corridor $162B consumes only 41; $1581 advances cursor')
     p['opcodes']['AB']['comment'] = 'ARG := integer 0 ($6C/$6D := 0, $11 := 1); no inline operand'
+    p['opcodes']['BB']['comment'] = (
+        'RND: floating input calls $E097; integer input selects the ROM branch by sign '
+        'at $E09A without converting the integer word to floating FAC. '
+        'Negative integer reseeding is not stock BASIC seed equivalence.')
     for op in ('D6', 'D7'):
         rule = p['opcodes'][op]
         rule['mnemonic'] += '_EMPTY_SKIP'

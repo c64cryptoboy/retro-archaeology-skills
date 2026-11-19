@@ -25,6 +25,7 @@ Do not load every file for a narrow question. Read the required phase **before**
 | Indirect jumps, self-modification, runtime decoding or ambiguous execution | [Dynamic code and traces](references/dynamic-code-and-traces.md) | Pointer writers/targets, comparable captures or bounded transform/trace evidence |
 | Distinguishing a supplied stream interpretation from pointer data or origin claims | [Regional evidence pilot](scripts/region-evidence/README.md) and [worksheet](scripts/region-evidence/WORKSHEET.md) | Byte-pinned consumer assumptions, conditional boundary checks, and explicit unknown authorship |
 | Separating Forth dictionary links, threaded cells, inline operands, and native handlers | [Source-backed FIG-Forth example](references/forth-source-example.md) | Source-derived relationships and explicit binary/platform applicability limits; not a universal recognizer |
+| Distinguishing native compiler output from hand-written code, p-code, inline text, and shared helpers | [Micro Compiler emission probes](references/microcompiler-emission.md) | One-source-change comparisons, operand roles, load address, and a bounded inverse claim |
 | Naming, closing a region or handing work off | [Completion and handoff](references/completion-and-handoff.md) | Reviewed names, byte coverage and unresolved worklist |
 
 For exact C64/1541 ROM calls, workspace or banking, also read the relevant `c64-rom-reference` table. Do not infer the behavior of a ROM call from its label alone.
