@@ -433,6 +433,11 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
             left, right = need(second, ins), need(first, ins)
             if op in (0x88, 0x89, 0x92):
                 left, right = right, left
+            if symbol in ("AND", "OR"):
+                # A legal alias next to a word operator can form a different
+                # token (AF + OR -> A, FOR).  Preserve safe compact spellings.
+                if tokenize(left + symbol + right) != tokenize(left) + tokenize(symbol) + tokenize(right):
+                    symbol = f" {symbol} "
             first = f"({left}{symbol}{right})"
         elif op == 0x87:
             first = f"(-{need(first, ins)})"

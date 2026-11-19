@@ -369,10 +369,6 @@
       "PRINT_EMPTY": {
         "op": "newline"
       },
-      "PRINT_CHANNEL_EMPTY": {
-        "op": "newline",
-        "restoreChannels": true
-      },
       "END": {
         "op": "simple"
       },
@@ -983,6 +979,11 @@
         "op": "literal",
         "dst": "arg",
         "value": "1"
+      },
+      "ZERO_ARG": {
+        "op": "literal",
+        "dst": "arg",
+        "value": "0"
       },
       "ZERO_FAC": {
         "op": "literal",
@@ -3006,10 +3007,6 @@
       },
       "PRINT_EMPTY": {
         "op": "newline"
-      },
-      "PRINT_CHANNEL_EMPTY": {
-        "op": "newline",
-        "restoreChannels": true
       },
       "END": {
         "op": "simple"

@@ -1,0 +1,9 @@
+# Test the boundary between a generated name and a word operator
+
+A saved BASIC line can display the intended expression while containing the wrong operator.  On stock C64 BASIC V2, the bytes `41 46 B0 31` (name `AF`, `OR`, digit `1`) and `41 81 31` (letter `A`, `FOR`, digit `1`) both expand to `AFOR1` in a listing without token separators.  A text-first exporter that joins `AF`, `OR`, and `1` before tokenizing can produce the second sequence.  Its own detokenizer and tokenizer can round-trip the *wrong* bytes.  Checking that `AF` is a legal name in isolation does not catch the error either.
+
+At the point where the expression still has separate operands and an operator, preserve those boundaries.  With a text-first backend, compare tokenizing the joined expression against concatenating the tokens for its parts.  If the word operator fuses with a neighbor, emit `AF OR 1`; leave an unambiguous spelling such as `A2AND1` alone when byte compatibility matters.  Apply this to the structured expression, not by searching rendered text that may contain strings, DATA, or comments.
+
+The pinned [PETSpeed expression emitter](https://github.com/EgonOlsen71/PetspeedDecompy/blob/3d4360e8b481c2157fccac0458f3556a2d3ea311/bin/speedcode.py#L374-L383) and [tokenizer](https://github.com/EgonOlsen71/PetspeedDecompy/blob/3d4360e8b481c2157fccac0458f3556a2d3ea311/bin/basic_v2.py#L71-L89) illustrate the boundary between the operations.
+
+For a regression, let the normal allocator reach `AF`, emit a bitwise OR, and check the **saved line body** for `41 46 20 B0 20 31`.  Pair it with `AT AND 1`: without separation the characters `TAN` can become token `$C0` instead of leaving `AT` followed by `$AF` (`AND`).  Keep a typed-name control such as `AF%` whose suffix already separates the operator.  This check establishes token identity and operand spelling, not runtime equivalence.

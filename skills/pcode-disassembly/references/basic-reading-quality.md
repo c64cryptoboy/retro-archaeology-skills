@@ -14,6 +14,8 @@ Use static code, source, documentation, observed execution, and firsthand user o
 
 ## Expressions and branches
 
+When a branch join loses an operand, use the [reaching-definition worksheet and counterexamples](value-at-a-join.md) to distinguish a preserved sample from two identical-looking reads.  Unknown entry or state still blocks forwarding.
+
 - Render **structured expressions**, not regular-expression parenthesis deletion.  Use precedence to omit redundant grouping while preserving the exact evaluation tree.  `1 + INT(X * 20)` needs no wrappers around the addition, multiplication, or function argument.
 - Keep necessary grouping: `A + (B + C)`, `A / (B * C)`, nested comparisons, powers, and unary edge cases must not be reassociated merely because an algebraic identity looks attractive.  Floating-point rounding, overflow, string operations, and error timing can make reassociation observable.
 - A proved comparison's false branch can use its opposite relation: `IF ((A > B)) = 0 THEN ...` can read `IF A <= B THEN ...`.  Preserve operands and their order.  Comparison-only Boolean-tree duality needs its own eager-evaluation proof; do not turn conditional paths into eager expressions.

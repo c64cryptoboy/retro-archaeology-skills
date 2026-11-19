@@ -35,6 +35,8 @@ Live-debugger steps describe capabilities, not a dependency on a particular agen
 - `c64-state-report.py snapshot.bin` summarizes a raw 64 KiB C64 memory snapshot. When `cpuPort.ioVisible` is false, the sampled bytes cannot establish the VIC bank, screen address, or charset address.  Capture I/O-visible state before relying on those fields.
 - `disassembly-report.py cfg.json --notes-json notes.json --output report.md` creates an evidence/worklist handoff. Update the notes JSON with human-confirmed facts and hypotheses rather than presenting tool candidates as facts.
 
+For stack-relative reasoning, compare [page-one pushes and an ordinary absolute-indexed lookback](stack-lookback.md).  They do not wrap at the same boundary.
+
 ## Core principles
 
 ### Do not linearly disassemble unknown memory

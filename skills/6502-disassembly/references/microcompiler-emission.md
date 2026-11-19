@@ -242,6 +242,10 @@ for name, (prg, expected) in cases.items():
     print(name, len(saved), expected)
 ```
 
+For the same store suffix writing through two different pointers, see [which address does the indirect store write?](microcompiler-pointer.md).
+
+For a 24-byte comparison shared by IF and FOR, [follow its successors and the first-entry bypass](microcompiler-successors.md) before choosing a source construct.
+
 ## Limitations worth retaining
 
 Source inspection, rather than additional runtime experiments, establishes these cautions at this pin:

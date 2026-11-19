@@ -46,10 +46,10 @@ class PETSpeedInputTests(unittest.TestCase):
         self.assertIn('REM INPUT#3 FIELD -> ELEM_4000(T_INDEX_1004)',texts(r))
         self.assertIn('retry semantics not reconstructed',str(r['groups']))
 
-    def test_get_uses_selected_channel_before_invalidating_it(self):
+    def test_contextual_get_preserves_selected_channel(self):
         r=program('petspeed',row('CONST_U8_FAC',3),row('SELECT_INPUT_FILE'),*prepared('string'),combined('GET','string'),row('GET_STRING'))
         self.assertIn('GET#3, ELEM_4000(T_INDEX_1004)',texts(r))
-        self.assertIn('GET#<?>, T_1006$',texts(r))
+        self.assertEqual(r['groups'][-1]['text'],'GET#3, T_1006$')
 
     def test_read_does_not_use_selected_file(self):
         r=program('petspeed',row('CONST_U8_FAC',3),row('SELECT_INPUT_FILE'),*prepared(),combined('READ','number'))

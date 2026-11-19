@@ -19,6 +19,8 @@ python3 scripts/reconstruct/reconstruct.py program.prg \
 python3 scripts/reconstruct/reconstruct.py dtl-object.prg \
   --json-output dtl.json --text-output dtl-full.txt --basic-output dtl.basic.txt
 python3 scripts/reconstruct/identify.py payload.bin --raw-base 0x0801
+python3 scripts/reconstruct/reconstruct.py program.prg --at 0x2104
+python3 scripts/reconstruct/reconstruct.py program.prg --outline-output statements.txt
 (cd scripts/reconstruct && python3 -m unittest -v)
 ```
 
@@ -28,6 +30,10 @@ intentionally has **no source, map, annotation or expected-statement option**.
 The primary library entry point is `reconstruct.reconstruct(binary_bytes)`;
 `symbolic.lift` is an internal adapter for newly generated decoder records, not
 an annotated-report import interface.
+
+For a short reading of any **admitted** object, `--outline-output` lists one heading per existing detailed group, in decoder order.  It keeps mapped addresses, qualifications, unresolved groups, retained DATA items, and limitations, without repeating the low-level instruction columns.  An address such as `$2474` identifies the first instruction of the group, not a source line or evidence of execution.  No group is promoted, and `--basic-output` retains its separate family-specific contracts.
+
+For a debugger trace, pass the mapped p-code address to `--at`, not the native CPU program counter in the interpreter.  It reports the owning instruction, the byte offset within it, and the detailed BASIC-like group with its warnings.  An address outside decoded instructions reports its loaded region, if any; the tool does not substitute the nearest statement.  The lookup also lists other detailed groups that explicitly cite the instruction as evidence.  Those groups do not own its bytes.  For DTL, it shows the compact statement that includes the instruction.  For numbered PETSpeed, it shows lines emitted at that exact instruction, not the next numbered line; generated DATA and DIM lines have no emission site.  None of these links establishes runtime execution.  Requested output files still contain the full reports.
 
 ## Identifier contract
 
@@ -68,6 +74,8 @@ not the author's exact original expressions. Many-to-one compilation is normal,
 not a reconstruction defect. Prefer clear code and few unsupported assumptions,
 not code golf. Equivalent source choices are distinct from uncertainty about
 behavior; validation should compare semantics rather than textual identity.
+In shared symbolic expression listings, string constants quote ordinary PETSCII source bytes and spell graphics, controls, and embedded quotes as `CHR$(n)`.  For example, byte `$5F` is `CHR$(95)`, not an ASCII underscore.  That notation describes the stored byte, not an extra VM function call or a prediction about the active font.  The numbered PETSpeed exporter and embedded tokenized-BASIC islands have separate rendering contracts.
+
 Byte-identical recompilation is a separate claim requiring a round-trip check.
 The current partial reading aid is a step toward that goal, not a claim that
 all emitted headings already constitute a validated BASIC preimage.
@@ -101,7 +109,34 @@ entire output space is supported.
 - Speedcompiler has a separate integer-stack, lazy floating-stack and three-string-
   frame model in `speedcompiler_lift.py`. Read the [scope guide](austrospeed-speedcompiler-tools.md).
 - PETSpeed models FAC/ARG and its typed spill stack, with explicit asymmetric
-  subtraction/division/string operand order.
+  subtraction/division/string operand order.  In the exact `$2267` runtime,
+  `V_dddd = PAIR_LOAD_bbbb(V_ffff, V_aaaa)` is a detailed VM reading, not
+  a BASIC array reference.  The uninterrupted base selection, FAC-slot
+  read, ARG-slot read, pair load, and immediate compact store sample both
+  mutable slots before writing the destination, even when slots alias.
+  `bbbb` is the selected base, not a promise about its descriptor: A1 reads
+  the live multiplier and type at base minus three.  Zero input tags require
+  potentially failing word conversions; other tags use their payload words.
+  The wrapped index and native carry-sensitive scaling select bytes, not
+  checked source subscripts.  The load returns a packed numeric value, a
+  word, or a string descriptor (not copied characters) on the normal path.
+  No folded read is carried across another operation or interior entry.
+  In the same runtime,
+  `STORE I16BE AT $hhhh FROM expr` describes a normal two-byte RAM write,
+  not a BASIC array assignment.  `$F4 lo hi` replaces the prepared pointer
+  `$3D/$3E` with the inline address.  When `$10` is nonzero, the handler
+  copies `$64`, then `$65`, without checking that the payload is numeric.
+  When `$10` is zero, it first calls BASIC ROM `$BC1B` (round the FAC
+  mantissa) and `$B1AA` (signed-word range check and fixed conversion).
+  This is not round-to-nearest-integer; conversion can fail before a write.
+  On success the high byte is stored first, then the low byte at address+1.
+  `$10` is not retagged; a floating FAC is no longer a normalized float.
+  The detailed reading discards the prior destination and accumulator facts.
+  A numeric RHS requires supported numeric producers on the same known path;
+  otherwise only the raw effect is reported.  Both bytes must fit in one
+  identified variable or array RAM region below `$A000`.  No original name,
+  subscript, reachability, or equivalent BASIC source is inferred.  No classic
+  runtime rule or numbered reading is changed.
 - BASIC-64 models floating FAC/ARG, integer value/ARG, alternate values and
   string descriptors separately. The selected optional native-expanded profile
   adds twelve evidenced operand contracts without modifying the original profile.
@@ -159,6 +194,46 @@ Repeated uses, reordered operands, opaque calls, explicit interior entries, regi
 gaps and unsupported corridors refuse. Synthetic captures around descriptor FN
 calls are not declared safe merely because their names resemble ordinary temps.
 
+One narrow exception reads `POKE address, FN F(argument)` when the detailed
+view shows an address capture, one descriptor call, and an immediate `$50` write.
+Read the address **before** evaluating the argument or entering the function;
+POKE uses that saved value, even if the call changes an address variable.  Both
+captures must be single-use, and the projected read, arithmetic, call, and write
+order must match the instructions.  The operand corridor admits short real
+scalar loads, numeric literals, addition, and multiplication.  A second exact
+shape reads `POKE A, FN F(FN G(X))`: one short real scalar read for each
+operand, the inner and outer `$B4` descriptor calls, and the `$50` write.
+The address is sampled before either call, even when A and X alias.  Each
+capture must feed its designated consumer exactly once.  Both calls remain
+runtime-bound.  Other nested shapes, interior entry points, and embedded BASIC
+boundaries keep the groups separate.
+The binding and purity caveat remains visible; the detailed groups retain the
+captures and bytes.
+
+An immediate clock or I/O status assignment reads as `T = TI`, `T$ = TI$`, or
+`S = ST` rather than a capture followed by a copy.  Each statement still reads
+once at its original address.  This rule accepts only the matching `B8` selector
+and adjacent short real (`D0`) or string (`D2`) scalar store with a single use
+and no known interior entry.  Long stores, arithmetic consumers, and clock writes
+are outside the rule.  The runtime-representation warning stays on the compact
+line; the detailed view keeps the capture and store separately.
+
+A status comparison can read `IF ST <> 49 THEN GOTO ...` without naming a
+one-use capture.  The accepted sequence is exactly `B8 1A` (read `ST`), a
+small or byte integer literal, `2B` (equal) or `2D` (less than), and `4F`
+(branch on false).  The projection retains the encoded destination and false
+sense: equal becomes `<>`, and less than becomes `>=`.  It requires contiguous
+instructions in one region, no known interior entry (including operand bytes),
+and the same read, comparison, and branch in order.  A later test samples `ST`
+again if reached; it never reuses the first sample.  The detailed groups and
+runtime-representation warning are unchanged.
+
+When an IF's false edge skips exactly one keyed GOTO, the compact view can show
+`IF predicate THEN GOTO destination`.  True takes the GOTO; false continues at
+the instruction after it.  The predicate is evaluated once.  An entry into the
+GOTO, a forwarded false edge, or an unresolved predicate keeps the statements
+separate.  The detailed view retains both instructions and both encoded targets.
+
 A uniquely typed, already-associated initializer may be fused into its FOR reading
 when that same ordered-corridor check passes. Initialization still precedes bound
 and step evaluation. Only an encoded default unit step is omitted; an explicit
@@ -175,9 +250,10 @@ separate definition/body evaluation identities. Within that body, single-use
 results—including nested FN calls and captured earlier reads—can be substituted
 only when the complete read/call/arithmetic/return order remains exact. This moves
 an expression into its use, not the called function's implementation: calls still
-occur once, in order, and need not be pure. Ordinary outside-function FN temporary
-policy is unchanged. Repeated uses, reordered operations, opaque operations,
-non-expression statements and incomplete or ambiguous bodies stay explicit.
+occur once, in order, and need not be pure.  This body rule does not apply at
+ordinary call sites; the separate `POKE` rule above is specific to that consumer.
+Repeated uses, reordered operations, opaque operations, non-expression statements,
+and incomplete or ambiguous bodies stay explicit.
 
 Only after independent p-code recovery, an immediately adjacent embedded DEF FN
 may share that reading line when the complete decoded spelling matches apart
@@ -424,8 +500,16 @@ Other VM families do not inherit this rule.
   captured before input; integer-store conversion remains explicit. INPUT fields
   retain prompt/grouping/retry uncertainty. Unknown or mismatched destinations
   stay partial/unresolved; string READ with an integer descriptor-byte store is
-  not normalized into an ordinary string READ. Post-input facts are discarded
-  conservatively. Native/mixed-code lifting, external-variable/overlay layouts,
+  not normalized into an ordinary string READ.  `REM current-channel GET: T_1234$`
+  means the ambient route is unknown, not that a file was selected.  `GET#<?>, T_1234$`
+  requires a reaching input selector whose number is unknown.  Classic INPUT field
+  headings make the same distinction; the alternate runtime's empty-input skip is
+  not an unconditional field assignment.  In the admitted `$2245` and `$2267`
+  runtimes, `$DB` and `$DC` call GETIN, not CHKIN or CLRCHN: two GETs after a
+  single `$E6` can both name that file until `$E9` restores the channels.
+  This describes successful ordinary I/O, not keyboard identity, a device number,
+  or recovery from a failed or redirected KERNAL call.  Registers and prepared
+  destinations are still discarded after GET.  Native/mixed-code lifting, external-variable/overlay layouts,
   arbitrary self-modification, path merging and whole-program I/O/function
   summaries are not implemented.
 - DTL objects load an external RTL. Object-only reconstruction explicitly assumes

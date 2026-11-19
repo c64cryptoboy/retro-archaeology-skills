@@ -33,6 +33,11 @@ are separate gates. Unknown signatures are not proof of uncompiled input.
 - Multiplication lifts as `VM_AUSTRO_MULTIPLY`, not silently as BASIC `*`, because
   the evidenced runtime has an integer-negation defect. A missing array index
   stays `<?>`; reconstruction does not invent the compiler's apparent intent.
+  For a one-dimensional GET destination, the DIM rank says how many subscripts
+  are needed, not which element is read.  `$A4` selects the array descriptor;
+  a separate reaching value supplies the subscript.  A file number consumed by
+  `$48` is not that value.  At `$50` (INPUT begin), a retry resumes with the
+  following opcode, so do not carry an earlier subscript through that boundary.
 - Direct opcode `$58` is operand-free `RETURN_IF_TRUE`; native stack-unwind
   behavior and a post-freeze source reveal independently validate its rendering
   as `IF condition THEN RETURN` for the older runtime. Existing BLITZ limits on
@@ -60,6 +65,58 @@ are separate gates. Unknown signatures are not proof of uncompiled input.
 - `VM_*` operations preserve integer width, conversions and other runtime-specific
   behavior. Effectful calls get one-time temporaries; joins/unknown effects lose
   facts. These are explanatory names, not guaranteed legal/runnable BASIC.
+- The listing uses `POKE address, byte` for an inline immediate byte write and
+  for a stack-based byte write with two proved bottom slots.  The latter reads
+  the first word as an unsigned address and stores only the second word's low
+  byte.  From proved empty depth the bounded proof follows up to three slots
+  of literal pushes, single-byte PEEK snapshots, and 16-bit additions.  PEEK
+  replaces the top word, addition reduces the top two to one, and POKE is
+  admitted only at depth two.  `VM_LOW_BYTE(VM_IADD(T, 4))`, for example,
+  stores the low byte of the sum using the earlier sample `T`, not a fresh
+  memory read.  Reads can see live VM workspace, not a pristine BASIC memory
+  image.  An alternate entry, unknown depth, or unmodeled intervening effect
+  kills the proof.  This is the memory effect, not original source syntax;
+  `POKE_WORD` is distinct.
+- `WAIT address, mask, xorByte` requires exactly three proved integer slots.
+  The first supplies a 16-bit address; only the low bytes of the second and
+  third participate.  The handler reads the addressed byte at least once,
+  repeating while `((byte XOR xorByte) AND mask)` is zero.  This is not one
+  `PEEK` or a promise that the wait ends.  Separate `PEEK` instructions that
+  produced operands remain one-time samples before the poll.  The listing
+  keeps an explicit zero XOR byte without guessing optional source syntax.
+- `CLOSE n` names the logical file, not a device or an output selection.  The
+  handler passes the low byte of the bottom integer slot to KERNAL CLOSE.
+  The reader names `n` only with exactly one proved slot.  Even if it cannot
+  name the file, the normal return to dispatch clears integer depth.  This
+  does not prove that a device operation succeeded or restore channel facts.
+- One counted-name `OPEN` form shows the four values actually passed: logical
+  file, device, secondary address, and filename.  On normal return from CLOSE,
+  three byte pushes start at empty integer depth.  The admitted path first
+  stores a literal in ordinary string storage, reloads that same slot after
+  the pushes, and appends a counted literal.  The reader can show their exact
+  concatenation if it fits in one byte of length.  A target bypassing the
+  reset or a producer, an unmatched store, or an intervening instruction
+  blocks this proof.  This does not recover omitted source arguments, infer
+  a file mode from a suffix, or establish that a file was opened.
+- A signed `INTEGER_COMPARE` returns through `LDY #0` even when it used
+  `DEY` to build a true result.  An immediately following `IF_INTEGER_TRUE`
+  stores this zero to integer depth before testing the bottom word.  On its
+  fall-through, new pushes can therefore prove bottom-slot arguments without
+  knowing the predicate.  This rule carries no operand or channel through
+  the branch.  A separate entry to the IF, the new push, or its consumer
+  breaks this proof; no depth is propagated to branch targets.
+- `SYS VM_FLOAT_TO_ADDR16(V_...)` calls the address obtained from the packed
+  scalar's **value**, not the address where the scalar is stored.  This is a
+  reading annotation, not a BASIC function.  The narrow proof follows a byte
+  push (which restores Y to zero), normal WAIT fall-through (which stores Y to
+  integer depth), and an uninterrupted scalar load, conversion, and SYS.
+  Conversion loads the packed value into FAC, enters stock BASIC at `$BC1D`
+  and then `$BC9B`, and pushes fixed-result bytes `$65` (low) and `$64` (high).
+  SYS reads the bottom word as an unsigned address, not the last expression
+  regardless of depth.  An entry bypassing a required step, or storage outside
+  the bounded scalar area, blocks substitution.  No earlier constant is
+  forwarded, no target code is interpreted, and all value and channel facts
+  are discarded at the call.
 - Numeric READ has tag-dependent native depth updates: events are visible, but
   unproved post-state/destination dataflow is dropped. Numeric-looking DATA
   strings keep their encoded string type. Input parsing/retries, file I/O,

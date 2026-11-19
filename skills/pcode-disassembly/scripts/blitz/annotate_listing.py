@@ -18,8 +18,10 @@ CONTROL_NAMES = {
 }
 
 
-def visible_string(text: str) -> str:
-    """Turn the decoder's escaped byte string into compact PETSCII-oriented text."""
+def visible_string(text: str | bytes) -> str:
+    """Prefer original operand bytes; tolerate the escaped display field of older reports."""
+    if isinstance(text, bytes):
+        return _visible_bytes(text)
     values: list[int] = []
     index = 0
     while index < len(text):
@@ -32,11 +34,15 @@ def visible_string(text: str) -> str:
                 pass
         values.append(ord(text[index]))
         index += 1
+    return _visible_bytes(bytes(values))
+
+
+def _visible_bytes(values: bytes) -> str:
     pieces: list[str] = []
     index = 0
     while index < len(values):
         value = values[index]
-        if 0x20 <= value < 0x7F:
+        if 0x20 <= value <= 0x5B or value == 0x5D:
             pieces.append(chr(value))
             index += 1
             continue
@@ -47,6 +53,16 @@ def visible_string(text: str) -> str:
         pieces.append("{" + name + (f"*{run}" if run > 1 else "") + "}")
         index += run
     return '"' + "".join(pieces).replace('"', '\\"') + '"'
+
+
+def visible_operand(record: dict[str, Any]) -> str:
+    kind = record.get('operandKind')
+    if kind in ('inline_string_u8', 'inline_string_short'):
+        raw = bytes.fromhex(record['bytes'])
+        return visible_string(raw[2:] if kind == 'inline_string_u8' else raw[1:])
+    if kind == 'inline_basic_to_colon':
+        return visible_string(bytes.fromhex(record['bytes'])[1:-1])
+    return visible_string(record['text'])
 
 
 def target_name(address: int, labels: dict[int, dict[str, Any]]) -> str:
@@ -65,7 +81,7 @@ def explain(record: dict[str, Any], stack: list[str], labels: dict[int, dict[str
     op = record["mnemonic"]
     if op.startswith("CONST_"):
         if "text" in record:
-            value = visible_string(record["text"])
+            value = visible_operand(record)
         elif "exactValue" in record:
             value = record["exactValue"]
         else:
@@ -121,6 +137,10 @@ def explain(record: dict[str, Any], stack: list[str], labels: dict[int, dict[str
         return f"{record['array']}({index}) := {value}"
     if op == "DIM_INTERNAL":
         bounds = [pop(stack) for _ in range(record["dimensions"])][::-1]
+        if record.get("reservedArray"):
+            statement = f"allocate reserved integer array Z*%, upper bound {bounds[0]}"
+            basic_summary(state, "REM " + statement)
+            return statement
         statement = f"DIM {record['variable']}({', '.join(bounds)})"
         basic_summary(state, statement)
         return f"allocate {record['variable']}({', '.join(bounds)})"
@@ -160,12 +180,14 @@ def explain(record: dict[str, Any], stack: list[str], labels: dict[int, dict[str
             basic_summary(state, f"IF ({condition}) = 0 THEN GOTO {target}")
             sense = "if false"
         return f"{sense}: {condition} -> {target}"
-    if op == "ON_GOTO":
+    if op in ("ON_GOTO", "ON_GOSUB"):
         selector = pop(stack, state.get("descriptor", "<?>"))
         state.pop("descriptor", None)
         targets = ", ".join(target_name(value, labels) for value in record["targets"])
-        basic_summary(state, f"ON {selector} GOTO {targets}")
-        return f"dispatch on {selector}: {targets}"
+        verb = "GOTO" if op == "ON_GOTO" else "GOSUB"
+        basic_summary(state, f"ON {selector} {verb} {targets}")
+        action = "dispatch" if verb == "GOTO" else "call"
+        return f"{action} on {selector}: {targets}"
     if op == "FOR_SETUP":
         variable = pop(stack, state.get("descriptor", "<?>"))
         end = pop(stack)
@@ -307,7 +329,7 @@ def render(disassembly: dict[str, Any], annotations: dict[str, Any]) -> str:
         elif "target" in record:
             operand = target_name(record["target"], labels)
         elif "text" in record:
-            operand = visible_string(record["text"])
+            operand = visible_operand(record)
         elif "exactValue" in record:
             operand = record["exactValue"]
         elif "value" in record:

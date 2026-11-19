@@ -47,12 +47,21 @@ def reconstruct(data,raw_base=None):
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('binary',type=Path)
     p.add_argument('--raw-base',type=lambda x:int(x,0));p.add_argument('--json-output',type=Path);p.add_argument('--text-output',type=Path)
+    p.add_argument('--outline-output',type=Path,help='All-family statement outline with mapped addresses and warnings; exclusive-create output')
     p.add_argument('--basic-output',type=Path,help='Optional compact DTL or numbered PETSpeed reading; exclusive-create output')
     p.add_argument('--prg-output',type=Path,help='Tokenized BASIC V2 reading copy for the supported PETSpeed revision; not verified equivalent')
+    p.add_argument('--at',type=lambda x:int(x,0),metavar='ADDRESS',help='Print the detailed group owning this mapped p-code byte (decimal or 0x hex)')
     a=p.parse_args()
     try:
         result=reconstruct(a.binary.read_bytes(),a.raw_base)
-        outputs=[(a.json_output,json.dumps(result,indent=2)+'\n'),(a.text_output,render(result))]
+        from address_lookup import describe_address
+        selection=describe_address(result,a.at) if a.at is not None else None
+        outputs=[]
+        if a.json_output is not None:outputs.append((a.json_output,json.dumps(result,indent=2)+'\n'))
+        if a.text_output is not None:outputs.append((a.text_output,render(result)))
+        if a.outline_output is not None:
+            from group_outline import render_outline
+            outputs.append((a.outline_output,render_outline(result)))
         if a.basic_output is not None:outputs.append((a.basic_output,render_reading(result)))
         if a.prg_output is not None:
             from petspeed_listing import serialize
@@ -63,7 +72,8 @@ def main():
                     with path.open('xb') as f:f.write(text)
                 else:
                     with path.open('x',encoding='utf-8') as f:f.write(text)
-        if a.text_output is None:print(render(result),end='')
+        if selection is not None:print(selection,end='')
+        elif a.text_output is None and a.outline_output is None:print(render(result),end='')
     except (ValueError,OSError,KeyError,IndexError) as exc:p.exit(2,'Reconstruction refused: '+str(exc)+'\n')
 
 

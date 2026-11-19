@@ -42,6 +42,8 @@ For each side:
 9. Check banking/visibility and physical versus CPU addresses.
 10. Record unsupported-opcode or inline-data stops.
 
+Before carrying a name or comment across a match, verify its particular operand relationship in the target.  The [annotation-transfer example](annotation-transfer.md) changes only the hardware address, RAM alias, or internal operand, and shows which annotations survive each change.
+
 Use a 6502 disassembly/semantic-commenting workflow for substantial context work; the matcher is not a replacement for reverse engineering.
 
 ## Dynamic evidence
