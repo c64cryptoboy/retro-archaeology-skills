@@ -46,6 +46,20 @@ copy:   LDA $3000,Y
 
 It copies 256 bytes upward from `$3000` through `$30FF` to `$4000` through `$40FF`, then transfers control to `$4000`.  The ranges do not overlap.  If the stored first four bytes are `20 30 40 60`, the destination begins `JSR $4030; RTS`.  That call already names a runtime destination; it does not need an automatic `$1000` operand adjustment.  The bytes at destination `$4030` still need to be supplied and analyzed.  Source `$3000` and destination `$4000` are distinct provenance/execution coordinates, not interchangeable labels.
 
+## Which row did the preview read?
+
+A restore range tells you which bytes the next owner needs back, not which bytes the previous owner read.  Consider a flat six-byte art buffer starting at `$5200`.  Its last four bytes are palette indices needed after a preview.  A tile editor temporarily installs two identical two-byte rows at the front; its preview reads exactly one row, selected by a button, then closes before the palette is restored.  There are no other readers or writers.  Values below are hex.
+
+| Moment | `$5200`, `$5201` | `$5202`, `$5203` | `$5204`, `$5205` |
+|---|---|---|---|
+| Before preview | `00 00` | `09 03` | `0E 07` |
+| Rows installed | `81 42` | `81 42` | `0E 07` |
+| After restore | `81 42` | `09 03` | `0E 07` |
+
+Only `$5202` and `$5203` need saving: they belong to both the four-byte tile and the four-byte palette.  If the button selects row zero, **neither** saved address is read for display; if it selects row one, **both** are.  The displayed row (`81 42`), the installed tile, the restore writes, and the complete final buffer match in both histories.  Even a screenshot plus a correct final dump cannot select a history.  One observation suffices here: record the preview reader's first effective address while it fetches the row (`$5200` or `$5202`), not the restorer's later write address.
+
+Source comparison: at pin `2339d4aea09141af178263e7796fe875154c83d4`, c64-re-tools [computes the saved extent from intersecting ranges](https://github.com/henols/c64-re-tools/blob/2339d4aea09141af178263e7796fe875154c83d4/src/stage.ts#L132-L136), and its [plan test checks the target and spare placement](https://github.com/henols/c64-re-tools/blob/2339d4aea09141af178263e7796fe875154c83d4/src/stage.test.ts#L15-L22).  Those are layout facts, not a trace of display reads.  The tile and button above are an independent data-only example.
+
 ## Minimal handoff record
 
 For each relevant stage, retain:

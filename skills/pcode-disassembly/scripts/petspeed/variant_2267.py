@@ -186,7 +186,7 @@ def build_profile(base_profile: dict) -> dict:
         'F4': _rule('STORE_INTEGER_ELEMENT_AT', 'u16le',
                     'convert/store FAC high/low word at ${value:04X}; $10 unchanged; '
                     'normal return and writable nonaliasing ordinary RAM required',
-                    '$20CA via $21C8 -> $20E0; floating path calls $BC1B/$B1AA; '
+                    '$20CA reads the inline address directly into $3D/$3E; $20E0 tests $10; zero calls $BC1B/$B1AA; '
                     'two stores then $0926; errors need not continue at P+3'),
     }
     p['opcodes'].update(additions)

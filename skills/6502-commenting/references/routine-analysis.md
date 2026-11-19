@@ -25,6 +25,8 @@ Do not commit to a semantic explanation based solely on the first few instructio
 
 ### 3. Identify inputs and outputs
 
+Use the [two-exit register exercise](restored-entry-value.md) to separate a balanced stack from restoration of a particular entry value.
+
 For each routine, determine where practical:
 
 Inputs may include:

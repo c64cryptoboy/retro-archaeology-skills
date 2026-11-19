@@ -24,7 +24,13 @@ Compilation, execution and decoding are separate gates. READY alone proves neith
 
 Keep fixture preparation and output capture deterministic and overwrite-refusing. Capture a failed disk and remaining intermediate files separately from successful outputs; do not scratch them as mere garbage, because they may expose parse trees, partial p-code and layout tables. A failed formulation plus a minimal successful workaround is a useful paired fixture, but is not a complete characterization of that feature. Validate the tokenizer's contract: DATA/REM tails, quoted PETSCII, statement separators, keyword matching and line links are common traps. Re-extract and compare the compiler input, not just its filename. A convenient one-sector fixture writer must refuse growth beyond its supported size rather than silently truncate.
 
+### When a numeric conversion disappears behind SYS
+
+Check whether earlier READ/POKE code installs the missing routine from DATA.  Establish the incoming DATA cursor, record types, destination, loop bounds, and later call address before interpreting the values as machine code.  Trace the caller’s byte staging and the callee’s actual result representation: numeric text, a packed variable, and floating-accumulator workspace are not interchangeable.  A small check against a pinned ROM routine can predict an operand without executing the compiler.  Compare the prediction with bytes at an independently identified instruction in a retained object, including sign and length; corroborate against an unchanged line if its intermediate and object are from related but different builds.  Report that as a paired-byte check, not a replay of the compiler.
+
 ## 3. Design small probes that discriminate hypotheses
+
+Two worked comparisons show how to choose the observation: [swap entries in a branch table](reblitz-ordered-transfers.md) without changing its destination set, or [toggle a BASIC-BOSS directive](../../6502-disassembly/references/basicboss-directive-probe.md) without changing the loop.  In the latter, compare linked routines and generated code separately, and reject an erroneous compile even when it writes a plausible object.
 
 State the unresolved question before each new compile or runtime experiment. Prefer static handler analysis when it directly resolves that question. Dynamic tests should discriminate alternatives, not simply repeat an already passing path.
 
@@ -37,6 +43,7 @@ State the unresolved question before each new compile or runtime experiment. Pre
 | Constant folding | Literals versus variables, one operation changed |
 | Variable slot allocation | Declaration/use order and frequency changed separately |
 | Integer/float/string representation | One type change while keeping statement structure |
+| Numeric value versus literal spelling | Keep the value fixed (`1`, `1.0`, `1E0`, `000001`), then vary adjacent values at the producer's cutoff, with and without a leading minus.  Compare the intermediate kind and mapped object operand, not just the printed value. |
 | Array address lowering | Constant subscript versus variable subscript |
 | Loop encoding | Default versus explicit STEP; unnamed versus named NEXT |
 | Loop frame search | One nested loop; named NEXT selects a particular variable |

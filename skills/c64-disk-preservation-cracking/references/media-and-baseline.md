@@ -113,6 +113,8 @@ Do not trust a rendered directory listing as the complete filesystem model. For 
 - unusual directory-sector links,
 - trailing error-table entries separately from sector payloads.
 
+For an example with two unexplained 1581 allocations, see [what the BAM proves about ownership](bam-ownership.md).  A former directory claim and a current application reference require different evidence.
+
 Treat a directory file type as metadata, not proof of content interpretation. A PRG record can be opened and streamed as text; a SEQ extraction can be given a misleading `.prg` host suffix. Derive the intended use from the consumer.
 
 These checks can reveal decoy aliases, false sizes, hidden files with NUL/control-character names, reserved protection regions, and filesystem sentinels that ordinary LOAD/SAVE copying may omit.

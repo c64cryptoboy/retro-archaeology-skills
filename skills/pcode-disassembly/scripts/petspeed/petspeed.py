@@ -30,17 +30,24 @@ def read_at(raw: bytes, base: int, address: int, count: int) -> bytes:
 
 
 def select_profile(prg: bytes, base_profile: dict) -> dict:
-    """Select a separate grammar only for the exact alternate runtime bytes."""
+    """Select a reviewed grammar by exact runtime; inspect_image still gates use."""
     start, end = 0x0826, 0x2800
     load = int.from_bytes(prg[:2], 'little')
     if load == 0x0801 and len(prg) >= 2 + end - load:
         region = prg[2 + start - load:2 + end - load]
-        if sha(region) == '3b13c8c451db362fdd3fafa91832f3484dd9fd3eac0fcff792b82e9484a9131a':
+        digest = sha(region)
+        if digest == '3b13c8c451db362fdd3fafa91832f3484dd9fd3eac0fcff792b82e9484a9131a':
             if __package__:
                 from .variant_2267 import build_profile
             else:
                 from variant_2267 import build_profile
             return build_profile(base_profile)
+        if digest == base_profile.get('runtimeSha256'):
+            extra = json.loads(Path(__file__).with_name('classic_2245.json').read_text())
+            if digest == extra['runtimeSha256']:
+                if sha(json.dumps(base_profile, sort_keys=True).encode()) != extra['baseProfileSha256']:
+                    raise DecodeError('classic extension requires the reviewed base profile')
+                return dict(base_profile, id=extra['id'], opcodes=base_profile['opcodes'] | extra['opcodes'])
     return base_profile
 
 

@@ -121,13 +121,13 @@ def parse_snapshot(data: bytes) -> dict:
     ram = data[ram_offset:ram_offset + C64_RAM_SIZE]
 
     cpu = None
-    main_modules = by_name.get("MAINCPU", [])
+    main_modules = by_name.get("MAINCPU", []) + by_name.get("MAINC64CPU", [])
     if len(main_modules) == 1:
         main = main_modules[0]
         p = main["payloadOffset"]
-        # VICE 3.9 MAINCPU v1.4 writes an eight-byte CLOCK, then A/X/Y/SP,
-        # little-endian PC, and P. Leave other versions un-interpreted.
-        if (main["major"], main["minor"]) == (1, 4) and main["payloadSize"] >= 15:
+        # Both writers use the same 15-byte prefix; make no claim about the tail.
+        layout = (main["name"], main["major"], main["minor"])
+        if layout in {("MAINCPU", 1, 4), ("MAINC64CPU", 1, 5)} and main["payloadSize"] >= 15:
             clock = struct.unpack_from("<Q", data, p)[0]
             cpu = {
                 "clock": clock,

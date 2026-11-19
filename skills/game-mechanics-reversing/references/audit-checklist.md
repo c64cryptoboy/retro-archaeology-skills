@@ -287,7 +287,7 @@ For every object/item:
 - Messages that contradict actual mutations
 - Animation lock, cancel windows, and control suppression
 - Sound cues with mechanical meaning
-- Visibility, darkness, fog, palette, sprite priority, and collision mismatch
+- Visibility, darkness, fog, palette, sprite priority, and collision mismatch; see the [packed versus aligned sprite example](sprite-storage-and-collision.md) before inferring damage from a sprite sheet.
 - Menus/help/pause that do or do not suspend gameplay
 - Accessibility/control options that alter mechanics
 - Display mode or hardware timing that changes play

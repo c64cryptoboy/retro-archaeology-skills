@@ -12,6 +12,8 @@ and computed dispatch patterns.
 
 Run `indirect-flow6502.py` to enumerate the static sites and candidate direct pointer-byte writers, then determine how the destination pointer is populated.
 
+For a worked split-table example, see [bound the dispatch by its selector](dispatch-selector.md).  A guarded range, a count of distinct destinations, and the number of plausible pointers in memory can all differ.
+
 Trace backwards to identify:
 
 - tables of addresses,
@@ -20,6 +22,8 @@ Trace backwards to identify:
 - interrupt vectors,
 - patched code,
 - self-modifying jump operands.
+
+For each vector byte, distinguish **untouched image byte**, **known replacement**, and **overwritten with an unknown value**.  Only the first can fall back to the initial image.  For example, if `$3249/$324A` initially hold `46 32`, then `STA $3249 : JMP ($3249)` with unconstrained A in ordinary writable RAM gives `PC=$3200+A`, not necessarily `$3246`.  Change only the store address to `$324B` and the edge is `$3246` in the absence of intervening writes or mapping changes.  Observing A=`$46` alone cannot distinguish those cases; `$47` can.  A bounded set of candidate addresses is not a set of observed instructions.  See the [c64-re-tools local replay and image-read rules](https://github.com/henols/c64-re-tools/blob/2339d4aea09141af178263e7796fe875154c83d4/src/native/decompiler/pcode.ts#L35-L61) that motivate the distinction.
 
 Where possible, enumerate plausible runtime destinations and add them to the analysis worklist.
 
@@ -36,6 +40,8 @@ Common patterns include modification of:
 - loop constants.
 
 Capture comparable memory/PRG images before and after the suspected writer, then run `code-write-diff.py` with CFG and/or execution coverage. If code writes into its own instruction stream, annotate the affected instructions and reason about their runtime forms rather than treating the static bytes as authoritative.
+
+For competing opcode versions, use the [fetch-witness example](fetched-opcode.md).  Even identical endpoint bytes, writes, and fetch counts do not identify the byte fetched at a particular visit.
 
 ### 9. Detect runtime decoding and deobfuscation
 

@@ -125,6 +125,8 @@ For a selected 16 KiB VIC bank:
 
 Always combine `$D018` with CIA #2 `$DD00` bits 0-1 to determine the actual VIC-visible address.
 
+For a worked PRG-offset-to-dot example, see [a bitmap beneath KERNAL ROM](bitmap-beneath-rom.md).  It separates the CPU read, the VIC fetch, and the colors selected in two bitmap modes.
+
 ## VIC colors
 
 | Address | Symbol | Meaning |

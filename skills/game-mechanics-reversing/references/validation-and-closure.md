@@ -25,6 +25,19 @@ Before each experiment record:
 
 After execution, classify malformed, partial, mistimed, unreachable, stale-state, or tool-contaminated runs as excluded rather than forcing an interpretation. Prefer focused watches, traces, breakpoints, before/after comparisons, raw-state captures, and bounded simulators. If debugger or emulator infrastructure becomes unstable, quarantine that investigation, preserve the failure separately, and use a validated fallback such as offline analysis or manual emulator operation; never report tool failure as game behavior.
 
+**Reader exercise: did the game read F2, or did it read a character?**  Suppose a C64 game has two ways to open its map.  The menu reads a byte from the stock keyboard queue and opens the map on `$89` (F2).  The play loop instead scans for left Shift and F1 together.  Both branches set `map_open` to 1.  Which branch can a recording test by supplying `$89` alone?
+
+Start each case with `map_open = 0`, an empty queue, no other keys down, and both joysticks neutral.  In the menu, place `$89` at `$0277` and set the count at `$00C6` to 1.  The menu can consume the byte and open the map.  In the play loop, that same injection leaves the contacts open.  With CIA 1 port A set to output and port B to input, compare two samples in one scan:
+
+| `$DC00` driven | Contact tested at `$DC01` | Byte queued, no keys down | Left Shift and F1 held throughout scan |
+|---|---|---|---|
+| `$FE` | F1, bit 4 | `$FF` | `$EF` |
+| `$FD` | Left Shift, bit 7 | `$FF` | `$7F` |
+
+Only the held pair satisfies both active-low tests; after release both samples return to `$FF`.  To credit the play control, identify the scan branch that set `map_open`, not just the open map.  The reverse inference also fails: stock keyboard scanning can translate a real chord into the same queued byte.  A consumed `$89` identifies the menu command, not how a player produced it on a host keyboard.
+
+This exercise assumes visible CIA I/O, stable scan selection, and neutral joysticks.  Sources: [recorded input actions](https://github.com/henols/c64-re-tools/blob/2339d4aea09141af178263e7796fe875154c83d4/skills/c64-testing/scripts/lib/recording.ts), [key contacts](https://github.com/henols/c64-re-tools/blob/2339d4aea09141af178263e7796fe875154c83d4/src/c64-keys.ts), and an independent [C64 keyboard table](https://github.com/mist64/c64ref/blob/7cae8b91d5317d1d18ae8cdcaac03533389e6032/src/charset/keyboard_c64.txt#L13-L38).
+
 One coordinator owns a shared live emulator and canonical files. Parallel work should use independent static evidence surfaces.
 
 ### 10. Close coverage explicitly

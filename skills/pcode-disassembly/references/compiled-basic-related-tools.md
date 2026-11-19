@@ -10,6 +10,10 @@ A detokenizer turns stored BASIC keyword bytes into text.  A p-code decompiler m
 | [VS64](https://github.com/rolandshacks/vs64/blob/f9a5dda20a3e2f8e70bb11eb0a55bd1db0df7024/tools/bclib/decompiler.py#L41), [C64ReverseBasic](https://github.com/jojowil/C64ReverseBasic/blob/8a95fb576416fa65b7f839c0c5588173d27ae2b6/src/C64ReverseBasic.java#L164), [basicv2](https://github.com/EgonOlsen71/basicv2/blob/d7f4615affc2d0293cb2482f1ec34fb6ca7908f5/src/main/java/com/sixtyfour/parser/cbmnative/UnTokenizer.java#L116) | Separate examples of tokenized BASIC input, linked lines, dialect tokens, and PETSCII presentation.  Do not count these parsers as independent lifts of compiled PETSpeed, BLITZ!, or DTL p-code. |
 | [c64-re-tools](https://github.com/henols/c64-re-tools/blob/2339d4aea09141af178263e7796fe875154c83d4/skills/c64-basic/scripts/basic.ts#L21) | Illustrates separating a BASIC listing from appended machine code and SYS/USR handoffs.  Recognizing a loader does not decode its payload. |
 
+For two other tool types, see the [Reko native-source audit](../../6502-disassembly/references/reko-source-audit.md) (flags and segment boundaries) and the [basicbossGUI directive probe](../../6502-disassembly/references/basicboss-directive-probe.md) (the emulated original compiler, not an independent implementation).
+
+For a multi-target BLITZ instruction, use the [Reblitz64 ordered `ON` transfer probe](reblitz-ordered-transfers.md).  The source-blind reader and the annotated listing are separate outputs: check both.  To repeat the three real compiles, use `test_reblitz_on.py` in the command below instead of `test_reblitz_if.py`.
+
 ### Reproducing the Reblitz64 `IF` check
 
 The pinned Reblitz64 compiler writes a different BASIC startup line but the same native BLITZ interpreter (from `$081C` up to, but not including, the pointer table at `$1F93`).  The binary-only frontend recognizes this exact bootstrap and runtime.  It does not infer which compiler produced an arbitrary file.

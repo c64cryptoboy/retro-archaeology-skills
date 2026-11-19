@@ -34,9 +34,12 @@ def number(value):
 
 
 def quoted(data):
+    """BASIC-like byte spelling, not the glyphs of a particular C64 charset."""
     parts=[];buf=''
     for b in data:
-        if 32<=b<=126 and b!=34:buf+=chr(b)
+        # $5C, $5E, $5F and the $60 bank are not ASCII backslash, carets,
+        # underscore, or lowercase text.  Keep only unambiguous source bytes.
+        if (0x20<=b<=0x5B and b!=0x22) or b==0x5D:buf+=chr(b)
         else:
             if buf:parts.append('"'+buf+'"');buf=''
             parts.append(f'CHR$({b})')
@@ -46,6 +49,7 @@ def quoted(data):
 
 # Not the same as an executed file selector whose operand is the expression '<?>'.
 UNKNOWN_OUTPUT = object()
+UNKNOWN_INPUT = object()  # Lost ambient route, distinct from a selector with an unknown operand.
 
 
 def saved_channel(expr):
@@ -103,6 +107,8 @@ class Lifter:
         self.blitz_leaf_definitions={};self.blitz_leaf_returns={};self.blitz_leaf_calls={}
         if self.family=='blitz':
             from blitz_functions import leaf_functions
+            from blitz_input import unique_input_dims
+            self.input_dims=unique_input_dims(self.rows)
             self.blitz_leaf_definitions=leaf_functions(report,self.identity_family)
             self.blitz_leaf_returns={d['returnAddress']:d for d in self.blitz_leaf_definitions.values()}
             self.blitz_leaf_calls={d['descriptor']:d for d in self.blitz_leaf_definitions.values()}
@@ -112,7 +118,8 @@ class Lifter:
         self.regs={};self.stack={k:[] for k in self.stacks};self.limit=None;self.step=None;self.destination_type=None
         self.for_zero_ready=None
         self.input_fields=[];self.input_prefix_known=False
-        if io:self.output=UNKNOWN_OUTPUT;self.input='<?>';self.readmode=None
+        if io:
+            self.output=UNKNOWN_OUTPUT;self.input=UNKNOWN_INPUT if self.family in ('blitz','basic64','petspeed') else '<?>';self.readmode=None
 
     def get(self,key):
         if key.startswith('#'):return Expr(key[1:])
@@ -342,11 +349,19 @@ class Lifter:
             elif 'modifier' in v:
                 self.barrier('unmodeled contextual input-store modifier');return
             if verb=='INPUT':
-                self.emit('REM INPUT'+('#'+self.input if self.input is not None else '')+' FIELD -> '+tmp,'partial',args=args,warnings=warnings+['Original INPUT grouping/prompt and retry semantics not reconstructed.'])
+                route=('current-channel INPUT' if self.input is UNKNOWN_INPUT else
+                       'INPUT#'+self.input if self.input is not None else 'INPUT')
+                self.emit('REM '+route+' FIELD -> '+tmp,'partial',args=args,warnings=warnings+['Original INPUT grouping/prompt and retry semantics not reconstructed.'])
+            elif verb=='GET' and self.input is UNKNOWN_INPUT:
+                self.emit('REM current-channel GET: '+tmp,'partial',args=args,warnings=warnings+['The input route is unknown; GET does not establish an explicit file number.'])
             else:
                 prefix=verb+'#'+self.input+', ' if verb=='GET' and self.input is not None else verb+' '
                 self.emit(prefix+tmp,args=args,warnings=warnings)
-            if verb=='GET':self.wipe(io=True)  # Do not assume whether this ABI restores its channel.
+            if verb=='GET':
+                route=self.input
+                self.wipe(io=True)
+                # Both admitted PETSpeed DB/DC handlers read via GETIN; cleanup is E9.
+                if self.family=='petspeed':self.input=route
             elif self.family=='petspeed':self.wipe()  # Input/parsing and typed stores may clobber facts.
             if not combined:self.set(rule['dst'],Expr(tmp,{r['address']}))
         elif op=='barrier':self.emit('REM VM '+n,'structural',reset=True)
@@ -488,6 +503,28 @@ class Lifter:
                 self.destination_type='integer' if n.startswith('INTEGER') else 'string' if n.startswith('STRING') else 'number'
             e=self.expr('ELEM_'+base.text+'('+index.text+')',[base,index],['Runtime index conversion/address arithmetic; linear index, original array dimensions/name not recovered.'])
             self.set('destination' if n.endswith('_DEST') else 'fac',e);return True
+        if self.family=='petspeed' and n=='ARRAY_PAIR_LOAD_FAC':
+            from petspeed_listing import RUNTIME
+            # Fold only an uninterrupted read into its immediate compact store.
+            # Never forward an expression that re-reads a descriptor, a slot,
+            # or an element across another operation (even another load).
+            if (self.report.get('runtimeSha256')!=RUNTIME or
+                    [p['mnemonic'] for p in self.pending]!=[
+                        'ARRAY_BASE','LOAD_FAC_VAR','LOAD_ARG_VAR',n]):return False
+            store=self.rows_by_address.get(r['address']+1,{})
+            if (store.get('mnemonic')!='STORE_FAC_VAR' or store['address'] in self.targets or
+                    store.get('region')!=r.get('region')):return False
+            select,first,second,_=self.pending
+            base=select['operands']['value'];regions=self.report.get('loadedRegions',())
+            slots=[p['operands']['variable'] for p in (first,second,store)]
+            if not (0x2803<=base<0xA000 and any(s['name']=='array region' and
+                    s['start']<=base-3 and base<s['end'] for s in regions) and
+                    any(s['name']=='variable region' and all(s['start']<=v and v+7<s['end']
+                        for v in slots) for s in regions)):return False
+            f=self.get('fac');a=self.get('arg');b=self.get('arraybase')
+            value=self.expr(f'PAIR_LOAD_{base:04X}({f.text}, {a.text})',[b,f,a],warnings=[
+                'VM pair load, not BASIC subscripts.  Sample FAC slot then ARG slot; convert FAC if needed, read live descriptor, form product, convert/add ARG, then load before the typed store.  Normal path with valid ordinary storage; native wrap and carry apply.'])
+            self.wipe(io=True);self.set('fac',value);return True
         if self.family=='petspeed' and n=='CHR_STRING':
             value=self.get('fac')
             producer=self.rows_by_address.get(value.producer,{}).get('mnemonic')
@@ -503,6 +540,28 @@ class Lifter:
             # this producer site; GC can clobber ARG and the integer scratch.
             self.function('CHR$',[value],'fac',True,
                           'Numeric-literal FAC only; conversion/range check precedes allocation/GC.  Normal-result string; heap/error behavior is not stock BASIC equivalence.')
+            return True
+        if self.family=='petspeed' and n=='STORE_INTEGER_ELEMENT_AT':
+            from petspeed_listing import RUNTIME
+            if self.report.get('runtimeSha256')!=RUNTIME:return False
+            addr=v['value'];value=self.get('fac')
+            # The two writes are sequential.  Do not treat I/O, VM workspace,
+            # or a word straddling the end of a data region as ordinary storage.
+            if not (0x2800<=addr<0x9FFF and any(
+                    s['name'] in ('array region','variable region') and s['start']<=addr and addr+1<s['end']
+                    for s in self.report.get('loadedRegions',()))):
+                self.barrier(f'absolute word store at ${addr:04X}: two ordinary data bytes not established');return True
+            # $3D/$3E are replaced on both paths.  reset=True drops any old
+            # prepared destination, and never propagates a converted float FAC.
+            # Nonzero tag is a raw payload path, NOT a numeric type check.
+            numeric={'ZERO_FAC','ONE_FAC','CONST_U8_FAC','CONST_I16_FAC','CONST_FLOAT_FAC',
+                     'ZERO_ARG','ONE_ARG','CONST_U8_ARG','CONST_I16_ARG','CONST_FLOAT_ARG','ADD','MULTIPLY'}
+            if value.deps and '<?>' not in value.text and all(self.rows_by_address[a]['mnemonic'] in numeric for a in value.deps):
+                self.emit(f'STORE I16BE AT ${addr:04X} FROM '+value.text,args=[value],warnings=[
+                    'Numeric FAC; floating input undergoes mantissa rounding, signed range check, and fixed conversion.  Normal store only; original subscript not recovered.'],reset=True)
+            else:
+                self.emit(f'REM word store at ${addr:04X} from FAC payload (high byte first)', 'partial',args=[value],warnings=[
+                    'Numeric RHS not established.  Tag zero requires successful float-to-word conversion; other tags copy two raw bytes.'],reset=True)
             return True
         if self.family=='petspeed' and n=='LOAD_STRING_ELEMENT_AT':
             self.set('fac',self.expr(f'STRDESC_{v["value"]:04X}$',warnings=[
@@ -538,12 +597,21 @@ class Lifter:
             info=self.arrays.get(r['descriptorOffset'])
             name=info[0] if info else 'ARRAY_'+str(r['descriptorOffset'])
             text=name+'('+index.text+')' if info and info[1]==1 else 'ELEM_'+str(r['descriptorOffset'])+'('+index.text+')'
-            e=self.expr(text,[index],[] if info and info[1]==1 else ['Flattened index; multidimensional source subscripts not recovered.'])
+            if info and info[1]==1:
+                warnings=['Array identified, but no reaching subscript is proved; the element is unknown.'] if index.text=='<?>' else []
+            else:warnings=['Flattened index; multidimensional source subscripts not recovered.']
+            e=self.expr(text,[index],warnings)
             if value:self.emit(text+' = '+value.text,args=[e,value],reset=True)
             else:
                 e.reference=True;self.set('stack',e)
             return True
+        if self.family=='blitz' and n=='PRINT_CHANNEL_EMPTY':
+            # $45 enters after the carriage-return write, directly at CLRCHN.
+            self.output=None;self.input=None
+            self.emit('REM restore default I/O channels (no newline)','structural',reset=True);return True
         if self.family=='blitz' and n=='INPUT_BEGIN':
+            # Retry resumes *after* $50, without replaying earlier operands.
+            self.stack['stack'].clear()
             self.input_fields=[];self.input_prefix_known=True;return True
         if self.family=='blitz' and n in ('INPUT_FIRST','INPUT_NEXT','INPUT_FINAL'):
             self.input_fields.append(self.get('stack'))
@@ -551,9 +619,21 @@ class Lifter:
                 fields=self.input_fields
                 items=', '.join(x.text for x in fields)
                 if self.input_prefix_known:
-                    prefix='INPUT' if self.input is None else 'INPUT#'+self.input+','
-                    self.emit(prefix+' '+items,args=fields,reset=True)
+                    if self.input is UNKNOWN_INPUT:
+                        self.emit('REM current-channel INPUT: '+items,'partial',args=fields,reset=True)
+                    else:
+                        prefix='INPUT' if self.input is None else 'INPUT#'+self.input+','
+                        self.emit(prefix+' '+items,args=fields,reset=True)
+                    if self.input is not None:self.wipe(io=True)  # Final field can clean up a selected channel.
                 else:
+                    from blitz_input import selected_file
+                    selector=self.groups[-1]['instructions'] if self.groups else []
+                    channel=selected_file(selector,self.pending,len(fields),self.report.get('scalarRecords',[]),self.input_dims,self.targets)
+                    if channel is not None:
+                        source=Expr(str(channel),{s['address'] for s in selector})
+                        self.emit('INPUT#'+source.text+', '+items,args=[source,*fields],reset=True)
+                        self.wipe(io=True)  # The final field performs channel cleanup, unlike a middle field.
+                        return True
                     self.emit('REM INPUT continuation: '+items,'partial',args=fields,reset=True,
                               warnings=['Earlier field list is unknown on this entry; only the observed suffix is shown.'])
             return True
@@ -567,10 +647,13 @@ class Lifter:
             return True
         if self.family=='blitz' and n in ('READ','READ_NUMERIC','GET','INPUT_KEYBOARD'):
             e=self.get('stack');verb='READ' if n.startswith('READ') else 'INPUT' if n=='INPUT_KEYBOARD' else 'GET'
-            # A compiled destination may be an array-reference expression; preserve it explicitly.
-            prefix=verb+'#'+self.input+', ' if verb=='GET' and self.input is not None else verb+' '
-            self.emit(prefix+e.text,'inferred' if e.reference else 'partial',args=[e],warnings=['Destination-reference interpretation; original statement grouping not recovered.']+([] if e.reference else ['Destination reference not established.']),reset=True)
-            if verb=='GET':self.wipe(io=True)
+            # GETIN and field input use the ambient route; neither selects a file.
+            partial_route=(verb=='GET' and self.input is UNKNOWN_INPUT or verb=='INPUT' and self.input is not None)
+            if partial_route:prefix='REM current-channel '+verb+': '
+            elif verb=='GET' and self.input is not None:prefix='GET#'+self.input+', '
+            else:prefix=verb+' '
+            self.emit(prefix+e.text,'inferred' if e.reference and not partial_route else 'partial',args=[e],warnings=['Destination-reference interpretation; original statement grouping not recovered.']+([] if e.reference else ['Destination reference not established.']),reset=True)
+            if verb=='GET' or verb=='INPUT' and self.input is not None:self.wipe(io=True)
             return True
         if self.family=='blitz' and n.startswith('CONST_'):
             self.set('stack',self.expr(self.constant(r,{})));return True
@@ -605,6 +688,10 @@ class Lifter:
             self.emit(f'FOR {name} = {name} TO {limit.text} STEP {step.text}',args=[limit,step],warnings=['Initial assignment shown separately.'],reset=True);return True
         if self.family=='blitz' and n=='DIM_INTERNAL':
             dims=[self.get('stack') for _ in range(r['dimensions'])][::-1]
+            if r.get('reservedArray'):
+                self.arrays[r['descriptorOffset']]=('INTERNAL_Z_STAR%',1)
+                self.emit('REM allocate reserved integer array Z*%, upper bound '+dims[0].text,
+                          'structural',args=dims,warnings=['Internal descriptor; not a BASIC source DIM.'],reset=True);return True
             self.arrays[r['descriptorOffset']]=(r['variable'],r['dimensions'])
             self.emit('DIM '+r['variable']+'('+', '.join(e.text for e in dims)+')',args=dims,reset=True);return True
         if self.family=='blitz' and n in ('FOR_SETUP','FOR_SETUP_STEP'):
@@ -708,6 +795,14 @@ class Lifter:
         if self.family=='blitz':
             from blitz_for import fold_literal_headers
             self.groups=fold_literal_headers(self.groups,self.report.get('scalarRecords',[]),self.targets)
+        elif self.family=='basic64':
+            from basic64_for import fold_literal_headers
+            from basic64_input import fold_data_fields, fold_inputs
+            from basic64_print import fold_print_lines
+            self.groups=fold_literal_headers(self.groups,self.targets)
+            self.groups=fold_data_fields(self.groups,self.targets,self.report.get('layout'))
+            self.groups=fold_inputs(self.groups,self.targets,self.report.get('layout'))
+            self.groups=fold_print_lines(self.groups,self.targets)
         result={'schema':'pcode-basic-reconstruction-v1','family':self.identity_family,'sourceSupplied':False,'mapsUsed':False,
                 'groups':self.groups,'symbols':self.symbols,'instructionCount':len(self.rows),
                 'coverage':{kind:sum(len(g['instructions']) for g in self.groups if g['kind']==kind) for kind in ('inferred','embedded','structural','partial','unresolved')},

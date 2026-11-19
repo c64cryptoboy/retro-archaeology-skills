@@ -1,0 +1,31 @@
+{
+  "id": "petspeed-c64-2245-chr-word-access-v4",
+  "baseProfileSha256": "d22ff6f07884e6012c221f9cda1013e7bf8eb16a677737603e1219df75ee9260",
+  "runtimeSha256": "cee17449b6e9700af4642546477c06dbb42413888fa5e594ebded33014c5dbaf",
+  "opcodes": {
+    "C7": {
+      "mnemonic": "CHR_STRING",
+      "operand": "none",
+      "comment": "For numeric FAC, convert/check the byte, then allocate a one-character string in FAC on success",
+      "evidence": "$08B4 selects $1E9E; $17BB checks the converted high byte; the low byte is staged at $0100 for the length-one $1D6E allocation.  Normal completion jumps to $0926 without fetching an inline operand."
+    },
+    "EE": {
+      "mnemonic": "LOAD_INTEGER_WORD_ARG_ABS",
+      "operand": "u16le",
+      "comment": "Load integer ARG from two bytes at ${value:04X}, high byte first",
+      "evidence": "$0902 selects $2054.  With binary arithmetic, $21A6 reads the little-endian address at IP+1 and IP+2, leaves IP advanced by two, and returns Y=0.  The handler sets $B6=1 and reads offsets 0 and 1 into $6C and $6D, then jumps to $0926 for the final increment."
+    },
+    "F1": {
+      "mnemonic": "LOAD_INTEGER_WORD_ABS",
+      "operand": "u16le",
+      "comment": "Load integer FAC from two bytes at ${value:04X}, high byte first",
+      "evidence": "$0908 selects $2042.  Its $21A6 helper fetches the address low then high at IP+1 and IP+2, advancing the cursor by two.  $1FEB sets $B5=1, reads offsets 0 and 1 into $64 and $65 respectively, then jumps to $0926 for the final increment."
+    },
+    "F4": {
+      "mnemonic": "STORE_NUMERIC_WORD_ABS",
+      "operand": "u16le",
+      "comment": "Store numeric FAC as a two-byte word at ${value:04X}, high byte first, on normal completion",
+      "evidence": "$090E selects $20A8: fetch destination low at IP+1 and high at IP+2; with $B5 zero call $BC1B then $B1AA.  Store $64 then $65 via ($3D),Y and jump to $0926 for the final cursor increment."
+    }
+  }
+}

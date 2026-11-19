@@ -61,9 +61,10 @@ def decode_var_name(record: bytes) -> str:
     if len(record) < 2:
         return "?"
     first, second = record[:2]
-    suffix = "$" if second & 0x80 else ("%" if first & 0x80 else "")
-    chars = [chr(value & 0x7F) for value in (first, second) if value & 0x7F]
-    return "".join(chars) + suffix
+    name = "".join(chr(value & 0x7F) for value in (first, second) if value & 0x7F)
+    if first & 0x80:
+        return name + "%" if second & 0x80 else "FN " + name
+    return name + "$" if second & 0x80 else name
 
 
 def variable_names(image: Image, profile: dict[str, Any]) -> list[str]:
@@ -243,6 +244,8 @@ def decode_one(
         result["variable"] = decode_var_name(raw[2:4])
         result["flags"] = raw[4]
         result["descriptorOffset"] = raw[5]
+        if raw == bytes.fromhex("10 01 da aa 00 00"):
+            result["reservedArray"] = True
     elif kind == "fac5":
         value = decode_fac5(raw[1:])
         result["payload"] = raw[1:].hex(" ")
