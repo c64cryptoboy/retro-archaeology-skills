@@ -33,6 +33,18 @@ class NegativeSeedImageTests(unittest.TestCase):
         self.assertEqual(image.fac_to_seed(value).bytes, bytes.fromhex("68 00 81 00 00"))
         self.assertEqual(self.rom_map(value), bytes.fromhex("68 00 81 00 00"))
 
+    def test_overwritten_reseed_still_changes_the_next_draw(self):
+        # Stock RND(-7), then RND(1); no compiled program participates in this oracle.
+        value = image.NegativeFac(0x83, 0xE0000000)
+        seed = self.rom_map(value)
+        self.assertEqual(seed, image.fac_to_seed(value).bytes)
+        self.assertEqual(seed, bytes.fromhex("68 60 83 00 00"))
+        cpu = rom.make_cpu()
+        self.assertEqual(rom.advance(cpu), bytes.fromhex("7e 3e 04 7e 4e"))  # no reseed
+        cpu.inject_bytes(rom.RNDX, seed)
+        self.assertEqual(rom.advance(cpu), bytes.fromhex("7f 67 5b f1 3d"))
+        self.assertEqual(rom.advance(cpu), bytes.fromhex("7e 7b 93 46 8e"))  # extra draw
+
     def test_power_on_seed_has_no_valid_negative_fac_preimage(self):
         seed = image.SeedState.from_bytes(bytes.fromhex("80 4f c7 52 58"))
         self.assertEqual(image.seed_preimages(seed), [])
