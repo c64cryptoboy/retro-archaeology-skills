@@ -1,0 +1,21 @@
+{
+  "title": "Lantern Relay",
+  "bend_range": 2,
+  "end_us": 4000000,
+  "voices": [
+    {"channel": 1, "notes": [
+      {"start_us": 0, "end_us": 750000, "key": 72, "curve": [{"us": 0, "pitch": 72}, {"us": 250000, "pitch": 72.5}, {"us": 625000, "pitch": 72}]},
+      {"start_us": 750000, "end_us": 1000000, "key": 72, "curve": [{"us": 750000, "pitch": 72}]},
+      {"start_us": 1125000, "end_us": 1750000, "key": 76, "curve": [{"us": 1125000, "pitch": 76}, {"us": 1500000, "pitch": 75.75}]},
+      {"start_us": 2000000, "end_us": 2500000, "key": 74, "curve": [{"us": 2000000, "pitch": 74}]},
+      {"start_us": 2500000, "end_us": 3500000, "key": 72, "curve": [{"us": 2500000, "pitch": 72}, {"us": 2750000, "pitch": 73}, {"us": 3000000, "pitch": 72.5}, {"us": 3250000, "pitch": 72}]}
+    ]},
+    {"channel": 2, "notes": [
+      {"start_us": 0, "end_us": 1000000, "key": 57, "curve": [{"us": 0, "hz": 220}, {"us": 500000, "pitch": 56.5}, {"us": 875000, "hz": 220}]},
+      {"start_us": 1000000, "end_us": 1750000, "key": 53, "curve": [{"us": 1000000, "pitch": 53}]},
+      {"start_us": 2000000, "end_us": 2400000, "key": 55, "curve": [{"us": 2000000, "pitch": 55}]},
+      {"start_us": 2500000, "end_us": 3500000, "key": 60, "curve": [{"us": 2500000, "pitch": 60}]}
+    ]}
+  ],
+  "noise": [{"start_us": 125000, "end_us": 187500, "gm_key": 42}, {"start_us": 1875000, "end_us": 1937500}]
+}

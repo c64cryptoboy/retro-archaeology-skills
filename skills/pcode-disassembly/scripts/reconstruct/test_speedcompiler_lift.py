@@ -34,6 +34,23 @@ class SpeedLiftTests(unittest.TestCase):
  def test_string_concat_order(self):
   r=program(row('CONST_STRING',payloadHex=b'LEFT'.hex()),row('CONST_STRING',payloadHex=b'RIGHT'.hex()),row('STRING_CONCAT'),row('STORE_STRING',slot=0,storage=0x3200))
   self.assertIn('("LEFT" + "RIGHT")',text(r))
+ def test_clock_write_is_not_a_sample_or_a_stack_result(self):
+  s=lambda:row('STORE_STRING',slot=0,storage=0x3200)
+  r=program(row('TIME_STRING'),s(),row('CONST_STRING',payloadHex=b'012345'.hex()),row('SET_TIME_STRING'),s())
+  self.assertEqual([g['text'] for g in r['groups']],
+                   ['T_2000 = VM_TIME_STRING()','V_3200$ = T_2000','TI$ = "012345"','V_3200$ = <?>'])
+  write=r['groups'][2];self.assertEqual(write['kind'],'inferred')
+  self.assertEqual(write['evidenceAddresses'],[0x2002,0x2003])
+  self.assertEqual([i['mnemonic'] for i in write['instructions']],['CONST_STRING','SET_TIME_STRING'])
+ def test_clock_write_refuses_unproved_frame(self):
+  setter=row('SET_TIME_STRING');lit=lambda s:row('CONST_STRING',payloadHex=s.hex())
+  for seq in ([lit(b'12345'),setter],[lit(b'12:345'),setter],
+              [row('LOAD_STRING',slot=3,storage=0x3000),setter],
+              [lit(b'012345'),setter,row('GOTO',target=0x2001)],
+              [lit(b'012345'),dict(setter,address=0x2010)]):
+   with self.subTest(seq=seq):
+    g=next(g for g in program(*seq)['groups'] if g['instructions'][-1]['mnemonic']=='SET_TIME_STRING')
+    self.assertEqual(g['kind'],'unresolved');self.assertNotIn('TI$ =',g['text'])
  def test_read_integer_discards_old_depth(self):
   r=program(const(99),row('READ_INTEGER'),row('STORE_INTEGER_RESET',slot=0,lowStorage=0x810,highStorage=0x888))
   self.assertIn('I_00% = <?>',text(r));self.assertNotIn('I_00% = 99',text(r))

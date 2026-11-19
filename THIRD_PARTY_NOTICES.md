@@ -45,6 +45,12 @@ The [DOS 3.3 and ATR/DOS 2.0 readers](skills/game-mechanics-reversing/references
 
 The compact BASIC translator adapts [EgonOlsen71/PetspeedDecompy](https://github.com/EgonOlsen71/PetspeedDecompy/tree/3d4360e8b481c2157fccac0458f3556a2d3ea311) under the Unlicense.  Its [adaptation notice](skills/pcode-disassembly/scripts/petspeed/decompy_compat/NOTICE.md) and [upstream license](skills/pcode-disassembly/scripts/petspeed/decompy_compat/LICENSE.txt) accompany the code.  No example programs, compiled images, or generated listings from the upstream project are bundled.
 
+## Graphics, music, and Forth examples
+
+The new examples use original demonstration artwork, music, players, and synthetic Forth data.  No game media, HVSC collection entries, ROM images, or third-party sound banks accompany them.  The optional music adapter calls a separately supplied ChiptuneSAK; the shared emulator attribution above remains unchanged.
+
+The [example score PDF](skills/c64-music-extraction/notation/fixture/engraved/score.pdf) embeds subsets of C059 Roman and Bold from [URW Base 35](https://github.com/ArtifexSoftware/urw-base35-fonts) and Emmentaler-16 from [LilyPond](https://lilypond.org/).  URW's AGPLv3 font exception permits embedding in PDF documents; Emmentaler's GPL font exception permits embedding unaltered portions without the font alone placing the document under the GPL.  These font programs are not relicensed under the repository MIT license.
+
 ## Analyzed formats and signatures
 
 The p-code tools include bounded compiler/runtime recognition data and format knowledge, not complete compiler distributions.  A matching signature is evidence within its stated contract, not proof of ownership, a license grant for the recognized program, or permission to redistribute a supplied input.

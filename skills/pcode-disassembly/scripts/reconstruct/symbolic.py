@@ -486,9 +486,88 @@ class Lifter:
             return True
         return False
 
+    def blitz_two_axis_read(self, row):
+        """Lift the audited $A4 value path only: two scalar axes, immediate scalar store."""
+        from blitz_input import scalar_name
+        if (self.identity_family != 'blitz' or row['opcode'] != 0xa4 or
+                [p['mnemonic'] for p in self.pending] != ['LOAD_VAR', 'LOAD_VAR', 'LOAD_ARRAY']):
+            return False
+        if not any(r['name'] == 'bootstrap/runtime/tables' and r['sha256'] ==
+                   '3adcf88648de854150be7eb269a212a9bd5a4012b903488e17dee82bf9b1c10c'
+                   for r in self.report.get('loadedRegions', ())):
+            return False
+        # Offset identifies the declaration even when DIM is later in address order.
+        # On the successful runtime path the descriptor exists; this is not dominance.
+        dim = self.input_dims.get(row['descriptorOffset'])
+        if (not dim or dim['dimensions'] != 2 or dim['flags'] or
+                not re.fullmatch(r'[A-Z][A-Z0-9]?', dim['variable']) or
+                not 0x41 <= bytes.fromhex(dim['bytes'])[2] <= 0x5a):
+            return False
+        store = self.rows_by_address.get(row['address'] + row['size'], {})
+        if store.get('mnemonic') != 'STORE_VAR':
+            return False
+        seq = self.pending + [store]
+        if (any(p.get('region') != 'main' for p in seq) or
+                any(a['address'] + a['size'] != b['address'] or b['address'] in self.targets
+                    for a, b in zip(seq, seq[1:]))):
+            return False
+        scalars = self.report['scalarRecords']
+        if not all(re.fullmatch(r'[A-Z][A-Z0-9]?', scalar_name(p, scalars) or '')
+                   for p in (seq[0], seq[1], store)):
+            return False
+        last = self.get('stack'); first = self.get('stack')
+        value = self.expr(f"{dim['variable']}({first.text}, {last.text})", [first, last])
+        value.deps.add(dim['address'])
+        self.set('stack', value)
+        return True
+
+    def blitz_two_axis_store(self, row):
+        """Prove both indices and RHS are built in this group, not ambient stack values."""
+        from blitz_input import scalar_name
+        dim = self.input_dims.get(row['descriptorOffset'])
+        if (not dim or dim['address'] >= row['address'] or dim['dimensions'] != 2 or dim['flags'] or
+                not re.fullmatch(r'[A-Z][A-Z0-9]?', dim['variable']) or
+                not 0x41 <= bytes.fromhex(dim['bytes'])[2] <= 0x5a):
+            return False
+        # The ordinary numeric $E4 path keeps the RHS and pops last axis first.
+        # Limit the projection to independent, straight-line numeric producers.
+        depth = 0
+        for producer, nxt in zip(self.pending, self.pending[1:]):
+            if (producer.get('region') != 'main' or producer['address'] + producer['size'] != nxt['address'] or
+                    nxt['address'] in self.targets):
+                return False
+            n = producer['mnemonic']
+            if n in ('CONST_SMALL', 'CONST_COMPACT', 'CONST_U8'):
+                depth += 1
+            elif n == 'LOAD_VAR':
+                name = scalar_name(producer, self.report.get('scalarRecords', []))
+                if not name or name.endswith('$'):
+                    return False
+                depth += 1
+            elif n in ('ADD', 'SUBTRACT', 'MULTIPLY') and depth >= 2:
+                depth -= 1
+            else:
+                return False
+        return depth == 3 and row.get('region') == 'main'
+
     def special(self,r):
         n=r['mnemonic'];v=r.get('operands',{})
         if self.family=='dtl' and self.dtl(r):return True
+        if self.family=='petspeed' and n=='TIME_STRING_ARG_CLOBBER_FAC_TYPE':
+            from petspeed_listing import RUNTIME
+            # The allocator retags FAC and may collect.  Its body exchanges
+            # preserve the three bytes of an inline (non-heap) descriptor, not
+            # an arbitrary FAC value.  Admit only its immediate string test.
+            literal=self.pending[-2] if len(self.pending)>=2 else {}
+            test=self.rows_by_address.get(r['address']+r['size'],{})
+            if (self.report.get('runtimeSha256')!=RUNTIME or literal.get('mnemonic')!='CONST_STRING_FAC' or
+                    literal['address']+literal['size']!=r['address'] or test.get('mnemonic')!='STRING_LESS_THAN' or
+                    test['address'] in self.targets or test.get('region')!=r.get('region')):return False
+            fac=self.get('fac');self.wipe(io=True);self.set('fac',fac)
+            tmp=f'T_{r["address"]:04X}$'
+            warning='Clock sampled here on normal return.  Only the inline FAC string is carried across allocation.'
+            self.emit(tmp+' = TI$','partial',warnings=[warning])
+            self.set('arg',self.expr(tmp,warnings=[warning]));return True
         if self.family=='petspeed' and n=='ARRAY_BASE':
             self.set('arraybase',self.expr(f'{v["value"]:04X}'));return True
         if self.family=='petspeed' and n in ('ARRAY_LOAD_FAC','INTEGER_ARRAY_LOAD','STRING_ARRAY_LOAD','ARRAY_DEST','INTEGER_ARRAY_DEST','STRING_ARRAY_DEST'):
@@ -593,9 +672,15 @@ class Lifter:
             else:self.set('ss' if 'STRING' in n else 'iv' if 'INTEGER' in n else 'fac',dest)
             return True
         if self.family=='blitz' and n in ('LOAD_ARRAY','STORE_ARRAY'):
+            if n=='LOAD_ARRAY' and self.blitz_two_axis_read(r):return True
             value=self.get('stack') if n=='STORE_ARRAY' else None;index=self.get('stack')
             info=self.arrays.get(r['descriptorOffset'])
             name=info[0] if info else 'ARRAY_'+str(r['descriptorOffset'])
+            if (self.identity_family=='blitz' and r['opcode']==0xe4 and value and info and info[1]==2 and
+                    self.blitz_two_axis_store(r)):
+                first=self.get('stack')
+                self.emit(f'{name}({first.text}, {index.text}) = {value.text}',args=[first,index,value],reset=True)
+                return True
             text=name+'('+index.text+')' if info and info[1]==1 else 'ELEM_'+str(r['descriptorOffset'])+'('+index.text+')'
             if info and info[1]==1:
                 warnings=['Array identified, but no reaching subscript is proved; the element is unknown.'] if index.text=='<?>' else []
@@ -721,6 +806,7 @@ class Lifter:
             d=self.blitz_leaf_calls.get(descriptor) if self.family=='blitz' else None
             warning=('Descriptor-indirect function; static numeric-leaf candidate '+self.label(d['header'])+
                      ' binds '+d['parameterName']+'.  Runtime binding is unproved; call state invalidation is retained.') if d else 'Descriptor-indirect function; original declaration not reconstructed.'
+            if self.family=='basic64':warning='Descriptor-indirect call; the active body is read from runtime storage, not statically bound.'
             self.function('FN F_'+str(descriptor),[e],src,True,warning);return True
         if n in ('DEFINE_FUNCTION','DEF_FN'):
             self.emit('REM '+n+' '+str({k:x for k,x in {**r,**v}.items() if k in ('descriptor','body','skip','bodyTarget','skipTarget','functionDescriptorOffset','parameterDescriptorOffset')}),'partial',reset=True);return True
@@ -775,6 +861,7 @@ class Lifter:
 
     def run(self):
         previous_region=None
+        console_candidates=set()
         for r in self.rows:
             if self.for_zero_ready and r['address']!=self.for_zero_ready['forAddress']:self.for_zero_ready=None
             region=r.get('region','main')
@@ -786,6 +873,9 @@ class Lifter:
                 self.wipe(io=r['address'] in self.targets)
                 if predicate is not None:self.stack['stack']=[predicate]
             previous_region=region;self.current=r;self.pending.append(r)
+            if (self.family=='petspeed' and r['mnemonic']=='INPUT_STRING_EMPTY_SKIP' and
+                    self.input in (None,UNKNOWN_INPUT)):
+                console_candidates.add(r['address'])  # B3 resets the field, not the route.
             if not self.special(r):
                 rule=self.rules.get(r['mnemonic'])
                 if rule:self.standard(r,rule)
@@ -795,10 +885,16 @@ class Lifter:
         if self.family=='blitz':
             from blitz_for import fold_literal_headers
             self.groups=fold_literal_headers(self.groups,self.report.get('scalarRecords',[]),self.targets)
+        elif console_candidates:
+            from petspeed_console import fold_console_fields
+            self.groups=fold_console_fields(self.groups,self.report,self.targets,console_candidates)
         elif self.family=='basic64':
             from basic64_for import fold_literal_headers
+            from basic64_functions import annotate_leaf_definitions, fold_call_assignments
             from basic64_input import fold_data_fields, fold_inputs
             from basic64_print import fold_print_lines
+            annotate_leaf_definitions(self.groups,self.report.get('layout'))
+            self.groups=fold_call_assignments(self.groups,self.targets,self.report.get('layout'))
             self.groups=fold_literal_headers(self.groups,self.targets)
             self.groups=fold_data_fields(self.groups,self.targets,self.report.get('layout'))
             self.groups=fold_inputs(self.groups,self.targets,self.report.get('layout'))

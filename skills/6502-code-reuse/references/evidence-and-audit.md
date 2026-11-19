@@ -92,6 +92,25 @@ A worked control is Vic Cortes's [Micro Compiler, preserved and ported by EgonOl
 
 For the actual immediate-versus-memory templates and host SAVE differences, see the [native emission probes](../../6502-disassembly/references/microcompiler-emission.md).  For a suspected common compiler, retain a helper-absent control, a second load address, and an unrelated emitter or hand-coded confuser where available.  Without that last comparison, do not claim unique provenance.  The probes above concern one port and one configuration, not every version or every target.
 
+### Attribute a match in linked cc65 code
+
+Use the map to ask **which object supplied these bytes**, then use the listing to ask **why the instructions match**.  These are different questions.
+
+1. Use the [ld65 map](https://cc65.github.io/doc/ld65.html) (`-m`) from each exact link.  For a `CODE` row in **Modules list**, add its hexadecimal `Offs` to the `CODE` `Start` in **Segment list**; `Size` gives the byte count.  Verify the resulting interval against the image layout before slicing: a CPU address is not a file offset.  A module interval is not necessarily one function.
+2. Compare the named library member on its own.  Then compare only verified application contributions, keeping disjoint intervals separate.  Calls *to* the library remain in caller code; the helper bodies do not.  Archive membership locates code in this build, not its historical author.  Nor is a loose object necessarily application code.
+3. For a surviving match, inspect the enclosing entries, operand roles, and first different consumer.  Record attribution alongside the structural result, not in place of it.  A score cannot supply a missing map or listing.
+
+In this original flat-image example, both `CODE` segments start at `$4000`.  The four judgments use different evidence:
+
+| Attribution | Evidence in the two links |
+|---|---|
+| Linked library | Both maps name `kit.lib(tint.o)`: `Offs=000025` and `Offs=00001D`, both `Size=000005`.  The five bytes at `$4025` and `$401D` are identical (`49 24 09 08 60`).  Count the member once, not once per caller. |
+| Compiler idiom | Outside the archive, cc65 emits `INC low; BNE done; INC high` for `++ticks` and `++samples`, respectively (`done` is the continuation).  One caller tests the low byte for zero to select a path; the other passes it to a transform.  The listings explain the common fragment, not a shared caller. |
+| Shared application routine | Both builds explicitly link the same application input `band.o`.  Both linked bodies match its complete 12-byte routine: mask the argument to five bits, compare against 11, then OR with `$40` below the threshold or XOR with `$16` otherwise.  Both callers supply a byte and use the returned byte.  The common input and complete operation establish reuse in this example, not the object name alone. |
+| Unknown | Withhold the maps, callers, and listings and show only the matching tail `ORA #$40; RTS`.  The bytes establish the return operation, but cannot distinguish a library member, compiler output, or application routine. |
+
+These are attribution controls, not matcher thresholds or evidence of copying direction.
+
 ## Candidate-specific frequency scans
 
 `candidate_signature6502.py` scans raw files at every byte offset for a selected complete portable-shape subsequence, retaining immediate values and allowing bounded target-only insertions.

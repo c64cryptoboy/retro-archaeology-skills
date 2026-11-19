@@ -217,7 +217,7 @@ Expression routines are not standalone math APIs. They generally expect:
 | `$B391` | `GIVAYF` | Convert signed two's-complement 16-bit integer (A=high, Y=low) to FAC; sets numeric type and overwrites FAC and scratch state |
 | `$B39E` | `POS` | POS(): SEC / JSR `$FFF0` reads cursor column into Y, then falls through to `$B3A2` |
 | `$B3A2` | `SNGFLT` / unsigned Y to FAC | Set A=0 and branch to `$B391`; converts Y (0..255) to FAC without reading cursor position |
-| `$B3B3` | `DEF` | DEF FN |
+| `$B3B3` | `DEF` | DEF FN; [why the shared store tail also restores the formal variable during FN evaluation](basic-fn-record.md) |
 | `$B3E1` | `GETFNM` | Require FN token, parse numeric function name, and return definition-record pointer in A/Y and `$4E/$4F` (low/high); FN evaluation starts at `$B3F4` |
 
 ### Internal-call cautions

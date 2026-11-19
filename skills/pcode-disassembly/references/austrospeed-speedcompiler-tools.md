@@ -117,6 +117,12 @@ are separate gates. Unknown signatures are not proof of uncompiled input.
   the bounded scalar area, blocks substitution.  No earlier constant is
   forwarded, no target code is interpreted, and all value and channel facts
   are discarded at the call.
+- On this Speedcompiler runtime, `TI$ = "012345"` sets the clock; the separate
+  `VM_TIME_STRING()` event reads it.  The write requires an adjacent counted
+  literal of six decimal digits with no entry bypassing that literal.  The
+  handler checks the top string length, passes its byte pointer to stock BASIC,
+  and returns to dispatch after SETTIM on success.  A different length takes
+  the VM error path.  The reading exports no post-call operand or stack depth.
 - Numeric READ has tag-dependent native depth updates: events are visible, but
   unproved post-state/destination dataflow is dropped. Numeric-looking DATA
   strings keep their encoded string type. Input parsing/retries, file I/O,

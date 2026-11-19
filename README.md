@@ -28,6 +28,9 @@ For optional agent-controlled live debugging, see [RetroDebugger MCP setup](skil
 | [6502-commenting](skills/6502-commenting/SKILL.md) | Explains assembly code's purpose, state, and calling conventions. |
 | [6502-code-reuse](skills/6502-code-reuse/SKILL.md) | Finds shared or transformed routines while separating similarity from provenance. |
 | [6502-size-reduction](skills/6502-size-reduction/SKILL.md) | Finds smaller implementations and checks their behavioral assumptions. |
+| [6502-forth-reversing](skills/6502-forth-reversing/SKILL.md) | Follows threaded Forth words through their dictionary entries, data, and native code. |
+| [c64-graphics-extraction](skills/c64-graphics-extraction/SKILL.md) | Recovers VIC-II graphics as reusable bytes and images, and reconstructs animations from measured poses and timing. |
+| [c64-music-extraction](skills/c64-music-extraction/SKILL.md) | Recovers SID and TED performances, exports editable MIDI and LilyPond scores, and packages C64 players as SID files. |
 | [game-mechanics-reversing](skills/game-mechanics-reversing/SKILL.md) | Recovers game rules and state transitions from code and observations. |
 | [pcode-disassembly](skills/pcode-disassembly/SKILL.md) | Identifies and decodes supported C64 compiled-BASIC formats. |
 | [c64-disk-preservation-cracking](skills/c64-disk-preservation-cracking/SKILL.md) | Preserves disk evidence and analyzes supported formats and copy protection. |

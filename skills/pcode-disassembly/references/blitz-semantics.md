@@ -48,6 +48,12 @@ A literal logical-file selector followed immediately by a complete field list ca
 
 This is the normal input and destination order, not proof that the file is open, a physical device is attached, or an input succeeds.  The final field has channel cleanup; do not carry its selected file forward.  Zero or computed channels, single-field forms, computed subscript expressions, and flattened multidimensional accesses are outside this rule.  BLITZ and Austro-Speed keep distinct error and end-of-file behavior.
 
+### Two-subscript numeric stores
+
+Two stores that end with the same subscript and value may write different cells.  For ordinary BLITZ `$E4`, a unique preceding numeric rank-two declaration identifies the array; it does not supply the live subscripts.  The reader names both axes when one uninterrupted group builds the first subscript, the second subscript, and the value, in that order.  For example, `U2(3, 4) = 99` and `U2(5, 4) = 99` are distinct even though the final index is 4 in both.  An entry into the middle of the group, a missing producer, or a conflicting descriptor prevents this reading.  Other ranks and Austro-Speed do not inherit this rule.
+
+A separate `$A4` **value read** can recover `V = TA(X, Y)` rather than collapsing it to its final axis `Y`.  The verified interpreter pops the last subscript first, then reads the earlier one when the descriptor says rank two.  Require two uninterrupted ordinary numeric scalar loads, a unique ordinary rank-two declaration, and an immediate numeric scalar assignment.  An alternate entry that bypasses the first producer blocks the reading.  The declaration identifies the array; it need not precede the consumer in address order and does not prove that it ran.  This rule does not apply to an array address used as an input destination.
+
 ### Bounded numeric leaf-FN reading
 
 The symbolic reader can label one straight-line numeric leaf declaration, its retained scalar formal, and its deferred normal-return expression.  The function name remains synthetic (`FN F_<descriptor>`), not recovered source syntax.  This is a structural reading aid, not executable or equivalent BASIC.

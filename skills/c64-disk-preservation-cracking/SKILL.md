@@ -29,6 +29,7 @@ Load only the current phase and applicable references, but do so **before** its 
 |---|---|---|
 | First preservation task or scope/authority ambiguity | [Preservation contract](references/preservation-contract.md) | Master versus derivative, scope and two-computer model |
 | Before multi-step execution, and after interruption or restart | [Checkpointing and recovery](references/checkpointing-and-recovery.md) | Current task/attempt ledger, holds, verified state, unknown-outcome reconciliation, and safe resume gates |
+| Numbered record in a standard 35-track D64 REL | [Read-only REL lookup](scripts/rel-record/README.md) | One-based record number, raw bytes, and physical spans checked against the ordered data chain; one or two side sectors |
 | Offline G64 sector/file reading or narrow RapidLok-like record inspection/decoding | [Read-only G64 helpers](references/g64-readers.md) | Preserved input, strict standard interpretation, recognition versus explicit-profile record decoding, and limits |
 | Before baseline execution, extraction, filesystem edits or choosing a format | [Media and baseline](references/media-and-baseline.md) | Hashes/fidelity, baseline, raw directory/chains/BAM/error-table audit |
 | Tracing loading, drive uploads, unusual tracks or the check itself | [Loader and authentication](references/loader-and-authentication.md) | Source and stage mappings, precise result consumers, and a clear boundary between static dependencies and measured behavior |

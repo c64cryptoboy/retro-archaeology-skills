@@ -51,7 +51,7 @@ Overlapping anchors on a compatible diagonal are clustered before extension.
 
 ## Boundary correction
 
-All-offset scanning can start inside an instruction. Extension tries shifts 0, -1, and -2 independently on each side and chooses the strongest containing decode/alignment. A corrected start is evidence, not proof of a callable routine entry.
+All-offset scanning can start inside an instruction.  Extension tries shifts 0, -1, and -2 independently on each side.  For each proposed decode, the same number of leading, ungapped supporting pairs must cover the original seed's bytes on both sides.  If a shift cuts the seed short, requires different pair counts, or pairs unlike instructions inside that prefix, it cannot use this seed.  Changing instruction boundaries can change the number of prefix pairs; a corrected start is evidence, not proof of a callable routine entry.
 
 ## Affine local alignment
 
@@ -66,9 +66,11 @@ Pair scores:
 | gap open | -5 |
 | gap continuation | -1 |
 
-Affine gaps tolerate compact platform edits while making long unrelated jumps expensive. Local alignment finds the strongest bounded region rather than forcing whole streams to correspond.
+After the seed prefix, affine gaps tolerate compact platform edits.  An extension may stop at its best endpoint; it may not restart at zero downstream.  For example, a rare entry followed by different calculations and then the same unrolled stores can establish an entry match, but cannot lend its rarity to a detached match between the stores.  The tail may still be reported if it earns its own seed.
 
-Every retained column records original instructions, relation, and score.
+Every retained column records original instructions, relation, and score.  `seed.leftEndExclusive` and `seed.rightEndExclusive` delimit the original exact windows in region offsets; `seed.alignedPrefixPairs` counts the supporting pairs in the selected decode that cover them.  The frequency is that of the original fingerprint, not a separate frequency measurement of a corrected decode.
+
+Existing locked results describe the aligner version recorded in their tool hashes.  Leave them intact; calibrate and freeze a fresh lock before using a changed aligner for a new primary comparison.
 
 ## Support metrics
 

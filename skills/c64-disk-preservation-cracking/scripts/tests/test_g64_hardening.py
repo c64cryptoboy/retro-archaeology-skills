@@ -370,6 +370,39 @@ class DuplicateEvidenceTests(SyntheticFiles):
                                (b"C" * 256, True, True)], 1)
 
 
+class FileEndIndexTests(SyntheticFiles):
+    def image_with_end_index(self, end_index):
+        # A two-block file: T1/S0 contributes all 254 bytes and links to T2/S0.
+        # Both sectors have nonzero contents past the link, even for an empty tail.
+        tracks = [b""] * 35
+        tracks[0] = track_bytes(record(1, 0, b"\x02\x00" + b"A" * 254))
+        tracks[2] = track_bytes(record(2, 0, bytes((0, end_index)) + b"B" * 254))
+        directory = bytearray(directory_sector(0, 255, "TEST"))
+        directory[30] = 2
+        tracks[34] = track_bytes(record(18, 0, b"\x12\x01".ljust(256, b"\0")),
+                                 record(18, 1, bytes(directory)))
+        return container(*tracks)
+
+    def test_standard_terminal_indices(self):
+        source = self.root / "fixture.g64"
+        output = self.root / "derived.prg"
+        for index, used in ((1, 0), (2, 1), (255, 254)):
+            with self.subTest(index=index):
+                source.write_bytes(self.image_with_end_index(index))
+                chain = self.run_cli(source, output)["extraction"]["chain"]
+                self.assertEqual(output.read_bytes(), b"A" * 254 + b"B" * used)
+                self.assertEqual([(b["nextTrack"], b["nextSector"], b["payloadBytes"]) for b in chain],
+                                 [(2, 0, 254), (0, index, used)])
+
+    def test_zero_terminal_index_refused_before_writing_prefix(self):
+        source = self.root / "fixture.g64"
+        source.write_bytes(self.image_with_end_index(0))
+        output = self.root / "derived.prg"
+        with self.assertRaisesRegex(g.G64Error, r"unsupported terminal file link \$00/\$00 at T2/S0"):
+            self.run_cli(source, output)
+        self.assertFalse(output.exists())
+
+
 class DirectoryOrderTests(SyntheticFiles):
     def test_nonascending_chain_and_entries_keep_traversal_order(self):
         sectors, _ = self.read_image(filesystem(order=(5, 1)))
