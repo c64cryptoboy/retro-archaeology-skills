@@ -1,0 +1,36 @@
+{
+  "title": "Two-bar gate study",
+  "subtitle": "Reading grid  |  Authored example",
+  "legend": "* = moving pitch bend",
+  "quarter_bpm": "100",
+  "anchors": [
+    [
+      0,
+      0
+    ],
+    [
+      3840,
+      64
+    ]
+  ],
+  "tolerance_ticks": 1,
+  "bars_32nds": [
+    32,
+    32
+  ],
+  "voices": [
+    {
+      "track": "Reed",
+      "label": "Reed",
+      "short": "R",
+      "clef": "treble",
+      "mark_wheel_span": 1024
+    },
+    {
+      "track": "Low",
+      "label": "Low",
+      "short": "L",
+      "clef": "bass"
+    }
+  ]
+}

@@ -29,6 +29,7 @@ class ReductionConfig:
     entry_facts: tuple[tuple[str, int], ...] = ()
     enabled_rules: frozenset[str] = frozenset({
         'known-state-redundancy',
+        'known-source-immediate-transfer',
         'duplicate-flag-setter',
         'transfer-roundtrip',
         'dead-source-load-transfer-fusion',
@@ -56,7 +57,8 @@ class ReductionConfig:
             if not isinstance(value, int) or not 0 <= value <= limit:
                 raise ReductionError(f'invalid entry fact {resource}={value}')
         supported = {
-            'known-state-redundancy', 'duplicate-flag-setter',
+            'known-state-redundancy', 'known-source-immediate-transfer',
+            'duplicate-flag-setter',
             'transfer-roundtrip', 'dead-source-load-transfer-fusion',
             'zero-page-operand-narrowing',
             'known-carry-immediate-adjustment',
@@ -129,6 +131,13 @@ _FUSIONS = {
     ('LDY', 'TYA', 'zp'):  (0xA5, 'Y'),
     ('LDY', 'TYA', 'abs'): (0xAD, 'Y'),
     ('LDY', 'TYA', 'abx'): (0xBD, 'Y'),
+}
+
+# Immediate load -> (known source register, exact one-byte transfer).
+_IMMEDIATE_TRANSFERS = {
+    'LDA': (('X', 0x8A), ('Y', 0x98)),  # TXA, TYA
+    'LDX': (('A', 0xAA),),              # TAX
+    'LDY': (('A', 0xA8),),              # TAY
 }
 
 _CARRY_ADJUSTMENT = {
@@ -370,6 +379,25 @@ def reduce_straight_block(data: bytes, *, base_address=0x8000,
                     )
                     _replace(tokens, index, 2, replacement); ledger.append(item)
                     changed = True; break
+        # Prefer exact deletion or a load/transfer fusion before substituting
+        # a transfer: both can be faster than this cycle-neutral rewrite.
+        if not changed and 'known-source-immediate-transfer' in config.enabled_rules:
+            for index, instruction in enumerate(instructions):
+                if instruction.mode != 'imm' or instruction.mnemonic not in _IMMEDIATE_TRANSFERS:
+                    continue
+                facts = known.facts_in(instruction.pc)
+                for source, opcode in _IMMEDIATE_TRANSFERS[instruction.mnemonic]:
+                    if facts.get(source) != instruction.operand:
+                        continue
+                    replacement = bytes((opcode,))
+                    item = _entry(
+                        'known-source-immediate-transfer', [tokens[index]], replacement, 0,
+                        f'{source}=${instruction.operand:02X}; {OPS[opcode][0]} sets the same destination and N/Z in two cycles',
+                    )
+                    _replace(tokens, index, 1, replacement); ledger.append(item)
+                    changed = True; break
+                if changed:
+                    break
         if not changed:
             break
 

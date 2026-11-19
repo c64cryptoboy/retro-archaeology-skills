@@ -345,7 +345,10 @@ def extract_chain(
         data = decoded.data
         next_track, next_sector = data[0], data[1]
         if next_track == 0:
-            byte_count = max(0, next_sector - 1)
+            if next_sector == 0:
+                raise G64Error(f"unsupported terminal file link $00/$00 at T{track}/S{sector}: "
+                               "expected last-used byte index $01 through $FF")
+            byte_count = next_sector - 1
             output.extend(data[2:2 + byte_count])
         else:
             byte_count = 254

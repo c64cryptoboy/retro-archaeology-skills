@@ -107,6 +107,55 @@ class ReductionRules6502Tests(unittest.TestCase):
         self.assertEqual((result.byte_delta, result.cycle_delta), (-3, -4))
         self.assertEqual(len(result.ledger), 2)
 
+    def test_known_source_replaces_immediate_with_all_outputs_live(self):
+        for load, transfer, src in ((0xA9, 0x8A, 'X'), (0xA9, 0x98, 'Y'),
+                                    (0xA2, 0xAA, 'A'), (0xA0, 0xA8, 'A')):
+            for value in (0, 0x42, 0x80, 0xFF):
+                with self.subTest(load=load, transfer=transfer, value=value):
+                    original = bytes((load, value, 0x60))
+                    result = reduce_straight_block(original, config=self.config(
+                        entry_facts=((src, value),), timing_policy='interrupt'))
+                    self.assertEqual(result.reduced, bytes((transfer, 0x60)))
+                    self.assertEqual((result.byte_delta, result.cycle_delta), (-1, 0))
+                    self.assertEqual(result.ledger[0].rule, 'known-source-immediate-transfer')
+                    registers = dict(a=value ^ 0x55, x=value ^ 0xAA, y=value ^ 0xFF)
+                    registers[src.lower()] = value
+                    for flags in (0x20, 0xEF):
+                        states = []
+                        for code in (original, result.reduced):
+                            trial = run(code, 0x80FF, flags=flags, **registers)
+                            self.assertTrue(trial.reached_legal_exit)
+                            s = trial.final
+                            self.assertEqual((s.cycles, trial.access.write_trace), (8, ()))
+                            states.append((s.a, s.x, s.y, s.sp, s.flags, s.pc))
+                        self.assertEqual(*states)
+
+    def test_known_source_checks_current_value_mode_and_transfer_direction(self):
+        # NZ at the final load describes X, but Y still holds the desired byte.
+        result = reduce_straight_block(bytes.fromhex('a0 42 a2 80 a9 42 60'),
+                                       config=self.config())
+        self.assertEqual(result.reduced, bytes.fromhex('a0 42 a2 80 98 60'))
+        for block in ('a9 42 60',               # no facts
+                      'a2 41 a9 42 60',         # wrong value
+                      'a2 42 a6 10 a9 42 60',   # memory load clobbered X
+                      'a2 42 a5 42 60',         # $42 is an address, not an immediate
+                      'a2 42 a0 42 60'):        # no documented TXY
+            original = bytes.fromhex(block)
+            self.assertEqual(reduce_straight_block(original, config=self.config()).reduced,
+                             original)
+        with self.assertRaisesRegex(ReductionError, 'cycle-exact'):
+            reduce_straight_block(bytes.fromhex('a2 42 a9 42 60'),
+                                  config=self.config(timing_policy='cycle-exact'))
+
+    def test_known_source_does_not_displace_deletion_or_faster_fusion(self):
+        result = reduce_straight_block(bytes.fromhex('a9 42 60'), config=self.config(
+            entry_facts=(('A', 0x42), ('X', 0x42), ('F:N', 0), ('F:Z', 0))))
+        self.assertEqual(result.reduced, bytes.fromhex('60'))
+        result = reduce_straight_block(bytes.fromhex('a9 42 a8 60'), config=self.config(
+            entry_facts=(('X', 0x42),), terminal_live={'Y', 'F:N', 'F:Z'}))
+        self.assertEqual(result.reduced, bytes.fromhex('a0 42 60'))
+        self.assertEqual(result.cycle_delta, -2)
+
     def test_known_carry_adjustment_is_exact_in_binary_mode(self):
         cases = (
             (bytes.fromhex('18 69'), 1, 0x21),  # CLC; ADC, incoming C=1

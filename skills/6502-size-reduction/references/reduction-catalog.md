@@ -53,6 +53,10 @@ A nibble-rotation routine can sometimes be reduced under a one-hot input domain 
 
 For carry reasoning, a preceding `CMP #20` can establish the carry consumed by `SBC #19`, avoiding a separate SEC. Promote analogous cases only when forward facts establish the required carry on every incoming path and final flags satisfy liveness/contract requirements.
 
+### Signed thresholds at a whole high byte
+
+For a signed 16-bit comparison against a constant whose low byte is zero, the signed high byte alone determines the result.  Flipping bit 7 on **both** high bytes turns signed ordering into unsigned ordering.  For example, to branch when X:A is at least signed `$1200`, `TXA; EOR #$80; CMP #$92; BCS target` gives the predicate in binary mode.  This is a candidate for hand analysis, not a general `CMP`-to-`EOR` substitution.  Relink and count the final bytes and cycles, including any long branch.  Compare the status at each **consumer**, not just which way the branch went: `CMP` preserves incoming V, unlike `SBC`.  A compensating `CLV` is correct only on paths where the required V is known clear or dead.  A case with high byte `$80`, incoming V set, and two real predecessor paths carrying different C values can expose three different invalid shortcuts.
+
 ### Outlining accounting
 
 Outlining two repeated 19-byte sequences into two JSRs plus one helper/RTS would save 12 code bytes before any additional layout costs, but add 12 cycles per execution. Always include call/return and branch/layout costs. Never outline or loop repeated code merely because it looks unrolled; preserve possible timing intent.
@@ -146,6 +150,8 @@ A replacement's extra register or flag clobber is not itself a rejection reason.
 - procedural generation of exact data;
 - grammar/dictionary encoding of repeated domain records;
 - specification-equivalent replacement where downstream invariants—not exact bytes—are the true contract.
+
+For dictionary-packed tables, distinguish **file bytes, peak RAM during expansion, and retained RAM during playback**.  If the input dictionary stays allocated beside the expanded table, shrinking the file may increase both memory figures.  Use linker ranges rather than summing overlapping startup and BSS segments.  Include any extra BSS clearing in startup time.  Compare the consumer’s actual words, including end markers; substituting one valid index for another should fail even if length and termination still match.  When the consumer fetches an entry only occasionally, compare a third build that looks up the word on demand and never expands it.  Measure extra cycles on the busiest simultaneous fetch, not just the mean.  If the scheduler waits for an eight-bit clock value, check a wider independent clock as well: a missed deadline can appear to match one full wrap later.  Meeting every update deadline does not guarantee the same spacing between writes inside an update.  If sound or display timing is relevant, compare the ordered bus writes relative to the first write of each event.  Include a control that shifts an interior write without changing either endpoint: a check of total event length alone must miss it.
 
 Measure complete cost: generator/decoder code, parameters, workspace, startup and runtime cycles, storage, and integration. Validate exact output when exact content matters; otherwise validate consumer-specific invariants and whole-program behavior.
 

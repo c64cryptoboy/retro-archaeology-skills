@@ -51,5 +51,7 @@ python3 tools/reduce6502.py INPUT.bin OUTPUT.bin \
 
 It accepts only one asserted straight-line documented-NMOS block with no interior entries. It does not repair surrounding layout. Current rules cover zero-page narrowing for existing `$00xx` operands, exact binary known-carry immediate adjustment around ADC/SBC, known-state redundant setters/immediate loads, duplicate flag setters, exact transfer round trips, and dead-source load/transfer fusion. Indexed zero-page narrowing requires a known index proving no wrap.
 
+When a different register is proven to hold the immediate byte, the reducer can use `TAX`, `TAY`, `TXA`, or `TYA` instead of the load.  For example, `LDX #$42; LDA #$42` becomes `LDX #$42; TXA`: four bytes become three, both take four cycles, and both registers and N/Z remain valid outputs.  This rule never substitutes for a memory read and does not relax cycle-exact refusal.
+
 Read [references/tool-map.md](../references/tool-map.md) before use.
 

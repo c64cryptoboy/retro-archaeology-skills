@@ -63,6 +63,12 @@ An interior entry, intervening effect, computed operand, or different counter
 leaves the statements separate.  This does not pair NEXTs or identify a build's
 optimizer or output mode.
 
+A numeric leaf can read `DEF FN F_36864(V_9002) = (V_9002 * V_9002)` instead of two disconnected partial rows.  The declaration writes the body cursor at descriptor `$9000` and skips the body.  A call reads the active cursor from that descriptor and packs FAC into its five-byte argument slot at `$9002`.  Normal return restores the VM cursor, **not** the slot's old contents.  The separate `RETURN FN` heading keeps the body addressable.  These names describe storage, not original spellings, and a call is never statically bound or inlined.
+
+The rule requires a bounded, nonoverlapping declaration record and no other decoded entry into the body.  It recognizes a direct reload of the formal, or one ARG/FAC add, subtract, or multiply of the formal with itself or a literal.  A nested call, a different scalar, a store, a stack operation, or an unproved return leaves the declaration partial.
+
+A direct numeric FAC argument, descriptor call, and immediately following packed scalar store can instead read `V_9022 = FN F_36864(7)`.  This expresses one call and its normal-return store, not substitution of a recovered definition.  An alternative entry at the call or store, an intervening operation, or a destination overlapping the descriptor retains the separate groups.
+
 The same listing recovers a single scalar `INPUT V_9ABC` or
 `INPUT "NUMBER";V_03F0` when a prompt's empty-line branch lands immediately
 after the typed field and matching store.  The prompt runs first; an empty

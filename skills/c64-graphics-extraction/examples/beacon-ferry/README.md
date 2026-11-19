@@ -1,0 +1,7 @@
+# Put an extracted sprite into a new C64 program
+
+Autostart [Beacon Ferry](beacon-ferry.prg), or load it and type `RUN`.  Use joystick port 2 to move the cyan ferry.  The green dock stays still.  Both use the same original artwork, stored **once**, and the rail behind them shows through the transparent dots.
+
+The [consumer source](ferry.s) includes the 64-byte slot block from the skill's example, not the donor screen, address map, or a PNG.  The donor used VIC bank $4000 and pattern $6000, so its pointer was $80.  This program places the same block at $0980 in bank $0000: the new pointer is **($0980 − $0000) / 64 = $26**.  It writes that pointer to $07F8 and $07F9, the first two entries for its own screen at $0400.  Both slots retain multicolor mode and both shared colors; changing just the second slot color turns the dock green.  Byte 63 remains in the imported block but draws no pixels.
+
+To reproduce the shipped PRG from the original donor, run `python3 -B check_build.py` here with ca65 and ld65 installed.  The [rebuild check](check_build.py) generates the frozen donor in a temporary directory, calls the regular extraction CLI, assembles the exported bytes into the new scene, and compares the complete PRG.  The normal image was also checked on NTSC x64sc: both 24 × 21 objects matched before and after 12 rightward input fields.  Changing only the dock to hires altered 112 dock dots without changing the asset.  This is not a PAL or physical-machine timing test.

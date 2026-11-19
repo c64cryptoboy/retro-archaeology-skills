@@ -109,7 +109,13 @@ def decode(prg,family):
         report['runtimeSha256']=p['runtimeSha256']
         l=report['layout'];bounds=[base,p['runtimeStart'],p['runtimeEnd'],l['data'],l['arrays'],l['initialization'],l['codeStart'],l['topCode'],end]
         labels=['bootstrap/header','runtime/tables','variable region','DATA (not lifted)','array region','initialization (not lifted)','main p-code','opaque trailing region']
+        from petspeed_console import RUNTIME, compact_string_slots
         from petspeed_data import RUNTIME_SHA256, decode_data_region
+        # The runtime's array clear tests for the end only after its first write.
+        if p['runtimeSha256']==RUNTIME and l['arrays']<l['initialization']:
+            report['petspeedCompactStringSlots']=compact_string_slots(
+                prg[2+p['runtimeEnd']-base:2+l['data']-base],
+                prg[2+l['initialization']-base:2+l['codeStart']-base])
         if p['runtimeSha256']==RUNTIME_SHA256:
             section=prg[2+l['data']-base:2+l['arrays']-base]
             report['petspeedData']=decode_data_region(section,l['data'],runtime_sha256=p['runtimeSha256'])

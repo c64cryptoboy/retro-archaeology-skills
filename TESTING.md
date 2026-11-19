@@ -21,6 +21,10 @@ The game-mechanics reader suite uses synthetic DOS 3.3 and ATR/DOS 2.0 structure
 
 Additional disk and p-code tests live beside their scripts.  Discover one test directory at a time; several modules have short import names and are intentionally isolated by the full runner.
 
+## Media and Forth examples
+
+The [Forth dictionary example](skills/6502-forth-reversing/SKILL.md), [VIC-II graphics workflow](skills/c64-graphics-extraction/SKILL.md), and [SID/TED workflow](skills/c64-music-extraction/SKILL.md) include small examples you can inspect without a game disk.  The full runner discovers their `test_*.py` suites.  Optional checks have separate prerequisites: Pillow for animated GIF export, ca65/ld65 to assemble the machine-code examples, and LilyPond to engrave a score.  The music skill explains how to check a rendered performance separately from its MIDI event list.  No emulator, synthesizer, or sound bank is installed by these commands.
+
 ## Optional Windows-build skill checks
 
 These checks exercise the bundled helpers without launching RetroDebugger or building native code:

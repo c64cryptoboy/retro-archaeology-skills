@@ -1,0 +1,7 @@
+track,key,start_tick,end_tick,start_32nd,end_32nd,wheel_start,wheel_min,wheel_max,wheel_writes_in_gate,printed
+Reed,60,0,480,0,8,0,0,0,0,
+Reed,60,480,960,8,16,0,0,0,0,
+Reed,67,1441,2401,24,40,0,0,4096,2,*
+Reed,69,2640,3120,44,52,0,0,0,0,
+Low,48,240,1200,4,20,0,0,0,0,
+Low,53,2160,2880,36,48,0,0,0,0,

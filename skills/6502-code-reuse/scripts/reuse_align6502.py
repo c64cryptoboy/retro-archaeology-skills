@@ -103,8 +103,9 @@ def affine_local_align(
     *,
     gap_open: int = -5,
     gap_extend: int = -1,
+    required_prefix_pairs: int = 0,
 ) -> LocalAlignment:
-    """Smith-Waterman with affine gaps and an inspectable traceback."""
+    """Affine local alignment, optionally extending only from a supported seed prefix."""
     n, m = len(left_relational), len(right_relational)
     match = [[0] * (m + 1) for _ in range(n + 1)]
     gap_right = [[0] * (m + 1) for _ in range(n + 1)]
@@ -112,15 +113,27 @@ def affine_local_align(
     trace_match: list[list[tuple[str, int, int] | None]] = [[None] * (m + 1) for _ in range(n + 1)]
     trace_gap_right: list[list[tuple[str, int, int] | None]] = [[None] * (m + 1) for _ in range(n + 1)]
     trace_gap_left: list[list[tuple[str, int, int] | None]] = [[None] * (m + 1) for _ in range(n + 1)]
-    best = (0, "M", 0, 0)
+    p = required_prefix_pairs
+    if not 0 <= p <= min(n, m):
+        raise ValueError("required prefix outside alignment streams")
+    for t in range(1, p + 1):
+        _, score = pair_relation(left_relational[t - 1], right_relational[t - 1],
+                                 left_shape[t - 1], right_shape[t - 1])
+        if score <= 0:
+            return LocalAlignment(0, ())
+        match[t][t] = match[t - 1][t - 1] + score
+        trace_match[t][t] = ("M", t - 1, t - 1)
+    best = (match[p][p], "M", p, p)
 
     def update_best(value: int, state: str, i: int, j: int) -> None:
         nonlocal best
         if value > best[0]:
             best = (value, state, i, j)
 
-    for i in range(1, n + 1):
-        for j in range(1, m + 1):
+    for i in range(max(1, p), n + 1):
+        for j in range(max(1, p), m + 1):
+            if i == j == p:
+                continue
             _, relation_score = pair_relation(
                 left_relational[i - 1],
                 right_relational[j - 1],
@@ -136,7 +149,10 @@ def affine_local_align(
                 ),
                 key=lambda item: item[0],
             )
-            match[i][j] = previous[0] + relation_score if previous[0] or relation_score > 0 else 0
+            # A zero predecessor starts a new local traceback.  A seeded
+            # extension must not restart downstream and inherit the seed's rarity.
+            if previous[0] > 0 or not p:
+                match[i][j] = max(0, previous[0] + relation_score)
             if match[i][j] > 0:
                 trace_match[i][j] = (previous[1], i - 1, j - 1)
 
@@ -263,6 +279,14 @@ def stream_candidates(
     return candidates
 
 
+def prefix_covering_seed(stream: Sequence[anchor.Instruction], end: int) -> int | None:
+    """Number of decoded instructions needed to cover the exact seed's byte span."""
+    for count, ins in enumerate(stream, 1):
+        if ins.offset + ins.length >= end:
+            return count
+    return None
+
+
 def alignment_metrics(alignment: LocalAlignment) -> dict[str, Any]:
     counts = {
         "relationalExact": 0,
@@ -375,7 +399,12 @@ def extend_cluster(
     for left_shift, left_stream in left_candidates:
         left_relational = anchor.relational_tokens(left_stream)
         left_shapes = anchor.shape_tokens(left_stream)
+        prefix = prefix_covering_seed(left_stream, seed.left.end)
+        if prefix is None:
+            continue
         for right_shift, right_stream in right_candidates:
+            if prefix_covering_seed(right_stream, seed.right.end) != prefix:
+                continue
             right_relational = anchor.relational_tokens(right_stream)
             right_shapes = anchor.shape_tokens(right_stream)
             alignment = affine_local_align(
@@ -383,7 +412,10 @@ def extend_cluster(
                 right_relational,
                 left_shapes,
                 right_shapes,
+                required_prefix_pairs=prefix,
             )
+            if not alignment.columns:
+                continue
             metrics = alignment_metrics(alignment)
             rank = (
                 alignment.score,
@@ -405,7 +437,7 @@ def extend_cluster(
                     alignment,
                     metrics,
                 )
-    if best is None or not best[9].columns:
+    if best is None:
         return None
     (
         _, left_shift, right_shift, left_stream, right_stream,
@@ -499,6 +531,9 @@ def match_json(match: ExtendedMatch, match_id: str) -> dict[str, Any]:
         "seed": {
             "leftStart": match.seed_anchor.left.start,
             "rightStart": match.seed_anchor.right.start,
+            "leftEndExclusive": match.seed_anchor.left.end,
+            "rightEndExclusive": match.seed_anchor.right.end,
+            "alignedPrefixPairs": prefix_covering_seed(match.left_stream, match.seed_anchor.left.end),
             "instructionCount": len(match.seed_anchor.fingerprint),
             "fingerprint": anchor.fingerprint_digest(match.seed_anchor.fingerprint),
             "leftFrequency": match.seed_anchor.left_frequency,
@@ -734,6 +769,7 @@ def analyze_manifests(
             "maxInstructionsPerExtension": max_instructions,
             "maxBytesPerExtension": max_bytes,
             "boundaryShiftsTried": [0, -1, -2],
+            "seedExtensionPolicy": "supported-full-seed-prefix-no-restart",
             "pairScores": {
                 "relationalExact": 5,
                 "shapeExact": 3,

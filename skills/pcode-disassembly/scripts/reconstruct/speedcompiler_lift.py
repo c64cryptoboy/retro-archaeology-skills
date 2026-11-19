@@ -126,6 +126,14 @@ class SpeedLifter(Lifter):
    self.set('ints',e(str(0 if n=='CONST_ZERO' else v['value'])));return
   if n=='CONST_FLOAT':self.fpush(e(self.constant(r,{})));return
   if n=='CONST_STRING':self.spush(e(quoted(bytes.fromhex(v['payloadHex']))));return
+  if n=='SET_TIME_STRING':
+   # run() splits pending rows at every known target.  Never take the
+   # literal from an alternate path, or infer a string-frame pop on return.
+   if len(self.pending)==2 and self.pending[0]['mnemonic']=='CONST_STRING':
+    src=self.pending[0];digits=bytes.fromhex(src['operands']['payloadHex'])
+    if src['address']+src['size']==r['address'] and len(digits)==6 and digits.isdigit():
+     self.emit('TI$ = '+quoted(digits));self.wipe(io=True);return
+   self.barrier('SET_TIME_STRING needs a reaching six-digit literal');return
   if n=='LOAD_INTEGER':self.set('ints',e(self.symbol(v,True)));return
   if n=='LOAD_FLOAT':self.fpush(e(self.symbol(v)));return
   if n=='LOAD_STRING':self.spush(e(self.symbol(v)+'$'));return

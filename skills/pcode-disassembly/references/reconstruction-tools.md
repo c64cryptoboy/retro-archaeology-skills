@@ -121,6 +121,12 @@ entire output space is supported.
   checked source subscripts.  The load returns a packed numeric value, a
   word, or a string descriptor (not copied characters) on the normal path.
   No folded read is carried across another operation or interior entry.
+  For an inline string followed immediately by `$80 $0D` and a string
+  less-than test, the detailed reading captures `TI$` at the selector and
+  compares that sample on the **left** with the literal on the right.  The
+  allocator retags FAC and may collect.  Only the inline string descriptor
+  is carried across the clock read; an earlier stack value stays unknown.
+  Other FAC producers, other consumers, and interior entries are not folded.
   In the same runtime,
   `STORE I16BE AT $hhhh FROM expr` describes a normal two-byte RAM write,
   not a BASIC array assignment.  `$F4 lo hi` replaces the prepared pointer
@@ -504,7 +510,15 @@ Other VM families do not inherit this rule.
   means the ambient route is unknown, not that a file was selected.  `GET#<?>, T_1234$`
   requires a reaching input selector whose number is unknown.  Classic INPUT field
   headings make the same distinction; the alternate runtime's empty-input skip is
-  not an unconditional field assignment.  In the admitted `$2245` and `$2267`
+  not an unconditional field assignment.  For an isolated fresh `$2267` string
+  field and one-byte compact string store, the detailed reader shows both paths
+  **on default console**: bare RETURN keeps the current value; typed `""` takes
+  the store and assigns an empty string.  The startup record must be tagged
+  `$FF`, with no initialization-list writes.  This assumes ordinary live scalar
+  storage, stock console vectors, and successful input.  It neither proves the
+  route (`$13=0`) nor lifts a file, a continuation field, or the original INPUT syntax.
+  The three byte rows remain visible; the numbered view is unchanged.
+  In the admitted `$2245` and `$2267`
   runtimes, `$DB` and `$DC` call GETIN, not CHKIN or CLRCHN: two GETs after a
   single `$E6` can both name that file until `$E9` restores the channels.
   This describes successful ordinary I/O, not keyboard identity, a device number,
