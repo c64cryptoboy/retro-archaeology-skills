@@ -42,6 +42,12 @@ def select_profile(prg: bytes, base_profile: dict) -> dict:
             else:
                 from variant_2267 import build_profile
             return build_profile(base_profile)
+        if digest == '02fff9b629da0d6f927549c4c0e7777fc6d31b040ae41c1b9630f114bd4e6af5':
+            if __package__:
+                from .variant_02fff9b6 import build_profile
+            else:
+                from variant_02fff9b6 import build_profile
+            return build_profile(base_profile)
         if digest == base_profile.get('runtimeSha256'):
             extra = json.loads(Path(__file__).with_name('classic_2245.json').read_text())
             if digest == extra['runtimeSha256']:

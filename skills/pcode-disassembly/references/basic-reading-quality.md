@@ -14,6 +14,8 @@ Use static code, source, documentation, observed execution, and firsthand user o
 
 ## Expressions and branches
 
+- Check the **effect reached by a branch**, not just whether its numeric destination is a valid instruction or BASIC line.  A sequence reading `PRINT "A";"B"` has two effects.  If a jump enters at the load of `"B"`, the jumping path must still print `B`, without printing `A`.  Split at the entry (`PRINT "A";` must not gain a newline), or show the original VM operations if incoming values or channel state are not known.  Include backwards branches and table-driven entries when checking for interior targets.
+
 When a branch join loses an operand, use the [reaching-definition worksheet and counterexamples](value-at-a-join.md) to distinguish a preserved sample from two identical-looking reads.  Unknown entry or state still blocks forwarding.
 
 - Render **structured expressions**, not regular-expression parenthesis deletion.  Use precedence to omit redundant grouping while preserving the exact evaluation tree.  `1 + INT(X * 20)` needs no wrappers around the addition, multiplication, or function argument.
