@@ -281,10 +281,25 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
     """Translate operations and expose exact emission sites and target choices.
 
     Emission sites are not expression starts or complete dependency provenance.
-    Generated DIM statements have no p-code emission address.  Target mappings
-    retain the legacy next-emission policy, which can redirect cross-entry flow.
+    Generated DIM statements have no p-code emission address.  PRINT groups
+    split at encoded entries and refuse unresolved expression dependencies.
+    Other target mappings retain the legacy next-emission policy, which can
+    redirect cross-entry flow; this is not a general branch-state analysis.
     """
     code = instructions(image)
+    # Collect every encoded entry before grouping output, including backward
+    # branches and ON tables.  Discovery during emission misses earlier joins.
+    targets = set()
+    for ins in code:
+        if ins.opcode in (0xd1, 0xd2):
+            targets.add(int.from_bytes(ins.argument, "little"))
+        elif ins.opcode == 0xd4:
+            targets.add(ins.address + ins.argument[0] + 1)
+        elif ins.opcode == 0xe2:
+            targets.update(ins.argument[1])
+    positions = {ins.address for ins in code}
+    if not targets <= positions:
+        raise ValueError(f"branch into operand at ${min(targets - positions):04X}")
     symbols = Symbols()
     scalar_end, array_start, array_end = image.sections[:3]
     if not 0x2800 < scalar_end <= array_start:
@@ -342,7 +357,11 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
 
     first = second = pointer = pointer_width = selected = upper = step = mid_length = None
     stack, loops, printing = [], [], []
-    emitted, targets = [], set()
+    emitted = []
+    # Track only PRINT dependencies across encoded entries, not general branch
+    # state.  Before any entry, the existing missing-operand checks suffice.
+    first_print_safe = second_print_safe = selected_print_safe = mid_print_safe = True
+    print_stack = []
     print_start = channel = input_channel = prompt = None
     input_mode = read_pending = get_pending = False
     input_kind = None
@@ -368,6 +387,10 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
 
     for ins in code:
         op, arg, address = ins.opcode, ins.argument, ins.address
+        if address in targets:
+            flush(address)  # Preserve output already performed, without a CR.
+            first_print_safe = second_print_safe = selected_print_safe = mid_print_safe = False
+            print_stack = [False] * len(stack)
         if (read_pending or get_pending or input_mode == "store") and not (0x60 <= op < 0x80 or op in (0xf3, 0xf4, 0xff)):
             raise ValueError(f"missing READ/GET/INPUT destination at ${address:04X}")
         boundary = 0x60 <= op < 0x80 or op in (
@@ -379,8 +402,10 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
                 flush(address)
         if op < 0x20 or op == 0xfe:
             second = variable(ins)
+            second_print_safe = True
         elif op < 0x40 or op == 0xfd:
             first = variable(ins)
+            first_print_safe = True
         elif op < 0x60:
             if op in (0x40, 0x49):
                 value = str(int.from_bytes(arg, "little", signed=True))
@@ -392,8 +417,10 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
                 value = string_literal(arg[1:])
             if op in (0x40, 0x43, 0x46, 0x52):
                 first = value
+                first_print_safe = True
             else:
                 second = value
+                second_print_safe = True
         elif op < 0x80 or op == 0xff:
             dest = variable(ins)
             if read_pending:
@@ -419,8 +446,10 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
             value = "1" if op in (0x8a, 0x97) else "0"
             if op in (0x8a, 0x9e):
                 first = value
+                first_print_safe = True
             else:
                 second = value
+                second_print_safe = True
         elif op in (0x81, 0x82, 0x83, 0x84, 0x85, 0x88, 0x89,
                     0x8b, 0x8c, 0x8d, 0x8f, 0x91, 0x92, 0x93,
                     0x94, 0x95, 0x96, 0x98, 0x99, 0x9a, 0x9b, 0x9c, 0x9d):
@@ -439,6 +468,7 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
                 if tokenize(left + symbol + right) != tokenize(left) + tokenize(symbol) + tokenize(right):
                     symbol = f" {symbol} "
             first = f"({left}{symbol}{right})"
+            first_print_safe = first_print_safe and second_print_safe
         elif op == 0x87:
             first = f"(-{need(first, ins)})"
         elif op == 0x90:
@@ -450,29 +480,37 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
             first = f"{name}({need(first, ins)})"
         elif op in (0xdd, 0xde):
             first = f"{'LEFT$' if op == 0xdd else 'RIGHT$'}({need(second, ins)},{need(first, ins)})"
+            first_print_safe = first_print_safe and second_print_safe
         elif op == 0xe0:
             first = f"MID$({need(first, ins)},{need(second, ins)},1)"
+            first_print_safe = first_print_safe and second_print_safe
         elif op == 0xa9:
             mid_length = need(first, ins)
+            mid_print_safe = first_print_safe
         elif op == 0xaa:
             if mid_length is None:
                 raise ValueError(f"MID$ length missing at ${address:04X}")
             first = f"MID$({need(first, ins)},{need(second, ins)},{mid_length})"
+            first_print_safe = first_print_safe and second_print_safe and mid_print_safe
             mid_length = None
         elif op == 0xf5:
             stack.append(need(first, ins))
+            print_stack.append(first_print_safe)
         elif op == 0xf6:
             if not stack:
                 raise ValueError(f"expression stack underflow at ${address:04X}")
             first = stack.pop()
+            first_print_safe = print_stack.pop()
         elif op == 0xf7:
             if not stack:
                 raise ValueError(f"expression stack underflow at ${address:04X}")
             second = stack.pop()
+            second_print_safe = print_stack.pop()
         elif op == 0xce:
             if not stack:
                 raise ValueError(f"POKE without address at ${address:04X}")
             emit(address, f"POKE {stack.pop()},{need(first, ins)}")
+            print_stack.pop()
         elif op == 0xcb:
             upper = need(first, ins)
         elif op == 0xcc:
@@ -484,6 +522,7 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
                 if not stack:
                     raise ValueError(f"STEP without limit at ${address:04X}")
                 upper = stack.pop()
+                print_stack.pop()
             emit(address, f"FOR {var}={need(first, ins)} TO {need(upper, ins)}"
                  + (f" STEP {step}" if step is not None else ""))
             loops.append((variable_address, var))
@@ -501,6 +540,7 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
                 emit(address, "NEXT")
         elif op == 0xfc:
             selected = int.from_bytes(arg, "little")
+            selected_print_safe = True
         elif op in (0x9f, 0xa0, 0xa2, 0xa3, 0xa5, 0xa6):
             if selected is None or selected not in layouts and selected not in aliases:
                 raise ValueError(f"array access without base at ${address:04X}")
@@ -510,6 +550,7 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
             element = indexed(selected, need(first, ins))
             if op in (0x9f, 0xa2, 0xa5):
                 first = element
+                first_print_safe = first_print_safe and selected_print_safe
             else:
                 pointer = element
                 pointer_width = width
@@ -519,6 +560,7 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
             element = f"{arrays[selected]}({need(second, ins)},{need(first, ins)})"
             if op == 0xa1:
                 first = element
+                first_print_safe = first_print_safe and second_print_safe and selected_print_safe
             else:
                 pointer = element
                 pointer_width = layouts[selected][0]
@@ -537,16 +579,16 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
             value = direct(int.from_bytes(arg, "little"), 5)
             if op == 0xed:
                 second = value
+                second_print_safe = True
             else:
                 first = value
+                first_print_safe = True
         elif op in (0xd1, 0xd2, 0xd4):
             target = address + arg[0] + 1 if op == 0xd4 else int.from_bytes(arg, "little")
-            targets.add(target)
             prefix = f"IF ({need(first, ins)})=0 THEN GOTO " if op == 0xd4 else "GOTO " if op == 0xd1 else "GOSUB "
             emit(address, (prefix, BranchReference(target)))
         elif op == 0xe2:
             branch, choices = arg
-            targets.update(choices)
             parts = [f"ON {need(first, ins)} {'GOTO' if branch == 0xd1 else 'GOSUB'} "]
             for index, target in enumerate(choices):
                 if index:
@@ -587,18 +629,24 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
             system_handler = image.word(0x19ba + 2 * arg[0])
             if system_handler == 0x25bb and arg[0] == 6:
                 first = "TI"
+                first_print_safe = True
             elif system_handler == 0x25bb and arg[0] == 11:
                 second = "TI"
+                second_print_safe = True
             elif system_handler == 0x25ee and arg[0] == 8:
                 first = "TI$"
+                first_print_safe = True
             elif system_handler == 0x25ee and arg[0] == 13:
                 second = "TI$"
+                second_print_safe = True
             elif system_handler == 0x2626 and arg[0] == 14:
                 emit(address, f"TI$={need(first, ins)}")
             else:
                 raise ValueError(f"untranslated system selector ${arg[0]:02X} "
                                  f"(handler ${system_handler:04X}) at ${address:04X}")
         elif op in (0xd0, 0xcf, 0xe7):
+            if not first_print_safe:
+                raise ValueError(f"unresolved PRINT expression across control entry at ${address:04X}")
             if not printing:
                 print_start = address
             printing.append(f"SPC({need(first, ins)})" if op == 0xe7 else need(first, ins))
@@ -615,11 +663,13 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
             if len(stack) < 2:
                 raise ValueError(f"OPEN without arguments at ${address:04X}")
             device, number = stack.pop(), stack.pop()
+            del print_stack[-2:]
             emit(address, f"OPEN {number},{device},{need(first, ins)}")
         elif op == 0xb0:
             if len(stack) < 3:
                 raise ValueError(f"OPEN without arguments at ${address:04X}")
             secondary, device, number = stack.pop(), stack.pop(), stack.pop()
+            del print_stack[-3:]
             emit(address, f"OPEN {number},{device},{secondary},{need(first, ins)}")
         elif op == 0xb1:
             emit(address, f"CLOSE {need(first, ins)}")
@@ -629,15 +679,13 @@ def decode_with_evidence(image: Image) -> DecodedProgram:
             if not stack:
                 raise ValueError(f"WAIT without address at ${address:04X}")
             emit(address, f"WAIT {stack.pop()},{need(first, ins)}")
+            print_stack.pop()
         else:
             raise ValueError(f"untranslated handler ${op:02X} at ${address:04X}")
 
     if stack or read_pending or get_pending or input_mode or upper is not None or step is not None:
         raise ValueError("unfinished Speedcode expression or statement")
     flush(image.sections[4])
-    positions = {ins.address for ins in code}
-    if not targets <= positions:
-        raise ValueError(f"branch into operand at ${min(targets - positions):04X}")
     locations = {}
     target_evidence = []
     for target in sorted(targets):

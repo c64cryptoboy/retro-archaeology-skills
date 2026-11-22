@@ -57,6 +57,22 @@ Maintain a voice-event ledger: source identifier, start call, exclusive end, lan
 
 The [performance MIDI writer](performance/README.md) turns explicit timed voice spans and held pitch changes into a playable MIDI.  It includes a short original tune, source ledger, and independent event parser; it does not infer gates from pitch alone.
 
+### Distinguish a SID attack from a register update
+
+Keep ordered cycle timestamps, not just the last register values in each player call.  A low-byte write followed by a high-byte write can briefly produce a third frequency word.  Preserve that word in the trace; before assigning it a MIDI note, check how long it persisted, gate state, and whether an isolated native render has a separate audible attack.  Likewise, alternating triangle and noise on one held gate is a timbre change, not by itself a reason to retrigger a melodic note and a drum every time.  A tiny MIDI note can still trigger a long sampled release.  Compare the **rendered** result against the native solo before choosing a percussion or expression proxy.  There is no universal minimum duration for a real note.
+
+For a fast cyclic pitch figure, distinguish the number of distinct pitches, the number of timed steps, and the number of gate attacks.  For example, three pitches can cycle over five equal updates without forming either five attacks or a triplet.  Where available, match the executed player command or pitch-table entries to the timed writes.  Follow the oscillator **after gate-off**: an audible release may keep cycling rather than resting or holding the last gated pitch.  Check a voice-isolated render through the next attack.  Keep the performed steps in the master; if a separate reading copy stacks them as a chord, label it as a reduction of one voice, not simultaneous SID notes.
+
+When voices appear to drift apart, compare their actual onset intervals in calls or cycles.  Two voices sharing the same interrupt clock may use different integer countdowns.  Check an early and a late alignment before changing the tempo map or inserting rests.  Preserve the measured offset in the performance export; a regularized beat grid belongs in a separate editorial copy.
+
+### When a rendered MIDI note sounds flat or sharp
+
+Start at the listener's timestamp.  Isolate the suspect voice and compare three things in the same sounding window: the native SID audio, the exported MIDI key plus its active pitch bend and bend range, and the audio rendered from that MIDI with the delivery synth and SoundFont.  Use several short windows if the note has vibrato; one low point is not its center pitch.  Use the native performance as the tuning reference, not the nearest equal-tempered key.  In a full mix, the strongest peak can belong to a different voice or a harmonic.
+
+If the MIDI agrees with the SID but its render does not, hold the MIDI events fixed and change only the instrument.  A sampled instrument can switch to a detuned sample at a particular key: test the first bad key, another key in that range, and neighboring good keys.  If the error follows the patch, change the program on the affected voice or passage rather than transposing the notes or flattening the source vibrato.  Reopen the MIDI to verify that only program changes differ, then measure the same notes in the new render.  Report the timbre tradeoff and name the tested sound bank; the result need not apply to other synths.
+
+For listening review, offer **SID** and **MIDI** controls on a shared timeline.  Render the delivered MIDI, keep both files aligned to the same musical origin (including lead-in), and let the listener switch either way at the current playback position without restarting.  Label both sides and use comparable listening levels without erasing dynamics.  Check a switch late in the piece as well as near the start: an onset offset or a drifting clock can make adjacent notes sound like a pitch error.
+
 ### Engrave and check a performance transcription
 
 The [notation guide](notation/README.md) includes a two-staff original example, a callable exporter, and a test that engraves a deliberately shortened note.  Both the right and wrong scores compile; only the correct one preserves every release.  Supply independently justified grid anchors and keep the performance MIDI separate from the reading copy.

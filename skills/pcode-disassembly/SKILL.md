@@ -32,7 +32,7 @@ Read the applicable reference **before** using its workflow; do not load every f
 |---|---|
 | BLITZ! | [Profile recovery](references/profile-recovery.md) for CLI examples; [scripts/blitz/](scripts/blitz/). Supply an independently evidenced profile; no title-specific profile is bundled. |
 | Austro-Speed / INPUT64 Speedcompiler | [Family contracts/tools](references/austrospeed-speedcompiler-tools.md). Distinct identities; Austro reuses audited BLITZ grammar, Speedcompiler has a separate decoder/state adapter. |
-| PETSpeed | [Detailed disassembly](references/petspeed-tools.md) for two verified runtimes; [one bounded routine beside its bytes](references/petspeed-tools.md#reading-one-independently-located-routine) for the classic runtime; [numbered BASIC text and tokenized PRG](references/petspeed-tools.md#alternate-runtime-and-numbered-basic) for the `JMP $2267` runtime. |
+| PETSpeed | [Detailed disassembly](references/petspeed-tools.md) for three exactly fingerprinted runtimes; [one bounded routine beside its bytes](references/petspeed-tools.md#reading-one-independently-located-routine) for the classic runtime; [numbered BASIC text and tokenized PRG](references/petspeed-tools.md#alternate-runtime-and-numbered-basic) for the `JMP $2267` runtime. |
 | BASIC-64 | [BASIC-64 tools](references/basic64-tools.md); [scripts/basic64/](scripts/basic64/). Tested optimizer-I/II p-code scope, not automatic native/mixed-mode support. |
 | DTL BASIC / Jetpack64.4 | [DTL tools](references/dtl-tools.md); [scripts/dtl/](scripts/dtl/). Structural/profile decoding and supplied-source annotation; source-free reconstruction is separately best-effort. |
 

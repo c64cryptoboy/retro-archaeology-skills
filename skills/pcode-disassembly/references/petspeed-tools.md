@@ -9,7 +9,7 @@ python3 -X utf8 scripts/petspeed/petspeed.py PROGRAM.WOW \
 python3 -X utf8 -m unittest discover -s scripts/petspeed -q
 ```
 
-Keep the `scripts/petspeed/` directory together, including `variant_2267.py` for the alternate runtime. Python 3.10+ standard library only. Tests use synthetic bytes and require no commercial software, emulator or network access.
+Keep the `scripts/petspeed/` directory together, including `variant_2267.py` and `variant_02fff9b6.py` for the two non-classic runtime fingerprints. Python 3.10+ standard library only. Tests use synthetic bytes and require no commercial software, emulator or network access.
 
 `--source` requires the matching raw SEQ `.W` map. Supplied BASIC is annotation, not recovered or authenticated source. Preserve duplicate source anchors and the opaque map footer instead of inventing meaning. Output files must be fresh.
 
@@ -18,6 +18,10 @@ Unknown runtime fingerprints, lengths/selectors, truncated instructions and inva
 Opcode `$AB` is the one-byte `ZERO_ARG` primitive: `$6C/$6D := 0`, integer tag `$B6 := 1`, no inline operand, normal p-code fallthrough. The pinned runtime's dispatch word `$087C` selects `$1408`; its handler tails to the shared `$0926` cursor increment without another operand fetch. This does not clear all ARG payload bytes or write FAC.  The symbolic reader contributes the numeric value zero from ARG while retaining a separately known FAC operand; it does not supply either fact to a branch that bypasses the load. That classic profile is pinned to runtime `[$0826,$2800)` SHA-256 `cee17449b6e9700af4642546477c06dbb42413888fa5e594ebded33014c5dbaf`. Static handler evidence and synthetic grammar/refusal tests are not target-execution or whole-program equivalence evidence.
 
 ON-table and function-definition grammars validate every encoded control destination. Keep function descriptors, body entries, skip targets and source-line operands distinct. Complete declared-main-p-code decoding does not establish reachability, full compiler-language support or interpreted/compiled equivalence.
+
+## Another exact `JMP $2245` runtime
+
+The standalone whole-object decoder and reconstruction frontend can also use a distinct runtime with SHA-256 `02fff9b629da0d6f927549c4c0e7777fc6d31b040ae41c1b9630f114bd4e6af5` over the same interval.  Use the ordinary automatic route; do **not** override a fingerprint mismatch or use the `$2267` numbered exporter.  Despite matching dispatch words, one changed ROM call alters the floating path of opcode `$B4` (`SGN`), and the optional STOP predicate differs.  These distinctions stay attached to the exact variant.  `$AF` here is an `OPEN` with secondary address and empty filename; `$F2 lo hi` loads the three-byte string descriptor at an absolute address, not character bytes embedded in the p-code.  Decoding either form is not a claim about successful I/O or live descriptor contents.
 
 ## Reading one independently located routine
 
@@ -53,7 +57,7 @@ python3 scripts/reconstruct/reconstruct.py program.prg --text-output annotated.t
 
 The numbered view adapts [PetspeedDecompy](https://github.com/EgonOlsen71/PetspeedDecompy/tree/3d4360e8b481c2157fccac0458f3556a2d3ea311).  Use it to read statements and follow branches; use the detailed view to check instruction addresses, operands, and unresolved semantics.  Line numbers and aliases are generated; array shapes are inferred, and DATA fields can be regrouped.  The text escapes nonprinting bytes for display.  The optional tokenized PRG preserves the generated token bytes, not the original source or a guarantee of equivalent execution.  Neither input nor output is run.  Compact translation can refuse an object whose instructions all have known lengths; in that case the detailed report remains available without the export options.  See also [related tools and independent checks](compiled-basic-related-tools.md).
 
-The JSON reading view links generated lines to emission addresses, records each encoded destination separately from the line it maps to, and retains each DATA field's address, tag, text bytes, numeric suffix, and the separate footer.  The frontend checks that the compact and detailed instruction boundaries agree (the compact view omits the terminal END marker).  It also refuses direct branches into scalar stores with an unproved incoming value, nonnormalized floating literals, and changes in the number of `RND`, `PEEK`, or `FRE` calls.  Equal counts do not establish evaluation order or reachability.  For the classic `JMP $2245` runtime, the detailed report recovers supported DATA records independently; it does not enable the alternate numbered exporter.
+The JSON reading view links generated lines to emission addresses, records each encoded destination separately from the line it maps to, and retains each DATA field's address, tag, text bytes, numeric suffix, and the separate footer.  The frontend checks that the compact and detailed instruction boundaries agree (the compact view omits the terminal END marker).  It also refuses direct branches into scalar stores with an unproved incoming value, nonnormalized floating literals, and changes in the number of `RND`, `PEEK`, or `FRE` calls.  The compact reader also separates pending PRINT items at encoded entries, including backward and ON targets, keeping a trailing semicolon rather than adding a newline.  It refuses unresolved PRINT operands at those entries.  This does not certify other next-emission target mappings.  Equal call counts do not establish evaluation order or reachability.  For the classic `JMP $2245` runtime, the detailed report recovers supported DATA records independently; it does not enable the alternate numbered exporter.
 
 ## Semantic clock-reading support
 
@@ -65,7 +69,7 @@ This semantic rule does not add a selector, runtime fingerprint, or image-admiss
 
 The internal symbolic adapter recognizes an independently decoded `LOAD_STRING_ELEMENT_AT` record as `STRDESC_hhhh$`, an opaque view of an absolute three-byte descriptor slot.  It replaces FAC, preserves ARG, and carries producer provenance and an explicit warning.  The suffix describes the handler's unconditional string output tag, not a recovered BASIC variable, array identity, dimensions, or subscripts.  No descriptor contents or character bytes are read by the lifter, and the expression is not marked as a stable snapshot.
 
-This semantic-only route adds no public opcode, runtime fingerprint, or image admission.  Its caller must establish the exact native contract, binary arithmetic, stable mapping/runtime, a valid stack, benign interrupts, and ordinary nonaliasing descriptor memory; workspace/I/O aliases are outside this simple copy interpretation.  Joins, calls, unknown effects, and region boundaries still discard facts.  No `$EF` tag recovery, character allocation semantics, whole-program typing, or executable BASIC equivalence is implied.
+The symbolic rule itself adds no opcode or image admission; `$F2` grammar on an admitted runtime is a separate decision.  Its caller must establish the exact native contract, binary arithmetic, stable mapping/runtime, a valid stack, benign interrupts, and ordinary nonaliasing descriptor memory; workspace/I/O aliases are outside this simple copy interpretation.  Joins, calls, unknown effects, and region boundaries still discard facts.  No `$EF` tag recovery, character allocation semantics, whole-program typing, or executable BASIC equivalence is implied.
 
 ## Semantic literal CHR$ construction
 
@@ -82,6 +86,10 @@ This symbolic rule does not change whole-object grammar, runtime fingerprints, o
 Check the [boundary between names and word operators](basic-word-boundary.md) in the saved BASIC bytes.  The numbered text alone cannot distinguish `A` followed by the FOR token from `AF` followed by the OR token.
 
 ## Extending coverage
+
+Treat another reader's refusal as a routing clue, not a family verdict.  Compare its handler dictionary against the object's dispatch words, check exceptions individually, and verify operand consumption against native code.  An address shift shared by many entries is not a single relocation rule for the whole table.  Even an identical dispatch table does not establish identical handler bodies or ROM call operands.  Admit a detailed profile only at its evidenced runtime hash and layout; numbered BASIC needs separate tests.
+
+For mixed BASIC/native utilities, follow `READ` → `POKE` → `SYS`.  Rebuild the contiguous memory interval from the compiled DATA records, verify its bounds and entry points, and classify embedded command bytes separately from instructions.  For a device reader, record the request length byte and the host's receive-loop count separately.  Neither a plausible BASIC reading nor the host loop proves the peripheral's response.
 
 Follow [compiler-assisted discovery](compiler-assisted-discovery.md). Establish runtime handler behavior and exact operand lengths before extending the profile. Freeze the core/profile before a fresh holdout and distinguish same-image regressions from independent validation.
 
